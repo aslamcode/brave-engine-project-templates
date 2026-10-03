@@ -1,0 +1,6 @@
+{
+  "name": "RPG",
+  "category": "rpg",
+  "minVersion": "0.5.0",
+  "description": "Top-down movement and a starter interaction system."
+}

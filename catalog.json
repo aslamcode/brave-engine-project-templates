@@ -1,0 +1,42 @@
+[
+  {
+    "id": "fps",
+    "name": "First Person Shooter",
+    "category": "fps",
+    "description": "Mouse-look movement and a weapon rig, ready to extend.",
+    "thumbnail": "https://cdn.cloudflare.steamstatic.com/steam/apps/782330/library_hero.jpg",
+    "builds": [
+      { "minVersion": "0.5.0", "ref": "main" }
+    ]
+  },
+  {
+    "id": "third-person",
+    "name": "Third Person",
+    "category": "third-person",
+    "description": "Camera-follow character controller with collision.",
+    "thumbnail": "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/library_hero.jpg",
+    "builds": [
+      { "minVersion": "0.5.0", "ref": "main" }
+    ]
+  },
+  {
+    "id": "side-scroller",
+    "name": "Side Scroller",
+    "category": "side-scroller",
+    "description": "Platformer movement locked to a single plane.",
+    "thumbnail": "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/library_hero.jpg",
+    "builds": [
+      { "minVersion": "0.5.0", "ref": "main" }
+    ]
+  },
+  {
+    "id": "rpg",
+    "name": "RPG",
+    "category": "rpg",
+    "description": "Top-down movement and a starter interaction system.",
+    "thumbnail": "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_hero.jpg",
+    "builds": [
+      { "minVersion": "0.5.0", "ref": "main" }
+    ]
+  }
+]

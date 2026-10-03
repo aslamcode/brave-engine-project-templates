@@ -1,0 +1,6 @@
+{
+  "name": "Side Scroller",
+  "category": "side-scroller",
+  "minVersion": "0.5.0",
+  "description": "Platformer movement locked to a single plane."
+}

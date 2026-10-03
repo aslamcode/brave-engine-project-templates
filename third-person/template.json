@@ -1,0 +1,6 @@
+{
+  "name": "Third Person",
+  "category": "third-person",
+  "minVersion": "0.5.0",
+  "description": "Camera-follow character controller with collision."
+}

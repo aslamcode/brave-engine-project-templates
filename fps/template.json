@@ -1,0 +1,6 @@
+{
+  "name": "First Person Shooter",
+  "category": "fps",
+  "minVersion": "0.5.0",
+  "description": "Mouse-look movement and a weapon rig, ready to extend."
+}

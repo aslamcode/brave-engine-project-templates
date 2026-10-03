@@ -1,0 +1,50 @@
+{
+  "name": "Third Person",
+  "layers": [
+    "Default"
+  ],
+  "quality": {
+    "renderScale": 1,
+    "upscaleTechnique": 1,
+    "msaaSampleCount": 0,
+    "textureAnisotropy": 16,
+    "shadowMapResolution": 4096,
+    "shadowDistance": 1000,
+    "cascadeSplitLambda": 0.5,
+    "shadowSoftness": 1,
+    "localShadowMapResolution": 2048,
+    "maxDirectionalShadows": 2,
+    "maxSpotShadows": 8,
+    "maxPointShadows": 4,
+    "maxSoftShadows": 8,
+    "maxAreaShadows": 8,
+    "transmissionSteps": 2
+  },
+  "general": {
+    "version": "1.0.0",
+    "packageName": "com.example.thirdperson",
+    "company": "",
+    "copyright": "",
+    "description": "Camera-follow character controller with collision.",
+    "iconAssetId": null
+  },
+  "physics": {
+    "tickRateHz": 60,
+    "gravity": {
+      "x": 0,
+      "y": -9.81,
+      "z": 0
+    }
+  },
+  "build": {
+    "scene": {
+      "start": "main.scn",
+      "scenes": [
+        "main.scn"
+      ]
+    },
+    "screen": {
+      "defaultMode": "fullscreen"
+    }
+  }
+}
