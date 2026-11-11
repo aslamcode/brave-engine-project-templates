@@ -60,6 +60,8 @@ export class Weapon extends ScriptComponent {
   @Float({ header: 'Feel', label: 'Camera Kick', suffix: '°', tooltip: 'How far the view climbs at each shot before it settles back.' }) cameraKick = 0.8;
   @Float({ label: 'Flash Time', suffix: 's', tooltip: 'How long the muzzle light stays on.' }) flashSeconds = 0.07;
 
+  @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the rifle is in hand when the game starts. Off: it starts put away, with the magazine loaded all the same, and 1 brings it up.' }) startEquipped = true;
+
   @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game fires only while it holds the pointer (the click that locks it does not shoot). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
 
   @JsonIgnore() protected crosshairOptions = [{ value: 'dot', description: 'Dot' }, { value: 'arcs', description: 'Arcs' }];
@@ -190,9 +192,9 @@ export class Weapon extends ScriptComponent {
     this.showAmmo();
   }
 
-  /** Whether the weapon may be used: in hand, its owner alive, the game running. A game that stuns the player does it here. */
+  /** Whether the weapon may be used: its owner on (a character that is switched off still hears the mouse, and must not shoot from where it stands), in hand, alive, the game running. A game that stuns the player does it here. */
   isReady(): boolean {
-    return this.arms?.equipped === true && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
+    return this.entity.activeInHierarchy && this.arms?.equipped === true && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
   }
   //#endregion Public
 
@@ -332,11 +334,11 @@ export class Weapon extends ScriptComponent {
     if (this.flashLeft <= 0 && this.muzzle) this.muzzle.active = false;
   }
 
-  // The arms reset themselves in their own `onStart()`, which may run after this one: the weapon is taken in hand on the first frame, once. After that `1` puts it away and brings it back.
+  // The arms reset themselves in their own `onStart()`, which may run after this one: the weapon is taken in hand on the first frame, once (unless it starts put away). After that `1` puts it away and brings it back.
   private takeInHand() {
     if (this.tookInHand || !this.arms) return;
     this.tookInHand = true;
-    this.arms.equip();
+    if (this.startEquipped) this.arms.equip();
   }
   //#endregion Frame
 
