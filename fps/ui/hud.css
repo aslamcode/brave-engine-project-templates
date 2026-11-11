@@ -19,8 +19,9 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .damage { position: fixed; inset: 0; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 40, 30, 0) 45%, rgba(255, 40, 30, 0.55) 100%); transition: opacity 0.45s ease-out; }
 .damage.-hit { opacity: 1; transition: none; }
 
-/* The crosshair: thin, small and alive. Two styles, by the weapon in hand. `dot`: a centre and four ticks that show while the stance is alert (or over a target). `arcs`: two arcs, one each side, and a small ring
-   in the middle (the shotgun's). Both open with the cone the weapon shoots in: hud.js sets --spread (pixels), the ticks never come nearer than 6 px and the arcs never closer than a radius of 18. */
+/* The crosshair: thin, small and alive. Two styles, by the weapon in hand. `dot`: a centre and four ticks that show while the stance is alert (or over a target). `arcs`: a ring of four arcs, broken at up, down,
+   left and right, and the same 2 px dot in the middle (the shotgun's: its pellets land anywhere inside the ring, the dot is where the middle is). Both open with the cone the weapon shoots in: hud.js sets --spread
+   (pixels), the ticks never come nearer than 6 px and the ring never smaller than a radius of 18. */
 .crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; --spread: 0px; --cross: var(--ink); --gap: max(6px, calc(var(--spread) + 4px)); --radius: min(90px, max(18px, var(--spread))); }
 .crosshair.-target { --cross: var(--target); }
 .crosshair__dot { position: absolute; left: -1px; top: -1px; width: 2px; height: 2px; border-radius: 50%; background: var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
@@ -30,14 +31,15 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .crosshair__tick.-up { top: calc(-1 * var(--gap) - 8px); } .crosshair__tick.-down { top: var(--gap); }
 .crosshair__tick.-left { left: calc(-1 * var(--gap) - 8px); } .crosshair__tick.-right { left: var(--gap); }
 .crosshair.-alert .crosshair__tick { opacity: 0.95; }
-.crosshair.-target .crosshair__tick { opacity: 1; }   /* the colour changes at once: an answer to where the player points is not eased */
+.crosshair.-target .crosshair__tick { opacity: 1; }
+.crosshair.-aiming .crosshair__tick { opacity: 0; }   /* aiming: the weapon is at the eye, the centre dot is enough (over a target the ticks stay: red is an answer) */
+.crosshair.-aiming.-target .crosshair__tick { opacity: 1; }   /* the colour changes at once: an answer to where the player points is not eased */
 
-.crosshair__arcs, .crosshair__pip { display: none; }
-.crosshair.-arcs .crosshair__dot, .crosshair.-arcs .crosshair__tick { display: none; }
+.crosshair__arcs { display: none; }
+.crosshair.-arcs .crosshair__tick { display: none; }
 .crosshair.-arcs .crosshair__arcs { display: block; position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; overflow: visible; }
-.crosshair__ring { fill: none; stroke: var(--cross); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 62 118; transform: rotate(-31deg); r: var(--radius); transition: r 0.06s linear; }
+.crosshair__ring { fill: none; stroke: var(--cross); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 54 36; transform: rotate(18deg); r: var(--radius); transition: r 0.06s linear; }
 .crosshair__ring.-shade { stroke: rgba(0, 0, 0, 0.6); stroke-width: 4; }
-.crosshair.-arcs .crosshair__pip { display: block; position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.35); }
 
 /* The hit marker: four short strokes that flash at the crosshair; red for a kill. */
 .hitmarker { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; opacity: 0; }
@@ -74,6 +76,11 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .ammo__loaded.-empty { color: var(--danger); }
 .ammo__slash { margin: 0 6px; font-size: 24px; color: var(--muted); }
 .ammo__reserve { font-size: 24px; color: var(--muted); }
+
+/* The weapons carried, over the ammo: the key and the name, the one in hand lit. */
+.weapons { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 6px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.weapons__chip { color: var(--muted); }
+.weapons__chip.-current { color: var(--accent); }
 
 /* What the player carries. */
 .items { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 8px; }

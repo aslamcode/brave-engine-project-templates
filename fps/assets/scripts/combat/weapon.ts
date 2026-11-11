@@ -1,10 +1,8 @@
-import { BraveEngine, BraveEngineModeEnum, Bool, Camera, CharacterController, Cursor, DecalSystem, Entity, FirstPersonCamera, Float, Inject, Input, Int, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Select, Signal, Time, Vector3 } from '@brave/core';
+import { BraveEngine, BraveEngineModeEnum, Bool, Camera, CharacterController, Cursor, DecalSystem, Entity, FirstPersonCamera, IEntity, Inject, Input, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, Time, TwoBoneIK, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { FirstPersonArms } from '../player/first-person-arms';
+import { Firearm } from './firearm';
 import { Health } from './health';
-
-/** The crosshair a weapon has: a centre and four ticks, or two arcs and a small ring (the shotgun's: the arcs open with the spread, so they show where the pellets may go). */
-export type CrosshairStyle = 'dot' | 'arcs';
 import { Hitbox } from './hitbox';
 import { playSound } from './play-sound';
 
@@ -17,63 +15,41 @@ export interface IBullet {
 }
 
 /**
- * The rifle of the first person player: the left mouse fires, R reloads, the shot is a ray from the camera. It lives on the `Player` entity, next to the `Health`, the `WeaponStance` that poses the
- * rifle and the `FirstPersonArms` that holds it; it only reads them.
+ * What the first person player does with a weapon: the left mouse fires, R reloads, the right mouse aims, the keys 1 to 9 and the wheel take a weapon in hand, and the shot is a ray from the camera. It lives
+ * on the `Player` entity, next to the `Health`, the `WeaponStance` that poses the weapon and the `FirstPersonArms` that holds it; it only reads them. The weapons themselves are the `Firearm`s under the
+ * `Weapons` entity in the right hand: their numbers, their parts and the rounds each one holds are theirs, and this fires whichever is in hand.
  *
- * A hit finds the `Health` above the collider it hit (`Health.find()`), scales the damage by the `Hitbox` of that collider (`zone`, `multiplier`) and tells the HUD. What a hit on scenery does (a mark on
- * the wall) and what a bullet does after a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
+ * A key takes a weapon in hand: the arms go back to the body, the model changes, and the arms come out again (`Equip Time` twice); the key of the weapon in hand puts it away. A hit finds the `Health` above the
+ * collider it hit (`Health.find()`), scales the damage by the `Hitbox` of that collider (`zone`, `multiplier`) and tells the HUD. What a hit on scenery does (a mark on the wall) and what a bullet does after
+ * a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
  *
- * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon
- * is put away (`1`) or the player dies, and a shot cannot be fired while it lasts.
+ * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon is
+ * put away or changed, or the player dies, and a shot cannot be fired while it lasts. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
+ * sprint, a reload, a switch.
  */
 @Script()
 export class Weapon extends ScriptComponent {
 
   // Where in the reload (0 to 1) the three sounds are: the magazine out, the magazine in, the bolt.
   private static readonly RELOAD_CUE_TIMES = [0.18, 0.62, 0.88];
+  // The rays a weapon with several pellets asks along besides the middle one (to know whether the crosshair turns red): this many, round a ring this share of the way out in the cone.
+  private static readonly PROBES = 6;
+  private static readonly PROBE_RING = 0.8;
 
   @Ref(Entity, { header: 'Parts', label: 'Eyes', tooltip: 'The camera: a shot starts here and goes where it looks.' }) eyes!: Entity;
-  @Ref(Entity, { label: 'Muzzle', tooltip: 'A point at the barrel tip, off at the start, with a Light on it: it is switched on for a few frames at each shot.' }) muzzle?: Entity;
-  @Ref(Entity, { label: 'Shot Sound', tooltip: 'An entity with an Audio Source, or with several as children: one of them plays at each shot.' }) shotSound?: Entity;
-  @Ref(Entity, { label: 'Dry Fire Sound', tooltip: 'The click of a trigger pulled on an empty magazine.' }) dryFireSound?: Entity;
-  @Ref(Entity, { label: 'Magazine Out Sound' }) magazineOutSound?: Entity;
-  @Ref(Entity, { label: 'Magazine In Sound' }) magazineInSound?: Entity;
-  @Ref(Entity, { label: 'Bolt Sound' }) boltSound?: Entity;
+  @Ref(Entity, { label: 'Weapons', tooltip: 'The entity in the right hand that has the weapons as its children: each child has a Firearm.' }) holder!: Entity;
 
-  @Bool({ header: 'Fire', label: 'Automatic', tooltip: 'On: holding the button keeps firing. Off: one shot for each click.' }) automatic = true;
-  @Float({ label: 'Rounds per Minute' }) roundsPerMinute = 600;
-  @Int({ label: 'Pellets', tooltip: 'How many bullets one shot sends, each in its own direction inside the cone: 1 is a rifle, 8 to 12 a shotgun (give it a wide Spread and a low Rounds per Minute).' }) pellets = 1;
-  @Float({ label: 'Damage', suffix: 'HP', tooltip: 'What a bullet takes from a body zone (multiplier 1; each pellet of a shotgun takes this); a head takes its Hitbox multiplier times this.' }) damage = 25;
-  @Float({ label: 'Range', suffix: 'm' }) range = 120;
-
-  @Float({ header: 'Spread', label: 'Still', suffix: '°', tooltip: 'The half angle of the cone a shot goes in, standing still.' }) spreadStill = 0.15;
-  @Float({ label: 'Moving', suffix: '°', tooltip: 'The same at the run speed. In between it follows the speed.' }) spreadMoving = 1.2;
-  @Float({ label: 'In the Air', suffix: '°', tooltip: 'The same while jumping or falling.' }) spreadAir = 3;
-  @Float({ label: 'Settle Time', suffix: 's', tooltip: 'How long the spread takes to follow what the player does.' }) spreadTime = 0.12;
-
-  @Select({ header: 'Crosshair', label: 'Crosshair', optionsKey: 'crosshairOptions', sort: false, tooltip: 'Dot: a centre and four ticks that open with the spread. Arcs: two arcs, one each side, and a small ring in the middle, that open with the spread (the shotgun\'s).' }) crosshair: CrosshairStyle = 'dot';
-
-  @Int({ header: 'Ammo', label: 'Magazine', tooltip: 'Rounds in a full magazine.' }) magazineSize = 30;
-  @Int({ label: 'Reserve', tooltip: 'Rounds carried besides the magazine, when the game starts.' }) startingReserve = 120;
-  @Float({ label: 'Reload Time', suffix: 's' }) reloadTime = 2.2;
-
-  @Float({ header: 'Feel', label: 'Camera Kick', suffix: '°', tooltip: 'How far the view climbs at each shot before it settles back.' }) cameraKick = 0.8;
-  @Float({ label: 'Flash Time', suffix: 's', tooltip: 'How long the muzzle light stays on.' }) flashSeconds = 0.07;
-
-  @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the rifle is in hand when the game starts. Off: it starts put away, with the magazine loaded all the same, and 1 brings it up.' }) startEquipped = true;
+  @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the first weapon is in hand when the game starts. Off: it starts put away, with the magazine loaded all the same, and its key brings it up.' }) startEquipped = true;
 
   @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game fires only while it holds the pointer (the click that locks it does not shoot). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
 
-  @JsonIgnore() protected crosshairOptions = [{ value: 'dot', description: 'Dot' }, { value: 'arcs', description: 'Arcs' }];
-
   @Inject(Hud) hud!: Hud;
 
-  /** Rounds in the magazine and in reserve. In a save, not in the scene file. */
-  @JsonIgnore() @Saved() ammo = 0;
-  @JsonIgnore() @Saved() reserve = 0;
   /** A reload is going on, and how far (0 to 1) it is. */
   @JsonIgnore() @Saved() isReloading = false;
   @JsonIgnore() @Saved() reloadProgress = 0;
+  /** The slot of the weapon in hand, or of the one being raised: 0 until the first is taken. */
+  @JsonIgnore() @Saved() slot = 0;
   /** The half angle of the cone the next shot goes in, in degrees. */
   @JsonIgnore() spread = 0;
 
@@ -84,26 +60,39 @@ export class Weapon extends ScriptComponent {
   onReloadStart = new Signal();
   /** The rounds are in. Not told for a reload that was cancelled. */
   onReloadEnd = new Signal();
+  /** A weapon was brought out: the one the player now holds, or is raising. */
+  onSwitch = new Signal<Firearm>();
+  /** The player began to aim. */
+  onAimStart = new Signal();
 
+  @JsonIgnore() private cache?: Firearm[];
   @JsonIgnore() private arms?: FirstPersonArms;
   @JsonIgnore() private health?: Health;
   @JsonIgnore() private body?: CharacterController;
   @JsonIgnore() private movement?: PlayerMovement;
   @JsonIgnore() private camera?: FirstPersonCamera;
+  @JsonIgnore() private eyesCamera?: Camera;
+  @JsonIgnore() private leftHand?: TwoBoneIK;
   @JsonIgnore() private clock = 0;
   @JsonIgnore() private nextShotAt = 0;
   @JsonIgnore() private triggerHeld = false;
+  @JsonIgnore() private aimHeld = false;
   @JsonIgnore() private tookInHand = false;
   @JsonIgnore() private flashLeft = 0;
-  // The kick of the rifle and the climb of the view: a shot gives each a push (1 for the rifle, as many degrees as `Camera Kick` for the view).
+  // The weapon the arms are going down to change to: it is brought out when they are at the body.
+  @JsonIgnore() private pending?: Firearm;
+  // Aiming: how far (0 to 1, linear in time), and the field of view and the look sensitivity the camera had before it began (what it goes back to).
+  @JsonIgnore() @Saved() private aimRaw = 0;
+  @JsonIgnore() @Saved() private baseFieldOfView = 0;
+  @JsonIgnore() @Saved() private baseSensitivity = 0;
+  // The kick of the weapon and the climb of the view: a shot gives each a push (1 for the weapon, as many degrees as `Camera Kick` for the view).
   @JsonIgnore() private readonly rifleSpring = new Spring();
   @JsonIgnore() private readonly viewSpring = new Spring();
   @JsonIgnore() @Saved() private reloadCue = 0;
   @JsonIgnore() private listeners: Parameters<typeof Input.removeListner>[0][] = [];
 
   onAwake() {
-    this.ammo = this.magazineSize;
-    this.reserve = this.startingReserve;
+    this.firearms.forEach(firearm => firearm.refill());
     this.isReloading = false;
     this.reloadProgress = 0;
   }
@@ -111,18 +100,20 @@ export class Weapon extends ScriptComponent {
   onStart() {
     this.bind();
     this.listen();
-    this.spread = this.spreadStill;
-    this.hud.setCrosshair(this.crosshair);
-    this.showAmmo();
-    if (this.muzzle) this.muzzle.active = false;
+    const first = this.current ?? this.firearms[0];
+    if (!first) return;
+    this.firearms.forEach(firearm => { if (firearm.muzzle) firearm.muzzle.active = false; });
+    this.bring(first);
   }
 
   onUpdate() {
     const deltaTime = Time.deltaTime;
     this.clock += deltaTime;
     this.takeInHand();
+    this.changeWeapon();
     this.pullTrigger();
     this.updateReload(deltaTime);
+    this.updateAim(deltaTime);
     this.updateSpread(deltaTime);
     this.updateRecoil(deltaTime);
     this.updateFlash(deltaTime);
@@ -134,41 +125,83 @@ export class Weapon extends ScriptComponent {
     this.cancelListen();
   }
 
-  // The copy holds the original's handles: it makes its own when it starts, and must never remove the original's.
+  // The copy holds the original's handles and its list of weapons: it makes its own when it starts, and must never remove the original's.
   onAfterClone() {
     this.listeners = [];
+    this.cache = undefined;
+    this.leftHand = undefined;
+    this.pending = undefined;
   }
 
   // A save brings the component back as it was, started: what `onStart()` registered is not there any more.
   onRestore() {
     this.cancelListen();
+    this.cache = undefined;
+    this.pending = undefined;
     this.bind();
     this.listen();
-    this.showAmmo();
+    const gun = this.current;
+    if (gun) this.bring(gun, this.aimRaw);
     // The arms do not keep what they hold in a save: the weapon is taken in hand again on the next frame.
     this.tookInHand = false;
   }
 
   //#region Public
-  /** How hard the rifle is kicked: 1 right after a shot, then back to 0. `WeaponStance` poses the rifle from it. */
+  /** The weapons the player carries, in the order of their slots. */
+  get firearms(): readonly Firearm[] {
+    return this.cache ??= this.collect();
+  }
+
+  /** The weapon in hand, or the one being raised. */
+  get current(): Firearm | undefined {
+    return this.firearms.find(firearm => firearm.slot === this.slot);
+  }
+
+  /** Rounds in the magazine and in reserve, of the weapon in hand. */
+  get ammo(): number {
+    return this.current?.ammo ?? 0;
+  }
+
+  get reserve(): number {
+    return this.current?.reserve ?? 0;
+  }
+
+  /** How hard the weapon is kicked: 1 right after a shot, then back to 0. `WeaponStance` poses it from it. */
   get recoil(): number {
     return this.rifleSpring.value;
   }
 
-  /** One shot, if the weapon is ready, is not being reloaded and has a round: the round goes, the bullet flies, the rifle kicks. Returns whether it fired. */
+  /** How near the weapon is to the eye: 0 not aiming, 1 aiming (eased). */
+  get aim(): number {
+    return this.aimRaw * this.aimRaw * (3 - 2 * this.aimRaw);
+  }
+
+  get isAiming(): boolean {
+    return this.aimRaw > 0;
+  }
+
+  /** The body runs on the ground: the weapon goes down, and nothing can be aimed. */
+  get isSprinting(): boolean {
+    if (!this.movement || !this.body) return false;
+    const velocity = this.body.actualVelocity;
+    return this.movement.isRunning && this.body.isGrounded && Math.hypot(velocity.x, velocity.z) > 0.5;
+  }
+
+  /** One shot, if the weapon is ready, is not being reloaded and has a round: the round goes, the bullet flies, the weapon kicks. Returns whether it fired. */
   fire(): boolean {
-    if (!this.isReady() || this.isReloading || this.ammo <= 0 || this.clock < this.nextShotAt) return false;
-    this.ammo--;
-    this.nextShotAt = this.clock + 60 / Math.max(this.roundsPerMinute, 1);
+    const gun = this.current;
+    if (!gun || !this.isReady() || this.isReloading || gun.ammo <= 0 || this.clock < this.nextShotAt) return false;
+    gun.ammo--;
+    this.nextShotAt = this.clock + 60 / Math.max(gun.roundsPerMinute, 1);
 
     // Each pellet has a direction of its own inside the cone; what listens to the shot is told of the first.
-    const bullet = this.makeBullet();
+    const bullet = this.makeBullet(gun);
     this.fireBullet(bullet);
-    for (let pellet = 1; pellet < this.pellets; pellet++) this.fireBullet(this.makeBullet());
-    this.flash();
-    playSound(this.shotSound);
+    for (let pellet = 1; pellet < gun.pellets; pellet++) this.fireBullet(this.makeBullet(gun));
+    this.flash(gun);
+    playSound(gun.shotSound);
     this.rifleSpring.kick(1);
-    this.viewSpring.kick(this.cameraKick);
+    this.viewSpring.kick(gun.cameraKick);
     this.showAmmo();
     this.onFire.emit(bullet);
     return true;
@@ -176,7 +209,8 @@ export class Weapon extends ScriptComponent {
 
   /** Starts a reload, if there is something to reload and room for it. Returns whether it began. */
   reload(): boolean {
-    if (this.isReloading || !this.isReady() || this.ammo >= this.magazineSize || this.reserve <= 0) return false;
+    const gun = this.current;
+    if (!gun || this.isReloading || !this.isReady() || gun.ammo >= gun.magazineSize || gun.reserve <= 0) return false;
     this.isReloading = true;
     this.reloadProgress = 0;
     this.reloadCue = 0;
@@ -184,39 +218,136 @@ export class Weapon extends ScriptComponent {
     return true;
   }
 
-  /** Gives the magazine and the reserve back in full (the player is back from the dead). */
+  /** Gives every weapon its magazine and its reserve back in full (the player is back from the dead). */
   refill(): void {
     this.cancelReload();
-    this.ammo = this.magazineSize;
-    this.reserve = this.startingReserve;
+    this.firearms.forEach(firearm => firearm.refill());
     this.showAmmo();
+  }
+
+  /** Takes the weapon of a slot in hand: from the body, the arms come out with it; from another weapon, the arms go back first; the key of the weapon in hand puts it away. Returns whether the slot has a weapon. */
+  select(slot: number): boolean {
+    const gun = this.firearms.find(firearm => firearm.slot === slot);
+    if (!gun || !this.canChange()) return false;
+    const arms = this.arms;
+    if (!arms) return false;
+
+    if (arms.equipped && gun === this.current && !this.pending) {
+      arms.unequip();
+      return true;
+    }
+    this.drawTo(gun);
+    return true;
+  }
+
+  /** The next weapon (1) or the one before (-1), by slot, never putting one away: with none in hand it takes one out. */
+  cycle(step: number): boolean {
+    const guns = this.firearms;
+    if (guns.length === 0 || !this.canChange()) return false;
+    const from = this.pending ?? this.current ?? guns[0];
+    const next = guns[(guns.indexOf(from) + step + guns.length) % guns.length];
+    if (next === from && this.arms?.equipped) return false;
+    this.drawTo(next);
+    return true;
   }
 
   /** Whether the weapon may be used: its owner on (a character that is switched off still hears the mouse, and must not shoot from where it stands), in hand, alive, the game running. A game that stuns the player does it here. */
   isReady(): boolean {
-    return this.entity.activeInHierarchy && this.arms?.equipped === true && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
+    return this.entity.activeInHierarchy && this.arms?.equipped === true && !this.pending && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
   }
   //#endregion Public
 
-  //#region Shots
-  private makeBullet(): IBullet {
-    const eyes = this.eyes.transform;
-    const direction = this.scatter(eyes.forward.normalized, eyes.right.normalized, eyes.up.normalized);
-    return { origin: eyes.globalPosition.clone(), direction, damage: this.damage, range: this.range };
+  //#region Switching
+  // The owner is on, alive and the game runs: a key does nothing otherwise (a character that is off still hears the keyboard).
+  private canChange(): boolean {
+    return this.entity.activeInHierarchy && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
   }
 
-  // Whether a shot at the middle of the crosshair would hurt something: the same ray as a shot (it ignores the player's own body and the triggers), as far as the weapon reaches, so that anything in the
-  // way (a wall in front of an enemy) is what the ray meets. A dead body, a door and the scenery do not count, and nothing does while the weapon is not in hand. The HUD only hears when the answer changes.
+  // From the body the weapon is brought out at once and the arms come out; in hand, the arms go down first and `changeWeapon()` brings it out when they are there.
+  private drawTo(gun: Firearm) {
+    const arms = this.arms;
+    if (!arms) return;
+    if (arms.equipped) {
+      if (gun === this.current) return;
+      this.pending = gun;
+      arms.unequip();
+      return;
+    }
+    // The arms are going down: for the weapon in hand it is a change of mind (they come out again), for another one it is the weapon to bring out when they are down.
+    if (this.pending || arms.reach > 0) {
+      if (gun === this.current && this.pending) {
+        this.pending = undefined;
+        arms.equip();
+      } else {
+        this.pending = gun;
+      }
+      return;
+    }
+    this.bring(gun);
+    arms.equip();
+  }
+
+  private changeWeapon() {
+    const gun = this.pending;
+    if (!gun || !this.arms || this.arms.equipped || this.arms.reach > 0) return;
+    this.pending = undefined;
+    this.bring(gun);
+    this.arms.equip();
+  }
+
+  // Shows the model of a weapon and hides the others, points the left hand at its grip and tells the HUD. What the weapon held stays in the weapon.
+  private bring(gun: Firearm, aim = 0) {
+    this.slot = gun.slot;
+    this.firearms.forEach(firearm => { firearm.entity.active = firearm === gun; });
+    if (this.leftHand && gun.gripLeft) this.leftHand.target = gun.gripLeft;
+    this.cancelReload();
+    this.triggerHeld = false;
+    this.aimRaw = aim;
+    this.spread = gun.spreadStill;
+    this.hud.setCrosshair(gun.crosshair);
+    this.hud.setWeapons(this.firearms.map(firearm => firearm.label), this.firearms.indexOf(gun));
+    this.showAmmo();
+    this.onSwitch.emit(gun);
+  }
+  //#endregion Switching
+
+  //#region Shots
+  private makeBullet(gun: Firearm): IBullet {
+    const eyes = this.eyes.transform;
+    const direction = this.scatter(eyes.forward.normalized, eyes.right.normalized, eyes.up.normalized);
+    return { origin: eyes.globalPosition.clone(), direction, damage: gun.damage, range: gun.range };
+  }
+
+  // Whether a shot now would hurt something: the same ray as a shot (it ignores the player's own body and the triggers), as far as the weapon reaches, so that anything in the way (a wall in front of an
+  // enemy) is what the ray meets. A dead body, a door and the scenery do not count, and nothing does while the weapon is not in hand. A weapon with several pellets scatters them over the cone, so it asks
+  // along the middle and along a ring inside the cone too: the crosshair is red when some pellet could hurt, not only when the middle is on it. The HUD only hears when the answer changes.
   private updateTarget(): void {
-    if (!this.isReady()) {
+    const gun = this.current;
+    if (!gun || !this.isReady()) {
       this.hud.setTarget(false);
       return;
     }
 
     const eyes = this.eyes.transform;
-    const hit = PhysicsSystem.raycast(eyes.globalPosition, eyes.forward.normalized, this.range, { ignore: this.entity });
+    const origin = eyes.globalPosition, forward = eyes.forward.normalized;
+    let hurts = this.hurtsAlong(origin, forward, gun.range);
+    if (!hurts && gun.pellets > 1 && this.spread > 0) {
+      const right = eyes.right.normalized, up = eyes.up.normalized;
+      const radius = Math.tan(this.spread * Weapon.PROBE_RING * Math.PI / 180);
+      for (let probe = 0; probe < Weapon.PROBES && !hurts; probe++) {
+        const angle = probe * 2 * Math.PI / Weapon.PROBES;
+        const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius;
+        const direction = new Vector3(forward.x + right.x * x + up.x * y, forward.y + right.y * x + up.y * y, forward.z + right.z * x + up.z * y).normalized;
+        hurts = this.hurtsAlong(origin, direction, gun.range);
+      }
+    }
+    this.hud.setTarget(hurts);
+  }
+
+  private hurtsAlong(origin: Vector3, direction: Vector3, range: number): boolean {
+    const hit = PhysicsSystem.raycast(origin, direction, range, { ignore: this.entity });
     const health = hit ? Health.find(hit.entity) : undefined;
-    this.hud.setTarget(!!health && !health.isDead);
+    return !!health && !health.isDead;
   }
 
   // A direction inside a cone of `spread` degrees about `forward`: the radius is the square root of a random number, so the shots lie evenly over the disc and are not bunched at its centre.
@@ -263,25 +394,26 @@ export class Weapon extends ScriptComponent {
   private pullTrigger() {
     if (!this.triggerHeld) return;
     if (!this.fireWithoutLock && !Cursor.isLocked) this.triggerHeld = false;
-    else if (this.automatic) this.fire();
+    else if (this.current?.automatic) this.fire();
   }
 
   private updateReload(deltaTime: number) {
+    const gun = this.current;
     if (!this.isReloading) return;
-    if (!this.isReady()) {
+    if (!gun || !this.isReady()) {
       this.cancelReload();
       return;
     }
-    this.reloadProgress = Math.min(1, this.reloadProgress + deltaTime / Math.max(this.reloadTime, 0.01));
+    this.reloadProgress = Math.min(1, this.reloadProgress + deltaTime / Math.max(gun.reloadTime, 0.01));
     while (this.reloadCue < Weapon.RELOAD_CUE_TIMES.length && this.reloadProgress >= Weapon.RELOAD_CUE_TIMES[this.reloadCue]) {
-      playSound([this.magazineOutSound, this.magazineInSound, this.boltSound][this.reloadCue]);
+      playSound([gun.magazineOutSound, gun.magazineInSound, gun.boltSound][this.reloadCue]);
       this.reloadCue++;
     }
     if (this.reloadProgress < 1) return;
 
-    const taken = Math.min(this.magazineSize - this.ammo, this.reserve);
-    this.ammo += taken;
-    this.reserve -= taken;
+    const taken = Math.min(gun.magazineSize - gun.ammo, gun.reserve);
+    gun.ammo += taken;
+    gun.reserve -= taken;
     this.cancelReload();
     this.showAmmo();
     this.onReloadEnd.emit();
@@ -292,21 +424,49 @@ export class Weapon extends ScriptComponent {
     this.reloadProgress = 0;
   }
 
-  // The cone follows what the body does: wider with speed, widest in the air.
+  // The right mouse button held brings the weapon to the eye over `Aim Time`; it lets go of it for a sprint, a reload, a switch or a weapon put away, and takes it up again when the button is still held and
+  // the cause is over. The camera goes from the field of view and the sensitivity it had to the narrower one (the sensitivity by the tangent of half the field, so that the same hand moves the same
+  // distance on the screen); what it had is read again at every frame at rest, so that a setting changed outside is not undone.
+  private updateAim(deltaTime: number) {
+    const gun = this.current, camera = this.eyesCamera;
+    if (!gun || !camera) return;
+    const wanted = this.aimHeld && this.isReady() && !this.isReloading && !this.isSprinting;
+    if (this.aimRaw === 0) {
+      this.baseFieldOfView = camera.fieldOfView;
+      this.baseSensitivity = this.camera?.sensitivity ?? 0;
+      if (!wanted) return;
+      this.onAimStart.emit();
+    }
+    const step = deltaTime / Math.max(gun.aimTime, 0.01);
+    this.aimRaw = wanted ? Math.min(1, this.aimRaw + step) : Math.max(0, this.aimRaw - step);
+
+    const aim = this.aim, base = this.baseFieldOfView;
+    camera.fieldOfView = base + (gun.aimFieldOfView - base) * aim;
+    if (this.camera) {
+      const zoom = Math.tan(gun.aimFieldOfView * Math.PI / 360) / Math.tan(base * Math.PI / 360);
+      this.camera.sensitivity = this.baseSensitivity * (1 + (zoom - 1) * aim);
+    }
+    this.hud.setAiming(this.aimRaw > 0);
+  }
+
+  // The cone follows what the body does: wider with speed, widest in the air, narrower while aiming.
   private updateSpread(deltaTime: number) {
-    let target = this.spreadStill;
+    const gun = this.current;
+    if (!gun) return;
+    let target = gun.spreadStill;
     if (this.body && this.movement) {
       const velocity = this.body.actualVelocity;
       const speed = Math.min(1, Math.hypot(velocity.x, velocity.z) / Math.max(this.movement.runSpeed, 0.1));
-      target = this.body.isGrounded ? this.spreadStill + (this.spreadMoving - this.spreadStill) * speed : this.spreadAir;
+      target = this.body.isGrounded ? gun.spreadStill + (gun.spreadMoving - gun.spreadStill) * speed : gun.spreadAir;
     }
-    this.spread += (target - this.spread) * (1 - Math.exp(-deltaTime / Math.max(this.spreadTime, 0.001)));
+    target *= 1 + (gun.aimSpreadScale - 1) * this.aim;
+    this.spread += (target - this.spread) * (1 - Math.exp(-deltaTime / Math.max(gun.spreadTime, 0.001)));
     this.showSpread();
   }
 
   // The cone on the screen: its tangent over the tangent of half the field of view is the share of half the screen's height it covers, whatever the window is.
   private showSpread() {
-    const fieldOfView = this.eyes.getComponent(Camera)?.fieldOfView ?? 60;
+    const fieldOfView = this.eyesCamera?.fieldOfView ?? 60;
     this.hud.setSpread(Math.tan(this.spread * Math.PI / 180) / Math.tan(fieldOfView * Math.PI / 360));
   }
 
@@ -319,22 +479,23 @@ export class Weapon extends ScriptComponent {
   }
 
   // The muzzle comes on for `Flash Time`, a little different every time (its size and how it is turned), as a flash is.
-  private flash() {
-    this.flashLeft = this.flashSeconds;
-    if (!this.muzzle) return;
+  private flash(gun: Firearm) {
+    this.flashLeft = gun.flashSeconds;
+    if (!gun.muzzle) return;
     const size = 0.7 + Math.random() * 0.45;
-    this.muzzle.transform.scale.set(size, size, size);
-    this.muzzle.transform.rotation.z = Math.random() * 90;
-    this.muzzle.active = true;
+    gun.muzzle.transform.scale.set(size, size, size);
+    gun.muzzle.transform.rotation.z = Math.random() * 90;
+    gun.muzzle.active = true;
   }
 
   private updateFlash(deltaTime: number) {
     if (this.flashLeft <= 0) return;
     this.flashLeft -= deltaTime;
-    if (this.flashLeft <= 0 && this.muzzle) this.muzzle.active = false;
+    if (this.flashLeft > 0) return;
+    this.firearms.forEach(firearm => { if (firearm.muzzle) firearm.muzzle.active = false; });
   }
 
-  // The arms reset themselves in their own `onStart()`, which may run after this one: the weapon is taken in hand on the first frame, once (unless it starts put away). After that `1` puts it away and brings it back.
+  // The arms reset themselves in their own `onStart()`, which may run after this one: the weapon is taken in hand on the first frame, once (unless it starts put away). After that its key puts it away and brings it back.
   private takeInHand() {
     if (this.tookInHand || !this.arms) return;
     this.tookInHand = true;
@@ -342,19 +503,42 @@ export class Weapon extends ScriptComponent {
   }
   //#endregion Frame
 
+  private collect(): Firearm[] {
+    const guns: Firearm[] = [];
+    this.holder?.children.forEach(child => {
+      const gun = child.getComponent(Firearm);
+      if (gun) guns.push(gun);
+    });
+    return guns.sort((a, b) => a.slot - b.slot);
+  }
+
   private bind() {
     this.arms = this.entity.getComponent(FirstPersonArms);
     this.health = this.entity.getComponent(Health);
     this.body = this.entity.getComponent(CharacterController);
     this.movement = this.entity.getComponent(PlayerMovement);
     this.camera = this.eyes?.getComponent(FirstPersonCamera);
+    this.eyesCamera = this.eyes?.getComponent(Camera);
+    // The left hand reaches for a grip of the weapon in hand: the one of the two hands whose target is below the weapons.
+    this.leftHand = this.entity.components.find((component): component is TwoBoneIK => component instanceof TwoBoneIK && this.isInHolder(component.target));
+  }
+
+  private isInHolder(entity?: IEntity): boolean {
+    for (let current = entity; current; current = current.parent) if (current === this.holder) return true;
+    return false;
   }
 
   private listen() {
+    const digits = [Input.keyboard.digit1, Input.keyboard.digit2, Input.keyboard.digit3, Input.keyboard.digit4, Input.keyboard.digit5, Input.keyboard.digit6, Input.keyboard.digit7, Input.keyboard.digit8, Input.keyboard.digit9];
     this.listeners.push(
       Input.mouse.left.down(() => this.onTriggerDown()),
       Input.mouse.left.up(() => { this.triggerHeld = false; }),
+      Input.mouse.right.down(() => { if (this.fireWithoutLock || Cursor.isLocked) this.aimHeld = true; }),
+      Input.mouse.right.up(() => { this.aimHeld = false; }),
+      Input.mouse.wheel.down(() => { this.cycle(1); }),
+      Input.mouse.wheel.up(() => { this.cycle(-1); }),
       Input.keyboard.keyR.down(() => { this.reload(); }),
+      ...digits.map((key, index) => key.down(() => { this.select(index + 1); })),
     );
   }
 
@@ -368,17 +552,20 @@ export class Weapon extends ScriptComponent {
     if (!this.fireWithoutLock && !Cursor.isLocked) return;
     if (!this.isReady()) return;
     this.triggerHeld = true;
-    if (this.ammo > 0) {
+    const gun = this.current;
+    if (!gun) return;
+    if (gun.ammo > 0) {
       this.fire();
       return;
     }
     if (this.isReloading) return;
-    playSound(this.dryFireSound);
+    playSound(gun.dryFireSound);
     this.onDryFire.emit();
   }
 
   private showAmmo() {
-    this.hud.setAmmo(this.ammo, this.magazineSize, this.reserve);
+    const gun = this.current;
+    if (gun) this.hud.setAmmo(gun.ammo, gun.magazineSize, gun.reserve);
   }
 }
 

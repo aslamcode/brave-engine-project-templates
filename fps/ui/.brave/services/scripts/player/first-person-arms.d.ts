@@ -28,6 +28,7 @@ export declare class FirstPersonArms extends ScriptComponent {
     armedLean: number;
     leanBone: string;
     equipTime: number;
+    equipKey: boolean;
     /** Whether the character holds the weapon (or is raising it). */
     equipped: boolean;
     /** 0: the arms are the body's. 1: they are at the view model. */

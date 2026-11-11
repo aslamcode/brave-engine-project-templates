@@ -5,7 +5,7 @@ var hud = BraveUiBridge.remote('Hud');
 
 var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
-var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items');
+var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items'), weapons = el('weapons');
 var markersEl = el('markers'), markerNodes = {};
 var hitTimer, damageTimer;
 
@@ -28,8 +28,18 @@ function render(state) {
   crosshair.classList.toggle('-alert', state.stance === 'alert');
   crosshair.classList.toggle('-target', !!state.target);
   crosshair.classList.toggle('-arcs', state.crosshair === 'arcs');
+  crosshair.classList.toggle('-aiming', !!state.aiming);
   // The cone of the weapon on this window: a share of half the height, in pixels. The ticks and the arcs open by it.
   crosshair.style.setProperty('--spread', (state.spread * window.innerHeight / 2).toFixed(1) + 'px');
+
+  // The weapons the player carries: the number of the key and the name, the one in hand lit.
+  weapons.innerHTML = '';
+  (state.weapons || []).forEach(function (name, index) {
+    var chip = document.createElement('span');
+    chip.className = 'weapons__chip' + (index === state.weapon ? ' -current' : '');
+    chip.textContent = (index + 1) + ' ' + name;
+    weapons.appendChild(chip);
+  });
 
   items.innerHTML = '';
   state.items.forEach(function (name) {

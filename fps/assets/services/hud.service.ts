@@ -18,10 +18,15 @@ export interface IHudState {
   items: string[];
   /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
   target: boolean;
-  /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (two arcs and a small ring, the shotgun's). */
+  /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (a ring of four arcs round a dot, the shotgun's). */
   crosshair: string;
   /** How wide the weapon's cone is on the screen, as a share of half the screen's height: the page turns it into pixels, so the crosshair opens as the shots scatter, at any size of the window. */
   spread: number;
+  /** The names of the weapons the player carries, in the order of their slots, and which one is in hand (an index into the list). */
+  weapons: string[];
+  weapon: number;
+  /** The player is aiming (the right mouse button): the page lets the crosshair's ticks go. */
+  aiming: boolean;
 }
 
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
@@ -40,7 +45,7 @@ export interface IHudMarker {
 
 @Service()
 export class Hud {
-  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], target: false, crosshair: 'dot', spread: 0 };
+  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IHudState>();
@@ -90,6 +95,19 @@ export class Hud {
     this.changed();
   }
 
+  setWeapons(weapons: string[], weapon: number): void {
+    if (this.state.weapon === weapon && this.state.weapons.length === weapons.length && this.state.weapons.every((name, index) => name === weapons[index])) return;
+    this.state.weapons = [...weapons];
+    this.state.weapon = weapon;
+    this.changed();
+  }
+
+  setAiming(aiming: boolean): void {
+    if (this.state.aiming === aiming) return;
+    this.state.aiming = aiming;
+    this.changed();
+  }
+
   setTarget(target: boolean): void {
     if (this.state.target === target) return;
     this.state.target = target;
@@ -126,6 +144,6 @@ export class Hud {
   }
 
   private changed(): void {
-    this.onChange.emit({ ...this.state, items: [...this.state.items] });
+    this.onChange.emit({ ...this.state, items: [...this.state.items], weapons: [...this.state.weapons] });
   }
 }

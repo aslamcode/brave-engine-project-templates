@@ -1,13 +1,14 @@
 import { Bool, CharacterController, Entity, Float, Inject, JsonIgnore, PlayerMovement, Quaternion, Ref, Saved, Script, ScriptComponent, State, Time, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
+import { Firearm } from './firearm';
 import { Weapon } from './weapon';
 
 /**
- * How the character carries the rifle, as poses of the point the right hand reaches (`Hold Right`) and of the one the left hand reaches (`Grip Left`): the locomotion animations are the character's own and
- * are not touched, the weapon and the arms go where the IK targets go.
+ * How the character carries the weapon, as poses of the point the right hand reaches (`Hold Right`) and of the one the left hand reaches (the `Grip Left` of the weapon in hand): the locomotion animations are
+ * the character's own and are not touched, the weapon and the arms go where the IK targets go.
  *
- * Two stances. **Alert** is the pose `Hold Right` was authored in: the rifle at the shoulder (not aiming down the sights: it is how the character stands). **Relaxed** is that pose moved down and back and the
- * barrel tilted down: the rifle at the hip. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one; then it goes back to relaxed, slowly. Running
+ * Two stances. **Alert** is the pose `Hold Right` was authored in: the weapon at the shoulder (it is how the character stands). **Relaxed** is that pose moved down and back and the
+ * barrel tilted down: the weapon at the hip. **Aiming** (the right mouse button, `Weapon.aim`) moves the weapon from the alert pose to the eye by the `Aim` numbers of its `Firearm`. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one; then it goes back to relaxed, slowly. Running
  * lowers the rifle like a sprint does (`Lower When Running`), except in the moment after a shot.
  *
  * On top of the stance come the kick of every shot (`Weapon.recoil`: the rifle back, up and tilted up) and the reload (`Weapon.reloadProgress`: the rifle dips and rolls, the left hand goes down and back
@@ -35,7 +36,6 @@ export class WeaponStance extends ScriptComponent {
   private static readonly scratch = new Quaternion();
 
   @Ref(Entity, { header: 'Parts', label: 'Hold Right', tooltip: 'The point the right hand reaches: a child of the chest. Its authored pose is the alert stance.' }) hold!: Entity;
-  @Ref(Entity, { label: 'Grip Left', tooltip: 'The point the left hand reaches: a child of the weapon.' }) gripLeft?: Entity;
   @Ref(Entity, { label: 'Eyes', tooltip: 'The camera: its heading says which way is forward.' }) eyes!: Entity;
 
   @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot or reload.' }) alertSeconds = 30;
@@ -66,10 +66,9 @@ export class WeaponStance extends ScriptComponent {
   /** How far the rifle is from the alert pose (0) to the relaxed one (1). */
   @JsonIgnore() @Saved() relaxed = 1;
 
-  // What is read once, when the game starts, and kept in a save: the authored local poses of the two points, and the look's own axes (forward, up, right: nine numbers) in the frame
+  // What is read once, when the game starts, and kept in a save: the authored local pose of the hold point (the grip of each weapon keeps its own, in its `Firearm`), and the look's own axes (forward, up, right: nine numbers) in the frame
   // the hold point hangs from, taken level whatever the camera's pitch.
   @JsonIgnore() @Saved() private authoredHold: number[] = [];
-  @JsonIgnore() @Saved() private authoredGrip: number[] = [];
   @JsonIgnore() @Saved() private axes: number[] = [];
 
   @JsonIgnore() private weapon?: Weapon;
@@ -85,6 +84,7 @@ export class WeaponStance extends ScriptComponent {
   onStart() {
     this.measure();
     this.bind();
+    this.measureGrips();
     this.relaxed = 1;
     this.hud.setStance('relaxed');
   }
@@ -116,8 +116,8 @@ export class WeaponStance extends ScriptComponent {
   //#region Stance
   private updateAlert(deltaTime: number) {
     if (!this.isAlert) return;
-    // A reload keeps the character alert the whole time it lasts: the clock of `Alert Seconds` starts when it ends.
-    if (this.weapon?.isReloading) this.alertLeft = this.alertSeconds;
+    // A reload, or aiming, keeps the character alert the whole time it lasts: the clock of `Alert Seconds` starts when it ends.
+    if (this.weapon?.isReloading || this.weapon?.isAiming) this.alertLeft = this.alertSeconds;
     this.alertLeft -= deltaTime;
     if (this.alertLeft > 0) return;
     this.alertLeft = 0;
@@ -132,9 +132,7 @@ export class WeaponStance extends ScriptComponent {
   }
 
   private isSprinting(): boolean {
-    if (!this.lowerWhenRunning || !this.movement || !this.body) return false;
-    const velocity = this.body.actualVelocity;
-    return this.movement.isRunning && this.body.isGrounded && Math.hypot(velocity.x, velocity.z) > 0.5;
+    return this.lowerWhenRunning && this.weapon?.isSprinting === true;
   }
 
   private follow(wanted: number, deltaTime: number) {
@@ -149,11 +147,13 @@ export class WeaponStance extends ScriptComponent {
     const weapon = this.weapon;
     const recoil = weapon?.recoil ?? 0;
     const reload = weapon?.isReloading ? this.reloadEnvelope(weapon.reloadProgress) : 0;
+    const gun = weapon?.current;
+    const aim = weapon?.aim ?? 0;
 
-    const down = this.relaxedLower * this.relaxed + this.reloadDip * reload - this.kickUp * recoil;
-    const back = this.relaxedBack * this.relaxed + this.kickBack * recoil;
-    const side = this.relaxedSide * this.relaxed;
-    const tilt = this.relaxedTilt * this.relaxed + this.reloadTilt * reload + this.kickTilt * recoil;
+    const down = this.relaxedLower * this.relaxed + this.reloadDip * reload - this.kickUp * recoil + (gun?.aimLower ?? 0) * aim;
+    const back = this.relaxedBack * this.relaxed + this.kickBack * recoil + (gun?.aimBack ?? 0) * aim;
+    const side = this.relaxedSide * this.relaxed + (gun?.aimSide ?? 0) * aim;
+    const tilt = this.relaxedTilt * this.relaxed + this.reloadTilt * reload + this.kickTilt * recoil + (gun?.aimTilt ?? 0) * aim;
     const turn = this.relaxedTurn * this.relaxed;
     const roll = this.reloadRoll * reload;
 
@@ -173,14 +173,14 @@ export class WeaponStance extends ScriptComponent {
     const transform = this.hold.transform;
     transform.setLocalSilently(this.position, this.rotation);
     transform.updateTransform();
-    this.poseLeftHand(weapon?.isReloading ? weapon.reloadProgress : 0);
+    this.poseLeftHand(gun, weapon?.isReloading ? weapon.reloadProgress : 0);
   }
 
-  private poseLeftHand(progress: number) {
-    if (!this.gripLeft) return;
+  private poseLeftHand(gun: Firearm | undefined, progress: number) {
+    if (!gun?.gripLeft || gun.authoredGrip.length === 0) return;
     const [down, back] = WeaponStance.leftHandAt(progress);
-    const [x, y, z] = this.authoredGrip;
-    const transform = this.gripLeft.transform;
+    const [x, y, z] = gun.authoredGrip;
+    const transform = gun.gripLeft.transform;
     transform.setLocalSilently(this.position.set(x, y - down, z + back));
     transform.updateTransform();
   }
@@ -207,8 +207,6 @@ export class WeaponStance extends ScriptComponent {
   private measure() {
     const position = this.hold.transform.position, rotation = this.hold.transform.rotationQ;
     this.authoredHold = [position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w];
-    this.authoredGrip = this.gripLeft ? [...this.gripLeft.transform.position] : [0, 0, 0];
-
     const look = this.eyes.transform.forward;
     const level = new Vector3(look.x, 0, look.z).normalized;
     const worldUp = new Vector3(0, 1, 0);
@@ -217,6 +215,11 @@ export class WeaponStance extends ScriptComponent {
     const parent = this.hold.parent?.transform;
     const local = (direction: Vector3) => [...(parent ? parent.inverseTransformDirection(direction) : direction).normalized];
     this.axes = [...local(level), ...local(worldUp), ...local(side)];
+  }
+
+  // The grip of each weapon, once: what a save brings back is never read again from a pose this wrote.
+  private measureGrips() {
+    this.weapon?.firearms.forEach(gun => { if (gun.authoredGrip.length === 0 && gun.gripLeft) gun.authoredGrip = [...gun.gripLeft.transform.position]; });
   }
 
   private loadRotation([x, y, z, w]: number[]) {
@@ -231,6 +234,7 @@ export class WeaponStance extends ScriptComponent {
     this.loadRotation(this.authoredHold.slice(3));
     this.weapon?.onFire.on(() => this.onShot(), this);
     this.weapon?.onReloadStart.on(() => this.raise(), this);
+    this.weapon?.onAimStart.on(() => this.raise(), this);
   }
 
   private onShot() {

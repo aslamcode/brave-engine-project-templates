@@ -159,6 +159,32 @@ def bolt():
     return finish(mix((scrape(rng, 0.1), 0.25, 0), (back, 0.8, 0.08), (forward, 1.0, 0.3)))
 
 
+def shotgun(seed):
+    """A heavier shot than the rifle's: a wider and longer burst, a deeper thump and a long low tail; the seed jitters the pitch and the decay a little."""
+    rng = random.Random(seed)
+    jitter = lambda value, amount: value * (1 + rng.uniform(-amount, amount))
+    n = int(0.2 * RATE)
+    burst = decay(lowpass(noise(0.6, rng), sweep(jitter(7000, 0.1), jitter(700, 0.15), n * 3)), jitter(0.07, 0.2))
+    crack = decay(highpass(noise(0.03, rng), 2200), 0.006)
+    thump = decay(sine(0.45, jitter(120, 0.12), jitter(30, 0.1)), jitter(0.12, 0.15))
+    tail = decay(lowpass(noise(0.9, rng), jitter(600, 0.2)), jitter(0.28, 0.2))
+    return finish(mix((burst, 1.0, 0), (crack, 0.45, 0), (thump, 1.0, 0), (tail, 0.3, 0.015)))
+
+
+def pump():
+    """The forend worked: pulled back (a scrape and a knock) and pushed forward (a harder knock with a ring), the shell leaving and the next one lifting between them."""
+    rng = random.Random(31)
+    back = mix((clack(rng, 1.0), 1.0, 0), (scrape(rng, 0.12), 0.3, 0.02))
+    forward = mix((clack(rng, 1.8), 1.0, 0), (decay(sine(0.25, 2200), 0.06), 0.18, 0))
+    return finish(mix((back, 0.9, 0), (clack(rng, 0.5), 0.35, 0.22), (forward, 1.0, 0.36)))
+
+
+def shell_in():
+    """A shell pushed into the tube: a plastic click and a small metal knock."""
+    rng = random.Random(32)
+    return finish(mix((decay(highpass(noise(0.04, rng), 1200), 0.007), 0.8, 0), (decay(sine(0.08, 1500), 0.015), 0.3, 0.004), (clack(rng, 0.6), 0.8, 0.045)))
+
+
 def enemy_hit():
     """A dull thud: a low sine that falls in pitch and a puff of dark noise."""
     rng = random.Random(31)
@@ -210,6 +236,11 @@ SOUNDS = {
     'magazine-out': magazine_out,
     'magazine-in': magazine_in,
     'bolt': bolt,
+    'shotgun-1': lambda: shotgun(1),
+    'shotgun-2': lambda: shotgun(2),
+    'shotgun-3': lambda: shotgun(3),
+    'pump': pump,
+    'shell-in': shell_in,
     'enemy-hit': enemy_hit,
     'enemy-die': enemy_die,
     'player-hurt': player_hurt,

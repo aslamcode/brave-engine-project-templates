@@ -1,4 +1,4 @@
-import { Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK } from '@brave/core';
+import { Bool, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK } from '@brave/core';
 
 /**
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
@@ -31,6 +31,7 @@ export class FirstPersonArms extends ScriptComponent {
   @Float({ label: 'Armed Lean', tooltip: 'The same while armed.' }) armedLean = 1;
   @String({ label: 'Lean Bone', tooltip: 'Which Look At leans: the one whose Bone is this (the chest). Empty: every Look At of the character, which is wrong for one that turns the head and must stay on.' }) leanBone = '';
   @Float({ header: 'Equip', label: 'Equip Time', suffix: 's', tooltip: 'How long the arms take to go to the weapon and to come back.' }) equipTime = 0.3;
+  @Bool({ label: 'Equip Key', tooltip: 'On: key 1 takes the weapon in hand and puts it away. Off when a Weapon handles the keys (1 to 9 choose a weapon): it calls equip() and unequip() itself.' }) equipKey = true;
 
   /** Whether the character holds the weapon (or is raising it). */
   @JsonIgnore() equipped = false;
@@ -51,7 +52,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.leans.forEach(lean => { lean.weight = this.unarmedLean; });
     this.show(false);
     // A character that is off (the other one of two, say) does not hold anything: its key would equip a weapon nobody sees and leave it armed when it comes back.
-    this.key = Input.keyboard.digit1.down(() => { if (this.entity.activeInHierarchy) this.toggle(); });
+    this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
   onUpdate() {

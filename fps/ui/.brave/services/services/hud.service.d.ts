@@ -21,6 +21,11 @@ export interface IHudState {
     crosshair: string;
     /** How wide the weapon's cone is on the screen, as a share of half the screen's height: the page turns it into pixels, so the crosshair opens as the shots scatter, at any size of the window. */
     spread: number;
+    /** The names of the weapons the player carries, in the order of their slots, and which one is in hand (an index into the list). */
+    weapons: string[];
+    weapon: number;
+    /** The player is aiming (the right mouse button): the page lets the crosshair's ticks go. */
+    aiming: boolean;
 }
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
 export interface IHudMarker {
@@ -57,6 +62,8 @@ export declare class Hud {
     setCrosshair(crosshair: string): void;
     /** The spread, rounded to a thousandth of half the screen (a pixel or two): a change smaller than that is not sent. */
     setSpread(spread: number): void;
+    setWeapons(weapons: string[], weapon: number): void;
+    setAiming(aiming: boolean): void;
     setTarget(target: boolean): void;
     /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
     setMarkers(markers: IHudMarker[]): void;
