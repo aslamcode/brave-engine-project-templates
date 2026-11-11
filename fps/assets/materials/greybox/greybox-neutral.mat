@@ -1,7 +1,9 @@
 {
   "shaderType": "Pbr",
   "shaderOverrides": {
+    "surfaceType": 0,
     "transparent": false,
+    "alphaCutoff": 0,
     "baseColor": [
       1,
       1,
@@ -17,6 +19,14 @@
     "normalTextureId": "",
     "reflectance": 0.5,
     "reflectanceTextureId": "",
+    "tiling": [
+      1,
+      1
+    ],
+    "offset": [
+      0,
+      0
+    ],
     "ior": 1.5,
     "thickness": 1,
     "attenuationColor": [
@@ -36,13 +46,17 @@
     ],
     "emissiveTextureId": "",
     "emissiveIntensity": 0,
+    "gpuInstancing": false,
     "adaptiveNormal": true,
     "adaptiveNormalMode": "automatic",
     "adaptiveNormalCompensation": 0.4,
     "adaptiveNormalMaxStrength": 8,
     "adaptiveNormalFarStrength": 0,
     "adaptiveNormalStartMip": 1,
-    "adaptiveNormalEndMip": 4
+    "adaptiveNormalEndMip": 4,
+    "metallicChannel": 0,
+    "roughnessChannel": 0,
+    "normalFormat": 0
   },
   "cullingFace": true,
   "cullingMode": 2
