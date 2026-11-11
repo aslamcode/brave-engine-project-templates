@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FPS Kit HUD</title>
+  <link rel="stylesheet" href="hud.css">
+</head>
+<body>
+  <!-- The HUD of the FPS kit: a transparent page over the game, fed by the `Hud` service (assets/services/hud.service.ts) through the Bridge. Nothing here is clickable. -->
+  <div id="damage" class="damage"></div>
+
+  <div id="crosshair" class="crosshair">
+    <span class="crosshair__arm -up"></span><span class="crosshair__arm -down"></span><span class="crosshair__arm -left"></span><span class="crosshair__arm -right"></span>
+    <span class="crosshair__dot"></span>
+    <span id="hitmarker" class="hitmarker"><i></i><i></i><i></i><i></i></span>
+  </div>
+
+  <div id="prompt" class="prompt"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div>
+  <div id="message" class="message"></div>
+
+  <div class="status -health">
+    <div class="status__label">Health</div>
+    <div class="bar"><div id="healthFill" class="bar__fill"></div></div>
+    <div id="healthText" class="status__value">100</div>
+  </div>
+
+  <div id="items" class="items"></div>
+
+  <div class="status -ammo">
+    <div id="stance" class="status__label">Relaxed</div>
+    <div class="ammo"><span id="ammo" class="ammo__loaded">0</span><span class="ammo__slash">/</span><span id="reserve" class="ammo__reserve">0</span></div>
+  </div>
+
+  <script src="vendor/ui-bridge.global.js"></script>
+  <script src="hud.js"></script>
+</body>
+</html>

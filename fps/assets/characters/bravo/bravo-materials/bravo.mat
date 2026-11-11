@@ -1,0 +1,63 @@
+{
+  "shaderType": "Pbr",
+  "shaderOverrides": {
+    "surfaceType": 0,
+    "transparent": false,
+    "alphaCutoff": 0,
+    "baseColor": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "baseColorTextureId": "00a3009c-24da-445c-959d-42cf3ccc45ff",
+    "metallic": 1,
+    "metallicTextureId": "d90b7e5b-be9e-4431-8a10-23e293445b71",
+    "roughness": 1,
+    "roughnessTextureId": "d90b7e5b-be9e-4431-8a10-23e293445b71",
+    "normalScale": 1,
+    "normalTextureId": "5feb6c1e-9b01-468b-814f-adc39e2fe574",
+    "reflectance": 0.5,
+    "reflectanceTextureId": "",
+    "tiling": [
+      1,
+      1
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "ior": 1.5,
+    "thickness": 1,
+    "attenuationColor": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "attenuationDistance": 1,
+    "frost": 0,
+    "frostTextureId": "",
+    "emissiveColor": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "emissiveTextureId": "",
+    "emissiveIntensity": 0,
+    "gpuInstancing": false,
+    "adaptiveNormal": true,
+    "adaptiveNormalMode": "automatic",
+    "adaptiveNormalCompensation": 0.4,
+    "adaptiveNormalMaxStrength": 8,
+    "adaptiveNormalFarStrength": 0,
+    "adaptiveNormalStartMip": 1,
+    "adaptiveNormalEndMip": 4,
+    "metallicChannel": 2,
+    "roughnessChannel": 1,
+    "normalFormat": 0
+  },
+  "cullingFace": true,
+  "cullingMode": 2
+}

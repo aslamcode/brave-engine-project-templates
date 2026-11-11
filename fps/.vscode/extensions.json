@@ -1,0 +1,13 @@
+{
+  // What VS Code offers to install when this project's folder is opened (Extensions > Recommended). Suggestions only:
+  // nothing here is needed to run the game or the Brave editor. TypeScript's own autocomplete, auto-import and type errors
+  // are built into VS Code and need no extension.
+  "recommendations": [
+    // Shows the lint warnings of eslint.config.js (quotes, 2-space indent, semicolons, likely mistakes) as you type and fixes
+    // the style when you save. Needs `npm install` once in the project folder.
+    "dbaeumer.vscode-eslint",
+    // The Brave editor bundles scripts with esbuild, which does not type-check, so a type error against @brave/core
+    // only shows up in VS Code. This prints it at the end of its line instead of making you hover the squiggle.
+    "usernamehw.errorlens"
+  ]
+}

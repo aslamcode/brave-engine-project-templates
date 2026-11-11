@@ -1,0 +1,68 @@
+/* Nothing on this page may take the mouse: the game's camera and click-to-lock live under it. */
+* { pointer-events: none; box-sizing: border-box; }
+a, button, input, select, textarea, [role="button"] { pointer-events: auto; }
+
+:root {
+  --ink: #f4f6f8;
+  --muted: rgba(244, 246, 248, 0.62);
+  --panel: rgba(12, 14, 18, 0.55);
+  --accent: #ffb454;
+  --danger: #ff5a4d;
+  --ok: #7ee0a1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body { margin: 0; height: 100%; background: transparent; color: var(--ink); overflow: hidden; user-select: none; }
+
+/* Red flash when the player is hurt. */
+.damage { position: fixed; inset: 0; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 40, 30, 0) 45%, rgba(255, 40, 30, 0.55) 100%); transition: opacity 0.45s ease-out; }
+.damage.-hit { opacity: 1; transition: none; }
+
+/* The crosshair: a dot, and four arms that open while the stance is alert. */
+.crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; }
+.crosshair__dot { position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55); }
+.crosshair__arm { position: absolute; background: var(--ink); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+.crosshair__arm.-up, .crosshair__arm.-down { width: 2px; height: 9px; left: -1px; }
+.crosshair__arm.-left, .crosshair__arm.-right { height: 2px; width: 9px; top: -1px; }
+.crosshair__arm.-up { top: -20px; } .crosshair__arm.-down { top: 11px; }
+.crosshair__arm.-left { left: -20px; } .crosshair__arm.-right { left: 11px; }
+.crosshair.-alert .crosshair__arm { opacity: 0.95; }
+
+/* The hit marker: four short strokes that flash at the crosshair; red for a kill. */
+.hitmarker { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; opacity: 0; }
+.hitmarker i { position: absolute; width: 8px; height: 2px; background: var(--ink); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); }
+.hitmarker i:nth-child(1) { left: 0; top: 4px; transform: rotate(45deg); } .hitmarker i:nth-child(2) { right: 0; top: 4px; transform: rotate(-45deg); }
+.hitmarker i:nth-child(3) { left: 0; bottom: 4px; transform: rotate(-45deg); } .hitmarker i:nth-child(4) { right: 0; bottom: 4px; transform: rotate(45deg); }
+.hitmarker.-show { opacity: 1; transition: none; }
+.hitmarker.-kill i { background: var(--danger); }
+.hitmarker { transition: opacity 0.25s ease-out; }
+
+/* What E does on what the player looks at. */
+.prompt { position: fixed; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 8px; background: var(--panel); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.12s; }
+.prompt.-show { opacity: 1; }
+.prompt__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; }
+.prompt__text { font-size: 15px; letter-spacing: 0.01em; }
+
+/* A line for a few seconds, near the top. */
+.message { position: fixed; left: 50%; top: 11%; transform: translateX(-50%); padding: 9px 20px; border-radius: 8px; background: var(--panel); backdrop-filter: blur(4px); font-size: 17px; letter-spacing: 0.02em; opacity: 0; transition: opacity 0.35s; text-align: center; max-width: 70vw; }
+.message.-show { opacity: 1; }
+
+.status { position: fixed; bottom: 26px; padding: 10px 16px; border-radius: 10px; background: var(--panel); backdrop-filter: blur(4px); }
+.status__label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.status.-health { left: 26px; min-width: 210px; }
+.status.-ammo { right: 26px; text-align: right; }
+.status__value { margin-top: 4px; font-size: 22px; font-weight: 600; }
+
+.bar { margin-top: 7px; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.bar__fill { height: 100%; width: 100%; border-radius: 4px; background: var(--ok); transition: width 0.2s ease-out, background 0.2s; }
+.bar__fill.-low { background: var(--danger); }
+
+.ammo { margin-top: 2px; font-variant-numeric: tabular-nums; }
+.ammo__loaded { font-size: 40px; font-weight: 700; line-height: 1; }
+.ammo__loaded.-empty { color: var(--danger); }
+.ammo__slash { margin: 0 6px; font-size: 24px; color: var(--muted); }
+.ammo__reserve { font-size: 24px; color: var(--muted); }
+
+/* What the player carries. */
+.items { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 8px; }
+.item { padding: 7px 13px; border-radius: 8px; background: var(--panel); backdrop-filter: blur(4px); border: 1px solid rgba(255, 180, 84, 0.45); font-size: 13px; letter-spacing: 0.04em; }

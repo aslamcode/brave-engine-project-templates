@@ -1,0 +1,413 @@
+{
+  "version": 1,
+  "name": "Bravo",
+  "parameters": [
+    {
+      "name": "Speed",
+      "type": "float",
+      "defaultValue": 0
+    },
+    {
+      "name": "Crouched",
+      "type": "bool",
+      "defaultValue": false
+    },
+    {
+      "name": "Grounded",
+      "type": "bool",
+      "defaultValue": true
+    },
+    {
+      "name": "VerticalSpeed",
+      "type": "float",
+      "defaultValue": 0
+    },
+    {
+      "name": "Stride",
+      "type": "float",
+      "defaultValue": 1
+    }
+  ],
+  "layers": [
+    {
+      "name": "Base",
+      "weight": 1,
+      "blending": "override",
+      "defaultState": "Locomotion",
+      "states": [
+        {
+          "name": "Locomotion",
+          "speed": 1,
+          "wrapMode": "loop",
+          "cycleOffset": 0,
+          "transitions": [
+            {
+              "to": "Crouch",
+              "conditions": [
+                {
+                  "parameter": "Crouched",
+                  "mode": "if"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.25,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 233,
+                "y": -68
+              }
+            },
+            {
+              "to": "Air",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "ifNot"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.15,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 233,
+                "y": 66
+              }
+            }
+          ],
+          "motion": {
+            "kind": "blendTree",
+            "blendType": "1d",
+            "parameter": "Speed",
+            "children": [
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "17232c8d-124e-4b43-9149-e8a4187035ca"
+                },
+                "threshold": 0,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              },
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "e997af74-dc54-4087-b951-b4fa7c7a730b"
+                },
+                "threshold": 1.4,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              },
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "faab3e64-eb7e-45b5-a022-477351475b32"
+                },
+                "threshold": 4,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              }
+            ]
+          },
+          "speedParameter": "Stride",
+          "position": {
+            "x": 30,
+            "y": 74
+          },
+          "shadowPosition": {
+            "x": -32,
+            "y": -52
+          }
+        },
+        {
+          "name": "Crouch",
+          "speed": 1,
+          "wrapMode": "loop",
+          "cycleOffset": 0,
+          "transitions": [
+            {
+              "to": "Locomotion",
+              "conditions": [
+                {
+                  "parameter": "Crouched",
+                  "mode": "ifNot"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.25,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 226,
+                "y": -89
+              }
+            },
+            {
+              "to": "Air",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "ifNot"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.15,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 231,
+                "y": 76
+              }
+            }
+          ],
+          "motion": {
+            "kind": "blendTree",
+            "blendType": "1d",
+            "parameter": "Speed",
+            "children": [
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "b26cc2c0-ba7d-4051-b925-cc7ca1f97fed"
+                },
+                "threshold": 0,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              },
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "dcf8a2bf-57f2-46a3-a9ce-14f1c19b04b4"
+                },
+                "threshold": 1.1,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              }
+            ]
+          },
+          "speedParameter": "Stride",
+          "position": {
+            "x": 373,
+            "y": 86
+          },
+          "shadowPosition": {
+            "x": 441,
+            "y": -57
+          }
+        },
+        {
+          "name": "Air",
+          "speed": 1,
+          "wrapMode": "loop",
+          "cycleOffset": 0,
+          "transitions": [
+            {
+              "to": "Land",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "if"
+                },
+                {
+                  "parameter": "Speed",
+                  "mode": "less",
+                  "threshold": 1
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.1,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 252,
+                "y": 81
+              }
+            },
+            {
+              "to": "Locomotion",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "if"
+                },
+                {
+                  "parameter": "Crouched",
+                  "mode": "ifNot"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.2,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 250,
+                "y": -5
+              }
+            },
+            {
+              "to": "Crouch",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "if"
+                },
+                {
+                  "parameter": "Crouched",
+                  "mode": "if"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.2,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 253,
+                "y": 174
+              }
+            }
+          ],
+          "motion": {
+            "kind": "blendTree",
+            "blendType": "1d",
+            "parameter": "VerticalSpeed",
+            "children": [
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "b9510345-e3dc-4e29-a332-851bf39c5928"
+                },
+                "threshold": -5,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              },
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "7105147c-e5e4-4502-888e-f0e49e7020e4"
+                },
+                "threshold": 0,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              },
+              {
+                "motion": {
+                  "kind": "clip",
+                  "clipId": "cf4fac57-fb7b-4772-aa4e-24516fc09f5c"
+                },
+                "threshold": 4,
+                "x": 0,
+                "y": 0,
+                "timeScale": 1
+              }
+            ]
+          },
+          "position": {
+            "x": 220,
+            "y": 220
+          },
+          "shadowPosition": {
+            "x": 442,
+            "y": 151
+          }
+        },
+        {
+          "name": "Land",
+          "speed": 1,
+          "wrapMode": "once",
+          "cycleOffset": 0,
+          "transitions": [
+            {
+              "to": "Air",
+              "conditions": [
+                {
+                  "parameter": "Grounded",
+                  "mode": "ifNot"
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.1,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 231,
+                "y": 178
+              }
+            },
+            {
+              "to": "Locomotion",
+              "conditions": [
+                {
+                  "parameter": "Speed",
+                  "mode": "greater",
+                  "threshold": 1.2
+                }
+              ],
+              "hasExitTime": false,
+              "exitTime": 1,
+              "duration": 0.15,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "ghost": {
+                "x": 231,
+                "y": 77
+              }
+            },
+            {
+              "to": "Locomotion",
+              "conditions": [],
+              "hasExitTime": true,
+              "exitTime": 1,
+              "duration": 0.2,
+              "blend": "inertialization",
+              "offset": 0,
+              "interruption": "both",
+              "autoExitTime": true,
+              "ghost": {
+                "x": 232,
+                "y": -3
+              }
+            }
+          ],
+          "motion": {
+            "kind": "clip",
+            "clipId": "05277f03-584e-42e9-956d-70dc363baa12"
+          },
+          "position": {
+            "x": -65,
+            "y": 221
+          },
+          "shadowPosition": {
+            "x": -30,
+            "y": 124
+          }
+        }
+      ],
+      "anyStateTransitions": []
+    }
+  ]
+}

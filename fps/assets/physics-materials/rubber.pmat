@@ -1,0 +1,5 @@
+{
+  "friction": 0.9,
+  "bounciness": 0.85,
+  "density": 1100
+}

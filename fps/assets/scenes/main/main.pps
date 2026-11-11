@@ -1,0 +1,236 @@
+{
+  "effects": [
+    {
+      "type": "TemporalAntiAliasingPostProcess",
+      "enabled": true,
+      "jitterSamples": 8,
+      "feedbackMin": 0.88,
+      "feedbackMax": 0.97,
+      "motionRejection": 12,
+      "varianceClipGamma": 2
+    },
+    {
+      "type": "ExposurePostProcess",
+      "enabled": true,
+      "mode": "auto",
+      "exposure": 1,
+      "compensation": 0,
+      "minExposure": 0.5,
+      "maxExposure": 2,
+      "speedToLight": 0.5,
+      "speedToDark": 1.5
+    },
+    {
+      "type": "BloomPostProcess",
+      "enabled": false,
+      "threshold": 1.5,
+      "softKnee": 0.5,
+      "intensity": 1,
+      "clamp": 0,
+      "iterations": 6
+    },
+    {
+      "type": "VignettePostProcess",
+      "enabled": false,
+      "intensity": 0.4,
+      "smoothness": 1,
+      "roundness": 0,
+      "color": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "type": "ChromaticAberrationPostProcess",
+      "enabled": false,
+      "intensity": 0.3,
+      "startOffset": 0.2
+    },
+    {
+      "type": "FilmGrainPostProcess",
+      "enabled": false,
+      "intensity": 0.1,
+      "response": 1
+    },
+    {
+      "type": "ColorGradingPostProcess",
+      "enabled": true,
+      "preset": "cinematic",
+      "temperature": 0.08,
+      "tint": 0,
+      "saturation": 0.92,
+      "contrast": 1.08,
+      "lift": [
+        0.47843137254901963,
+        0.5019607843137255,
+        0.5176470588235295,
+        1
+      ],
+      "gammaColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gammaIntensity": 1,
+      "gainColor": [
+        1,
+        0.9803921568627451,
+        0.9490196078431372,
+        1
+      ],
+      "gainIntensity": 1
+    },
+    {
+      "type": "FogPostProcess",
+      "enabled": false,
+      "preset": "atmospheric",
+      "falloffMode": 1,
+      "density": 0.02,
+      "startDistance": 2,
+      "heightFalloff": 0.003,
+      "color": [
+        0.5,
+        0.55,
+        0.6,
+        1
+      ],
+      "skyAmount": 1
+    },
+    {
+      "type": "LensFlarePostProcess",
+      "enabled": false,
+      "intensity": 1,
+      "minIntensity": 1.5,
+      "bladeCount": 8,
+      "bladeWidth": 5,
+      "bladeLength": 0.7,
+      "sharpness": 1,
+      "coreSize": 3,
+      "coreIntensity": 3,
+      "streakWidth": 3,
+      "streakLength": 1,
+      "ghostIntensity": 0.02,
+      "ghostThreshold": 3
+    },
+    {
+      "type": "MotionBlurPostProcess",
+      "enabled": false,
+      "mode": "camera-and-objects",
+      "shutterAngle": 180,
+      "maxBlur": 1,
+      "sampleCount": 32,
+      "objectStrength": 2,
+      "smear": "trailing",
+      "debugView": "off"
+    },
+    {
+      "type": "DepthOfFieldPostProcess",
+      "enabled": true,
+      "mode": "auto",
+      "focusDistance": 5,
+      "focusSpeed": 0.3,
+      "focusRange": 1,
+      "transitionRange": 1,
+      "blurAmount": 0.5,
+      "iterations": 4,
+      "activationDistance": 0.5,
+      "activationFalloff": 0.5,
+      "bokehRadius": 0.015,
+      "bokehSamples": 8
+    },
+    {
+      "type": "LumosPostProcess",
+      "enabled": true,
+      "giMode": "radiance",
+      "resolution": "quarter",
+      "historyLength": 10,
+      "motionThreshold": 0.02,
+      "surfaceMatchThreshold": 0.05,
+      "useRandomDirection": true,
+      "bounceDistance": 8,
+      "stepCount": 16,
+      "rayCount": 4,
+      "hitThickness": 0.02,
+      "fireflyClamp": 2,
+      "denoiseStrength": 1,
+      "varianceScale": 5,
+      "waveletIterations": 4,
+      "confidenceRampPower": 0.5,
+      "fulgorStrength": 5,
+      "fulgorAdaptTime": 1,
+      "reflectionMode": "screen-space-fidelityfx",
+      "reflectionResolution": "half",
+      "rayStepCount": 100,
+      "maxRoughness": 1,
+      "reflectionHitThickness": 4,
+      "mipLevelCount": 7,
+      "fallbackMipLevel": 5,
+      "edgeFade": 0.1,
+      "intensity": 1,
+      "brdfBias": 0.7,
+      "temporalResponseMin": 0.85,
+      "temporalResponseMax": 1,
+      "traceMode": "uniform",
+      "motionCompensation": true,
+      "coneBlurScale": 0.3,
+      "coneStretch": 1,
+      "fxTemporalStability": 1,
+      "fxDepthThickness": 0.5,
+      "fxRoughnessThreshold": 0.2,
+      "fxVarianceThreshold": 0,
+      "fxMaxTraversalIntersections": 128,
+      "fxMinTraversalOccupancy": 4,
+      "fxMostDetailedMip": 0,
+      "fxSamplesPerQuad": 1,
+      "fxVarianceGuidedTracing": true,
+      "fxBrdfBias": 0.7,
+      "fxHistoryLength": 8,
+      "fxFireflyClamp": 10,
+      "fxSpatialFilter": 1,
+      "reflectionDebugView": "off",
+      "aoMode": "off",
+      "aoResolution": "quarter",
+      "aoRadius": 5,
+      "aoSliceCount": 2,
+      "aoStepCount": 1,
+      "aoPower": 1,
+      "aoHistoryLength": 8,
+      "aoSurfaceMatchThreshold": 0.01,
+      "aoMotionThreshold": 0.02,
+      "aoDenoiseStrength": 1,
+      "aoDebugView": "off"
+    },
+    {
+      "type": "RainPostProcess",
+      "enabled": false,
+      "intensity": 1,
+      "windLean": 0,
+      "speed": 1,
+      "distanceFalloff": 0,
+      "lensDroplets": true,
+      "dropletAmount": 0.5,
+      "dropletSize": 1,
+      "areaRadius": 30,
+      "debugView": "off"
+    },
+    {
+      "type": "TonemappingPostProcess",
+      "enabled": true,
+      "algorithm": 1
+    },
+    {
+      "type": "DitheringPostProcess",
+      "enabled": true,
+      "intensity": 1
+    },
+    {
+      "type": "AntiAliasingPostProcess",
+      "enabled": false,
+      "mode": "fxaa",
+      "quality": "ultra"
+    }
+  ]
+}

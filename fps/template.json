@@ -1,6 +1,6 @@
 {
   "name": "First Person Shooter",
   "category": "fps",
-  "minVersion": "0.5.0",
-  "description": "Mouse-look movement and a weapon rig, ready to extend."
+  "minVersion": "0.9.0",
+  "description": "A first-person shooter to start from: a playable level, Bravo or Brava in first person with a rifle carried relaxed or alert, interaction with E (doors, a drawer, pickups, a socket), enemies in waves and a HUD."
 }

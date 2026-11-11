@@ -1,0 +1,31 @@
+{
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.formatOnSave": true,
+  },
+  "typescript.preferences.quoteStyle": "single",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "js/ts.implicitProjectConfig.target": "ES2022",
+  "js/ts.implicitProjectConfig.experimentalDecorators": true,
+  "files.associations": {
+    "*.asset": "json",
+    "*.sdr": "typescript",
+    "*.ppfx": "typescript",
+  },
+  "files.exclude": {
+    "**/*.asset": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.suggest.paths": false,
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "**/brave/core/***/*",
+  ]
+}

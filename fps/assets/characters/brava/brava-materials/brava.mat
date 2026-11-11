@@ -1,0 +1,35 @@
+{
+  "shaderType": "Pbr",
+  "shaderOverrides": {
+    "baseColor": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "metallic": 1,
+    "roughness": 1,
+    "normalScale": 1,
+    "emissiveColor": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "emissiveIntensity": 0,
+    "adaptiveNormal": true,
+    "adaptiveNormalMode": "automatic",
+    "adaptiveNormalCompensation": 0.4,
+    "adaptiveNormalMaxStrength": 8,
+    "adaptiveNormalFarStrength": 0,
+    "adaptiveNormalStartMip": 1,
+    "adaptiveNormalEndMip": 4,
+    "baseColorTextureId": "793bd2bd-30d1-4787-a2ff-1737bdb70f7c",
+    "metallicTextureId": "0894462f-cfe5-448b-b6cd-f3eeefa0a7c7",
+    "roughnessTextureId": "0894462f-cfe5-448b-b6cd-f3eeefa0a7c7",
+    "metallicChannel": 2,
+    "roughnessChannel": 1
+  },
+  "cullingFace": true,
+  "cullingMode": 2
+}

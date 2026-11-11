@@ -1,0 +1,47 @@
+# Git LFS: the binary assets of this project. Git cannot delta a texture, a model or a sound, so without LFS the repository grows by the whole
+# file every time one is saved again. It needs Git LFS on the machine (`git lfs install`, once). Where it is not installed Git ignores these
+# rules and stores the files as it always does, so nothing breaks: the history just carries them whole.
+#
+# The extensions are the binary ones of the engine's asset types, plus the interchange formats the importers read (a model, a font) that a
+# project keeps beside the file they make. Text assets (.scn .fab .mat .pmat .pps .animator .director, the scripts) are left out on purpose:
+# Git diffs and compresses them well, and a scene or a material you can read in a diff is worth more than the space.
+# Keep the list equal to the engine's asset types: a spec (project-template-lfs.spec.ts) fails when a binary type is missing from it.
+
+# Textures
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.dds filter=lfs diff=lfs merge=lfs -text
+*.hdr filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+
+# Audio
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+*.opus filter=lfs diff=lfs merge=lfs -text
+*.webm filter=lfs diff=lfs merge=lfs -text
+
+# Video
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.m4v filter=lfs diff=lfs merge=lfs -text
+*.ogv filter=lfs diff=lfs merge=lfs -text
+
+# 3D models: .mdl is the engine's own format (binary, already compressed); the others are what an artist imports from (.obj is text but easily tens of MB)
+*.mdl filter=lfs diff=lfs merge=lfs -text
+*.obj filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.gltf filter=lfs diff=lfs merge=lfs -text
+*.glb filter=lfs diff=lfs merge=lfs -text
+
+# Animation clips (binary)
+*.anim filter=lfs diff=lfs merge=lfs -text
+
+# Fonts: .font is what the editor bakes from a font file (binary, mostly the atlas pictures)
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.otf filter=lfs diff=lfs merge=lfs -text
+*.woff filter=lfs diff=lfs merge=lfs -text
+*.woff2 filter=lfs diff=lfs merge=lfs -text
+*.font filter=lfs diff=lfs merge=lfs -text

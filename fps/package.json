@@ -1,0 +1,21 @@
+{
+  "name": "new-project",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Brave Engine Project",
+  "author": "",
+  "scripts": {
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "lint:fix": "node node_modules/eslint/bin/eslint.js . --fix"
+  },
+  "dependencies": {
+    "@brave/core": "file:./brave/core"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.12.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1"
+  }
+}

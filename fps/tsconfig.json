@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "types": [],
+    "lib": [
+      "es2022",
+      "DOM"
+    ],
+    "paths": {
+      "@brave/core": [
+        "./brave/core/index.d.ts"
+      ]
+    },
+    "experimentalDecorators": true,
+    // With `target: es2022` TypeScript and esbuild both default this to TRUE, which compiles every declared
+    // field (`@Store() volume: number;`) into a native class field: an own property on each instance that
+    // shadows the accessor a property decorator installs on the prototype. @Store then never runs — the
+    // script sees a plain field, and Vault.get() finds nothing; an @Inject(Service) property reads undefined
+    // the same way. Play in the editor hides it (it clones the scene, and Object.assign assigns through the
+    // prototype's setter); a compiled build does not.
+    // libs/core and every app in this repo are built with it off for the same reason.
+    "useDefineForClassFields": false
+  },
+  "include": [
+    "./**/*",
+    "./brave/core/index.d.ts"
+  ],
+  "exclude": [
+    "**/brave/core/***/*"
+  ]
+}

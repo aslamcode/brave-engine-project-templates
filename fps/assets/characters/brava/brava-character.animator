@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "name": "brava-character",
+  "base": "dccad338-51d1-41c8-b6f6-86237497e34c",
+  "overrides": [
+    {
+      "clip": "17232c8d-124e-4b43-9149-e8a4187035ca",
+      "replacement": "989af856-c1d2-4883-a54a-88fd890cc556"
+    },
+    {
+      "clip": "e997af74-dc54-4087-b951-b4fa7c7a730b",
+      "replacement": "46a95bc5-bbf4-44e4-9379-74de739738a2"
+    },
+    {
+      "clip": "faab3e64-eb7e-45b5-a022-477351475b32",
+      "replacement": "f767ae46-a958-4239-baf1-711beb589bed"
+    },
+    {
+      "clip": "dcf8a2bf-57f2-46a3-a9ce-14f1c19b04b4",
+      "replacement": "4ca47bab-a3c9-4b9f-bbbb-efb0f7d68330"
+    }
+  ]
+}

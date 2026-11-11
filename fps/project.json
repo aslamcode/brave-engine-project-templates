@@ -1,7 +1,8 @@
 {
   "name": "First Person Shooter",
   "layers": [
-    "Default"
+    "Default",
+    "Arms"
   ],
   "quality": {
     "renderScale": 1,
@@ -9,7 +10,7 @@
     "msaaSampleCount": 0,
     "textureAnisotropy": 16,
     "shadowMapResolution": 4096,
-    "shadowDistance": 1000,
+    "shadowDistance": 100,
     "cascadeSplitLambda": 0.5,
     "shadowSoftness": 1,
     "localShadowMapResolution": 2048,
@@ -18,14 +19,15 @@
     "maxPointShadows": 4,
     "maxSoftShadows": 8,
     "maxAreaShadows": 8,
-    "transmissionSteps": 2
+    "transmissionSteps": 2,
+    "maxStains": 1024
   },
   "general": {
     "version": "1.0.0",
     "packageName": "com.example.fps",
     "company": "",
     "copyright": "",
-    "description": "Mouse-look movement and a weapon rig, ready to extend.",
+    "description": "A first-person shooter to start from: a playable level, a first-person character with a rifle, interaction with E, enemies in waves and a HUD.",
     "iconAssetId": null
   },
   "physics": {
@@ -34,7 +36,8 @@
       "x": 0,
       "y": -9.81,
       "z": 0
-    }
+    },
+    "ignoredLayerPairs": []
   },
   "build": {
     "scene": {
@@ -46,5 +49,40 @@
     "screen": {
       "defaultMode": "fullscreen"
     }
+  },
+  "navigation": {
+    "threading": "worker",
+    "cellSize": 0.3,
+    "chunkColumns": 16,
+    "windowRadius": 200,
+    "hysteresisChunks": 2,
+    "maxLayers": 16,
+    "minClearance": 1.8,
+    "sliceMs": 4,
+    "maxCpuFraction": 1,
+    "cpuBurstMs": 80,
+    "stepHeight": 0.45,
+    "maxSlope": 45,
+    "agentRadius": 0.4,
+    "fieldRadius": 100,
+    "nonWalkableLayers": [],
+    "agentTypes": [],
+    "nextAgentTypeId": 1,
+    "cascadeRadii": [
+      20,
+      50
+    ],
+    "cascadeSlackMeters": 4,
+    "orcaTimeHorizon": 2,
+    "orcaMaxNeighbors": 8,
+    "approachMaxExpansions": 6000
+  },
+  "director": {
+    "roles": [
+      {
+        "id": "00d17ec7-0a1e-4000-8000-000000000001",
+        "name": "Player"
+      }
+    ]
   }
 }
