@@ -1,5 +1,7 @@
 import { AudioSource, ScriptComponent, Signal } from '@brave/core';
 import type { Interactor } from './interactor';
+/** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what E does when it is looked at). */
+export type InteractableMarker = 'line' | 'simple' | 'none';
 /**
  * Something the player can use with E: what it says when the player looks at it (`currentPrompt`), whether it can be used now (`usable`), and what happens when it is (`onUse`).
  *
@@ -20,8 +22,14 @@ import type { Interactor } from './interactor';
  */
 export declare class Interactable extends ScriptComponent {
     prompt: string;
+    marker: InteractableMarker;
+    markerHeight: number;
     audio?: AudioSource;
     pitchVariation: number;
+    protected markerOptions: {
+        value: string;
+        description: string;
+    }[];
     /** The player used it. Emitted after what it does, with the Interactor that used it. */
     onUsed: Signal<Interactor>;
     /** What the player is told E does now. A kind with states (a door: open, close, locked) answers for the state it is in. */

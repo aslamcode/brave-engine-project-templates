@@ -10,13 +10,18 @@
   <div id="damage" class="damage"></div>
 
   <div id="crosshair" class="crosshair">
-    <span class="crosshair__arm -up"></span><span class="crosshair__arm -down"></span><span class="crosshair__arm -left"></span><span class="crosshair__arm -right"></span>
+    <span class="crosshair__tick -up"></span><span class="crosshair__tick -down"></span><span class="crosshair__tick -left"></span><span class="crosshair__tick -right"></span>
     <span class="crosshair__dot"></span>
+    <svg class="crosshair__arcs" viewBox="-100 -100 200 200" aria-hidden="true"><circle class="crosshair__ring -shade" r="30" pathLength="360"></circle><circle class="crosshair__ring" r="30" pathLength="360"></circle></svg>
+    <span class="crosshair__pip"></span>
     <span id="hitmarker" class="hitmarker"><i></i><i></i><i></i><i></i></span>
   </div>
 
   <div id="prompt" class="prompt"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div>
   <div id="message" class="message"></div>
+
+  <!-- What can be used, over it on the screen: filled by hud.js from the `Hud` service's markers. -->
+  <div id="markers" class="markers"></div>
 
   <div class="status -health">
     <div class="status__label">Health</div>

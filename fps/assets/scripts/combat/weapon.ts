@@ -1,7 +1,10 @@
-import { BraveEngine, BraveEngineModeEnum, Bool, CharacterController, Cursor, DecalSystem, Entity, FirstPersonCamera, Float, Inject, Input, Int, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
+import { BraveEngine, BraveEngineModeEnum, Bool, Camera, CharacterController, Cursor, DecalSystem, Entity, FirstPersonCamera, Float, Inject, Input, Int, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Select, Signal, Time, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { FirstPersonArms } from '../player/first-person-arms';
 import { Health } from './health';
+
+/** The crosshair a weapon has: a centre and four ticks, or two arcs and a small ring (the shotgun's: the arcs open with the spread, so they show where the pellets may go). */
+export type CrosshairStyle = 'dot' | 'arcs';
 import { Hitbox } from './hitbox';
 import { playSound } from './play-sound';
 
@@ -39,13 +42,16 @@ export class Weapon extends ScriptComponent {
 
   @Bool({ header: 'Fire', label: 'Automatic', tooltip: 'On: holding the button keeps firing. Off: one shot for each click.' }) automatic = true;
   @Float({ label: 'Rounds per Minute' }) roundsPerMinute = 600;
-  @Float({ label: 'Damage', suffix: 'HP', tooltip: 'What a shot takes from a body zone (multiplier 1); a head takes its Hitbox multiplier times this.' }) damage = 25;
+  @Int({ label: 'Pellets', tooltip: 'How many bullets one shot sends, each in its own direction inside the cone: 1 is a rifle, 8 to 12 a shotgun (give it a wide Spread and a low Rounds per Minute).' }) pellets = 1;
+  @Float({ label: 'Damage', suffix: 'HP', tooltip: 'What a bullet takes from a body zone (multiplier 1; each pellet of a shotgun takes this); a head takes its Hitbox multiplier times this.' }) damage = 25;
   @Float({ label: 'Range', suffix: 'm' }) range = 120;
 
   @Float({ header: 'Spread', label: 'Still', suffix: '°', tooltip: 'The half angle of the cone a shot goes in, standing still.' }) spreadStill = 0.15;
   @Float({ label: 'Moving', suffix: '°', tooltip: 'The same at the run speed. In between it follows the speed.' }) spreadMoving = 1.2;
   @Float({ label: 'In the Air', suffix: '°', tooltip: 'The same while jumping or falling.' }) spreadAir = 3;
   @Float({ label: 'Settle Time', suffix: 's', tooltip: 'How long the spread takes to follow what the player does.' }) spreadTime = 0.12;
+
+  @Select({ header: 'Crosshair', label: 'Crosshair', optionsKey: 'crosshairOptions', sort: false, tooltip: 'Dot: a centre and four ticks that open with the spread. Arcs: two arcs, one each side, and a small ring in the middle, that open with the spread (the shotgun\'s).' }) crosshair: CrosshairStyle = 'dot';
 
   @Int({ header: 'Ammo', label: 'Magazine', tooltip: 'Rounds in a full magazine.' }) magazineSize = 30;
   @Int({ label: 'Reserve', tooltip: 'Rounds carried besides the magazine, when the game starts.' }) startingReserve = 120;
@@ -55,6 +61,8 @@ export class Weapon extends ScriptComponent {
   @Float({ label: 'Flash Time', suffix: 's', tooltip: 'How long the muzzle light stays on.' }) flashSeconds = 0.07;
 
   @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game fires only while it holds the pointer (the click that locks it does not shoot). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
+
+  @JsonIgnore() protected crosshairOptions = [{ value: 'dot', description: 'Dot' }, { value: 'arcs', description: 'Arcs' }];
 
   @Inject(Hud) hud!: Hud;
 
@@ -102,6 +110,7 @@ export class Weapon extends ScriptComponent {
     this.bind();
     this.listen();
     this.spread = this.spreadStill;
+    this.hud.setCrosshair(this.crosshair);
     this.showAmmo();
     if (this.muzzle) this.muzzle.active = false;
   }
@@ -115,6 +124,7 @@ export class Weapon extends ScriptComponent {
     this.updateSpread(deltaTime);
     this.updateRecoil(deltaTime);
     this.updateFlash(deltaTime);
+    this.updateTarget();
   }
 
   // What a script registers it gives back: the callbacks would go on calling a script that is gone.
@@ -149,8 +159,10 @@ export class Weapon extends ScriptComponent {
     this.ammo--;
     this.nextShotAt = this.clock + 60 / Math.max(this.roundsPerMinute, 1);
 
+    // Each pellet has a direction of its own inside the cone; what listens to the shot is told of the first.
     const bullet = this.makeBullet();
     this.fireBullet(bullet);
+    for (let pellet = 1; pellet < this.pellets; pellet++) this.fireBullet(this.makeBullet());
     this.flash();
     playSound(this.shotSound);
     this.rifleSpring.kick(1);
@@ -189,6 +201,20 @@ export class Weapon extends ScriptComponent {
     const eyes = this.eyes.transform;
     const direction = this.scatter(eyes.forward.normalized, eyes.right.normalized, eyes.up.normalized);
     return { origin: eyes.globalPosition.clone(), direction, damage: this.damage, range: this.range };
+  }
+
+  // Whether a shot at the middle of the crosshair would hurt something: the same ray as a shot (it ignores the player's own body and the triggers), as far as the weapon reaches, so that anything in the
+  // way (a wall in front of an enemy) is what the ray meets. A dead body, a door and the scenery do not count, and nothing does while the weapon is not in hand. The HUD only hears when the answer changes.
+  private updateTarget(): void {
+    if (!this.isReady()) {
+      this.hud.setTarget(false);
+      return;
+    }
+
+    const eyes = this.eyes.transform;
+    const hit = PhysicsSystem.raycast(eyes.globalPosition, eyes.forward.normalized, this.range, { ignore: this.entity });
+    const health = hit ? Health.find(hit.entity) : undefined;
+    this.hud.setTarget(!!health && !health.isDead);
   }
 
   // A direction inside a cone of `spread` degrees about `forward`: the radius is the square root of a random number, so the shots lie evenly over the disc and are not bunched at its centre.
@@ -273,6 +299,13 @@ export class Weapon extends ScriptComponent {
       target = this.body.isGrounded ? this.spreadStill + (this.spreadMoving - this.spreadStill) * speed : this.spreadAir;
     }
     this.spread += (target - this.spread) * (1 - Math.exp(-deltaTime / Math.max(this.spreadTime, 0.001)));
+    this.showSpread();
+  }
+
+  // The cone on the screen: its tangent over the tangent of half the field of view is the share of half the screen's height it covers, whatever the window is.
+  private showSpread() {
+    const fieldOfView = this.eyes.getComponent(Camera)?.fieldOfView ?? 60;
+    this.hud.setSpread(Math.tan(this.spread * Math.PI / 180) / Math.tan(fieldOfView * Math.PI / 360));
   }
 
   private updateRecoil(deltaTime: number) {

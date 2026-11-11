@@ -8,6 +8,7 @@ a, button, input, select, textarea, [role="button"] { pointer-events: auto; }
   --panel: rgba(12, 14, 18, 0.55);
   --accent: #ffb454;
   --danger: #ff5a4d;
+  --target: #fd1111;   /* the crosshair over something a shot would hurt */
   --ok: #7ee0a1;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -18,15 +19,25 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .damage { position: fixed; inset: 0; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 40, 30, 0) 45%, rgba(255, 40, 30, 0.55) 100%); transition: opacity 0.45s ease-out; }
 .damage.-hit { opacity: 1; transition: none; }
 
-/* The crosshair: a dot, and four arms that open while the stance is alert. */
-.crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; }
-.crosshair__dot { position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55); }
-.crosshair__arm { position: absolute; background: var(--ink); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); opacity: 0; transition: opacity 0.2s, transform 0.2s; }
-.crosshair__arm.-up, .crosshair__arm.-down { width: 2px; height: 9px; left: -1px; }
-.crosshair__arm.-left, .crosshair__arm.-right { height: 2px; width: 9px; top: -1px; }
-.crosshair__arm.-up { top: -20px; } .crosshair__arm.-down { top: 11px; }
-.crosshair__arm.-left { left: -20px; } .crosshair__arm.-right { left: 11px; }
-.crosshair.-alert .crosshair__arm { opacity: 0.95; }
+/* The crosshair: thin, small and alive. Two styles, by the weapon in hand. `dot`: a centre and four ticks that show while the stance is alert (or over a target). `arcs`: two arcs, one each side, and a small ring
+   in the middle (the shotgun's). Both open with the cone the weapon shoots in: hud.js sets --spread (pixels), the ticks never come nearer than 6 px and the arcs never closer than a radius of 18. */
+.crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; --spread: 0px; --cross: var(--ink); --gap: max(6px, calc(var(--spread) + 4px)); --radius: min(90px, max(18px, var(--spread))); }
+.crosshair.-target { --cross: var(--target); }
+.crosshair__dot { position: absolute; left: -1px; top: -1px; width: 2px; height: 2px; border-radius: 50%; background: var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
+.crosshair__tick { position: absolute; background: var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); opacity: 0; transition: opacity 0.2s, top 0.06s linear, left 0.06s linear; }
+.crosshair__tick.-up, .crosshair__tick.-down { width: 1px; height: 8px; left: -0.5px; }
+.crosshair__tick.-left, .crosshair__tick.-right { height: 1px; width: 8px; top: -0.5px; }
+.crosshair__tick.-up { top: calc(-1 * var(--gap) - 8px); } .crosshair__tick.-down { top: var(--gap); }
+.crosshair__tick.-left { left: calc(-1 * var(--gap) - 8px); } .crosshair__tick.-right { left: var(--gap); }
+.crosshair.-alert .crosshair__tick { opacity: 0.95; }
+.crosshair.-target .crosshair__tick { opacity: 1; }   /* the colour changes at once: an answer to where the player points is not eased */
+
+.crosshair__arcs, .crosshair__pip { display: none; }
+.crosshair.-arcs .crosshair__dot, .crosshair.-arcs .crosshair__tick { display: none; }
+.crosshair.-arcs .crosshair__arcs { display: block; position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; overflow: visible; }
+.crosshair__ring { fill: none; stroke: var(--cross); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 62 118; transform: rotate(-31deg); r: var(--radius); transition: r 0.06s linear; }
+.crosshair__ring.-shade { stroke: rgba(0, 0, 0, 0.6); stroke-width: 4; }
+.crosshair.-arcs .crosshair__pip { display: block; position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.35); }
 
 /* The hit marker: four short strokes that flash at the crosshair; red for a kill. */
 .hitmarker { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; opacity: 0; }
@@ -40,6 +51,7 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 /* What E does on what the player looks at. */
 .prompt { position: fixed; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 8px; background: var(--panel); backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.12s; }
 .prompt.-show { opacity: 1; }
+.prompt.-hidden { opacity: 0; }   /* a marker's box says what E does */
 .prompt__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; }
 .prompt__text { font-size: 15px; letter-spacing: 0.01em; }
 
@@ -66,3 +78,19 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 /* What the player carries. */
 .items { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 8px; }
 .item { padding: 7px 13px; border-radius: 8px; background: var(--panel); backdrop-filter: blur(4px); border: 1px solid rgba(255, 180, 84, 0.45); font-size: 13px; letter-spacing: 0.04em; }
+
+/* Markers: what can be used, over it on the screen. The one looked at is a glass box with what E does (the page behind it blurred, its colours pushed), tied to the thing by a line; the others are a small mark. */
+.markers { position: fixed; inset: 0; overflow: hidden; }
+.marker { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; animation: marker-in 0.18s ease-out; }
+.marker__dot { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); border: 1.5px solid rgba(255, 255, 255, 0.85); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); backdrop-filter: blur(4px) saturate(300%); -webkit-backdrop-filter: blur(4px) saturate(300%); }
+.marker__line, .marker__box { display: none; }
+.marker.-focused .marker__dot { left: -7px; top: -7px; width: 14px; height: 14px; border-color: var(--accent); }
+.marker.-focused .marker__box { display: flex; align-items: center; gap: 10px; position: absolute; bottom: 24px; left: 0; transform: translateX(calc(-50% + var(--shift, 0px))); padding: 6px 14px 6px 7px; border-radius: 12px; white-space: nowrap; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px) saturate(300%); -webkit-backdrop-filter: blur(10px) saturate(300%); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+.marker.-focused.-line .marker__box { bottom: 80px; }
+.marker.-focused.-line .marker__line { display: block; position: absolute; left: -1px; bottom: 7px; width: 2px; height: 73px; background: linear-gradient(to top, var(--accent), rgba(255, 255, 255, 0.35)); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.3); }
+.marker.-focused.-below .marker__box { bottom: auto; top: 24px; }
+.marker.-focused.-line.-below .marker__box { top: 80px; }
+.marker.-focused.-line.-below .marker__line { bottom: auto; top: 7px; background: linear-gradient(to bottom, var(--accent), rgba(255, 255, 255, 0.35)); }
+.marker__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; background: rgba(0, 0, 0, 0.18); }
+.marker__text { font-size: 15px; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); }
+@keyframes marker-in { from { opacity: 0; } to { opacity: 1; } }

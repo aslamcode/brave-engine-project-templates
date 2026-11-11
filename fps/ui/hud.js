@@ -6,6 +6,7 @@ var hud = BraveUiBridge.remote('Hud');
 var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
 var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items');
+var markersEl = el('markers'), markerNodes = {};
 var hitTimer, damageTimer;
 
 function render(state) {
@@ -25,6 +26,10 @@ function render(state) {
   reserve.textContent = state.reserve;
   stance.textContent = state.stance === 'alert' ? 'Alert' : 'Relaxed';
   crosshair.classList.toggle('-alert', state.stance === 'alert');
+  crosshair.classList.toggle('-target', !!state.target);
+  crosshair.classList.toggle('-arcs', state.crosshair === 'arcs');
+  // The cone of the weapon on this window: a share of half the height, in pixels. The ticks and the arcs open by it.
+  crosshair.style.setProperty('--spread', (state.spread * window.innerHeight / 2).toFixed(1) + 'px');
 
   items.innerHTML = '';
   state.items.forEach(function (name) {
@@ -50,3 +55,38 @@ hud.onDamaged.on(function () {
   clearTimeout(damageTimer);
   damageTimer = setTimeout(function () { damage.classList.remove('-hit'); }, 60);
 }, { sampleEvery: 0 });
+
+// The things that can be used, over them on the screen. Every frame they move there is a list: one element for each id is kept (made when it first comes, taken out when it goes), moved by a transform. The one
+// looked at (`focused`) shows a glass box with what E does, tied to the thing by a line when its marker is `line`; the others are a small mark. While a box says what E does, the line under the crosshair is hidden.
+function makeMarker() {
+  var root = document.createElement('div');
+  root.className = 'marker';
+  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><span class="marker__key">E</span><span class="marker__text"></span></div><div class="marker__dot"></div>';
+  markersEl.appendChild(root);
+  return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text') };
+}
+
+function renderMarkers(list) {
+  var width = window.innerWidth, height = window.innerHeight, seen = {}, boxShown = false;
+  list.forEach(function (m) {
+    var node = markerNodes[m.id] || (markerNodes[m.id] = makeMarker());
+    var x = m.x * width, y = m.y * height;
+    seen[m.id] = true;
+    node.root.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+    node.root.classList.toggle('-focused', m.focused);
+    node.root.classList.toggle('-line', m.focused && m.line);
+    node.root.classList.toggle('-below', y < 150);
+    if (m.focused && node.text.textContent !== m.prompt) node.text.textContent = m.prompt;
+    // The box stays on the screen sideways: it is the box that is moved, never the point it is tied to.
+    node.box.style.setProperty('--shift', (Math.max(0, 110 - x) - Math.max(0, x - (width - 110))).toFixed(1) + 'px');
+    if (m.focused && m.prompt !== '') boxShown = true;
+  });
+  Object.keys(markerNodes).forEach(function (id) {
+    if (seen[id]) return;
+    markersEl.removeChild(markerNodes[id].root);
+    delete markerNodes[id];
+  });
+  prompt.classList.toggle('-hidden', boxShown);
+}
+
+hud.onMarkers.on(renderMarkers, { sampleEvery: 0 });

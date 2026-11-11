@@ -1,5 +1,5 @@
-import { AudioSource, AudioTrack, BraveEngine, BraveEngineModeEnum, Entity, Float, IEntity, Inject, Input, JsonIgnore, PhysicsSystem, Ref, Script, ScriptComponent, Signal, Vector3 } from '@brave/core';
-import { Hud } from '../../services/hud.service';
+import { AudioSource, AudioTrack, BraveEngine, BraveEngineModeEnum, Camera, Entity, Float, IEntity, Inject, Input, Int, JsonIgnore, MeshRenderer, PhysicsSystem, Ref, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
+import { Hud, IHudMarker } from '../../services/hud.service';
 import { Interactable } from './interactable';
 import { playClip } from './play-clip';
 
@@ -7,6 +7,10 @@ import { playClip } from './play-clip';
  * The player's side of interaction: put it on the player's eyes (the camera). Every frame a ray goes from the eyes along the look, `Reach` metres, ignoring the player's own body and everything
  * under it, and stops at the nearest thing it meets. From the collider it hit it walks up through the parents to the first entity that has an `Interactable`, and tells the `Hud` what E does
  * on it (`hud.setPrompt`), or an empty line when there is nothing. E (`Input.keyboard.keyE`) uses it.
+ *
+ * It also tells the `Hud` which things that can be used are near and in sight (`Marker Range`, at most `Max Markers`, the nearest first), where on the screen, so the page can mark them: the one looked at gets a
+ * glass box with what E does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The point on the screen comes from the camera on this entity (the eyes)
+ * and the anchor of each thing (the centre of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked.
  *
  * It does nothing while the game is paused or when the entity it is on is off (the other one of two players, say).
  *
@@ -23,6 +27,9 @@ export class Interactor extends ScriptComponent {
   @Ref(AudioTrack, { label: 'Deny Sound', tooltip: 'Played when the player tries something that cannot be done.' }) denySound = '';
   @Float({ label: 'Pitch Variation', tooltip: 'How much the pitch changes from one time to the next, as a fraction.' }) pitchVariation = 0.05;
 
+  @Float({ header: 'Markers', label: 'Marker Range', suffix: 'm', tooltip: 'How far from the eyes a thing that can be used gets a marker on the screen. 0 draws none.' }) markerRange = 6;
+  @Int({ label: 'Max Markers', tooltip: 'How many markers at once: the nearest ones. The one looked at is always among them.' }) maxMarkers = 4;
+
   @Inject(Hud) hud!: Hud;
 
   /** What the player is looking at and can use now, or nothing. */
@@ -33,6 +40,9 @@ export class Interactor extends ScriptComponent {
   @JsonIgnore() private key?: ReturnType<typeof Input.keyboard.keyE.down>;
   @JsonIgnore() private readonly origin = new Vector3();
   @JsonIgnore() private readonly direction = new Vector3();
+  // The things that can be used, found again every half second (a scan of the scene is not for every frame) and measured every frame.
+  @JsonIgnore() private candidates: ICandidate[] = [];
+  @JsonIgnore() private sinceScan = Infinity;
 
   onStart() {
     this.listen();
@@ -45,17 +55,22 @@ export class Interactor extends ScriptComponent {
 
   onUpdate() {
     if (!this.running) return;
-    this.watch(this.look());
+
+    const target = this.look();
+    this.watch(target);
+    this.mark(target);
   }
 
   onDisable() {
     this.watch(undefined);
+    this.hud?.setMarkers([]);
   }
 
   onDestroy() {
     if (this.key) Input.removeListner(this.key);
     this.key = undefined;
     this.watch(undefined);
+    this.hud?.setMarkers([]);
   }
 
   // The copy made for Play holds the original's handle, which must not be removed with the copy's own: dropped, never removed (see docs/scripts.md).
@@ -104,6 +119,96 @@ export class Interactor extends ScriptComponent {
     return undefined;
   }
 
+  // What is on the screen to be used: near, in front of the camera, within the screen, not behind a wall (the one looked at needs no ray: the look already found it), and not asked to be left out.
+  private mark(focused: Interactable | undefined): void {
+    const markers: IHudMarker[] = [];
+    const camera = this.entity.getComponent(Camera);
+
+    if (camera && this.markerRange > 0 && this.maxMarkers > 0) {
+      this.sinceScan += Time.deltaTime;
+      if (this.sinceScan >= SCAN_EVERY) {
+        this.sinceScan = 0;
+        this.scan();
+      }
+
+      const matrix = camera.viewProjectionMatrix;
+      const found: { thing: Interactable; distance: number; x: number; y: number; point: Vector3 }[] = [];
+      this.candidates.forEach(candidate => {
+        const thing = candidate.thing;
+        if (!thing.activeInHierarchy || !thing.usable || thing.marker === 'none') return;
+
+        const point = this.anchorOf(candidate);
+        const distance = Vector3.distance(point, this.origin);
+        if (distance > this.markerRange) return;
+
+        const w = matrix[3] * point.x + matrix[7] * point.y + matrix[11] * point.z + matrix[15];
+        if (!(w > 0)) return;
+        const x = (matrix[0] * point.x + matrix[4] * point.y + matrix[8] * point.z + matrix[12]) / w;
+        const y = (matrix[1] * point.x + matrix[5] * point.y + matrix[9] * point.z + matrix[13]) / w;
+        if (Math.abs(x) > 1.05 || Math.abs(y) > 1.05) return;
+
+        found.push({ thing, distance, x: x * 0.5 + 0.5, y: 0.5 - y * 0.5, point });
+      });
+
+      found.sort((a, b) => (a.thing === focused ? -1 : b.thing === focused ? 1 : a.distance - b.distance));
+      for (const item of found) {
+        if (markers.length >= this.maxMarkers) break;
+        if (item.thing !== focused && this.isBehindSomething(item.thing, item.point, item.distance)) continue;
+
+        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: item.thing === focused ? item.thing.currentPrompt : '', focused: item.thing === focused, line: item.thing.marker === 'line' });
+      }
+    }
+
+    this.hud.setMarkers(markers);
+  }
+
+  // The first thing a ray from the eyes to the point meets is not the thing itself (or a child of it) and is nearer than the point: a wall, a door, a crate.
+  private isBehindSomething(thing: Interactable, point: Vector3, distance: number): boolean {
+    this.direction.set((point.x - this.origin.x) / distance, (point.y - this.origin.y) / distance, (point.z - this.origin.z) / distance);
+    const hit = PhysicsSystem.raycast(this.origin, this.direction, distance, { ignore: this.body ?? this.root() });
+    if (!hit || hit.distance >= distance - 0.25) return false;
+
+    for (let entity: Entity | undefined = hit.entity; entity; entity = entity.parent) if (entity === thing.entity) return false;
+    return true;
+  }
+
+  // Where a marker is tied: the centre of the biggest thing the entity is drawn with (the leaf of a door, a pickup's model), as it is now, and `Marker Height` above it; the origin when nothing is drawn.
+  private anchorOf(candidate: ICandidate): Vector3 {
+    const { thing, renderer } = candidate;
+    const bounds = renderer?.mesh?.localBounds;
+    if (!renderer || !bounds) {
+      const place = thing.entity.transform.globalPosition;
+      return new Vector3(place.x, place.y + thing.markerHeight, place.z);
+    }
+
+    const m = renderer.entity.transform.worldMatrix;
+    const x = (bounds.min.x + bounds.max.x) / 2, y = (bounds.min.y + bounds.max.y) / 2, z = (bounds.min.z + bounds.max.z) / 2;
+    return new Vector3(m[0] * x + m[4] * y + m[8] * z + m[12], m[1] * x + m[5] * y + m[9] * z + m[13] + thing.markerHeight, m[2] * x + m[6] * y + m[10] * z + m[14]);
+  }
+
+  // Every Interactable of the running scenes, each with the biggest renderer in it (by the size it has in the world).
+  private scan(): void {
+    this.candidates = [];
+    const volume = (renderer: MeshRenderer) => {
+      const bounds = renderer.mesh?.localBounds;
+      if (!bounds) return 0;
+      const m = renderer.entity.transform.worldMatrix;
+      return (bounds.max.x - bounds.min.x) * Math.hypot(m[0], m[1], m[2]) * (bounds.max.y - bounds.min.y) * Math.hypot(m[4], m[5], m[6]) * (bounds.max.z - bounds.min.z) * Math.hypot(m[8], m[9], m[10]);
+    };
+    const biggest = (entity: Entity, best?: MeshRenderer): MeshRenderer | undefined => {
+      const renderer = entity.getComponent(MeshRenderer);
+      if (renderer && volume(renderer) > (best ? volume(best) : 0)) best = renderer;
+      entity.children.forEach(child => { best = biggest(child, best); });
+      return best;
+    };
+    const visit = (entity: Entity) => {
+      const thing = entity.getComponent(Interactable);
+      if (thing) this.candidates.push({ thing, renderer: biggest(entity) });
+      entity.children.forEach(visit);
+    };
+    BraveEngine.scenes.forEach(scene => scene.children.forEach(visit));
+  }
+
   private watch(target: Interactable | undefined): void {
     this.hud?.setPrompt(target ? target.currentPrompt : '');
     if (target === this.target) return;
@@ -121,4 +226,13 @@ export class Interactor extends ScriptComponent {
   private get running(): boolean {
     return BraveEngine.mode === BraveEngineModeEnum.Running && this.activeInHierarchy;
   }
+}
+
+// How often the scene is looked through for things to mark, seconds.
+const SCAN_EVERY = 0.5;
+
+// A thing that can be used, and the renderer its marker is tied to (none: its origin).
+interface ICandidate {
+  thing: Interactable;
+  renderer?: MeshRenderer;
 }

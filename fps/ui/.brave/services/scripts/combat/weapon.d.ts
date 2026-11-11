@@ -1,5 +1,7 @@
 import { Entity, IRaycastHit, ScriptComponent, Signal, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
+/** The crosshair a weapon has: a centre and four ticks, or two arcs and a small ring (the shotgun's: the arcs open with the spread, so they show where the pellets may go). */
+export type CrosshairStyle = 'dot' | 'arcs';
 /** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` is where a bullet that goes on after a hit would be handled. */
 export interface IBullet {
     origin: Vector3;
@@ -28,18 +30,24 @@ export declare class Weapon extends ScriptComponent {
     boltSound?: Entity;
     automatic: boolean;
     roundsPerMinute: number;
+    pellets: number;
     damage: number;
     range: number;
     spreadStill: number;
     spreadMoving: number;
     spreadAir: number;
     spreadTime: number;
+    crosshair: CrosshairStyle;
     magazineSize: number;
     startingReserve: number;
     reloadTime: number;
     cameraKick: number;
     flashSeconds: number;
     fireWithoutLock: boolean;
+    protected crosshairOptions: {
+        value: string;
+        description: string;
+    }[];
     hud: Hud;
     /** Rounds in the magazine and in reserve. In a save, not in the scene file. */
     ammo: number;
@@ -87,6 +95,7 @@ export declare class Weapon extends ScriptComponent {
     /** Whether the weapon may be used: in hand, its owner alive, the game running. A game that stuns the player does it here. */
     isReady(): boolean;
     private makeBullet;
+    private updateTarget;
     private scatter;
     private fireBullet;
     /** What a bullet does to what it hit. Returns the damage it still has: 0, it stops. */
@@ -97,6 +106,7 @@ export declare class Weapon extends ScriptComponent {
     private updateReload;
     private cancelReload;
     private updateSpread;
+    private showSpread;
     private updateRecoil;
     private flash;
     private updateFlash;

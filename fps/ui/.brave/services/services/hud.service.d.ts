@@ -15,6 +15,25 @@ export interface IHudState {
     message: string;
     /** What the player carries, one name for each item. */
     items: string[];
+    /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
+    target: boolean;
+    /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (two arcs and a small ring, the shotgun's). */
+    crosshair: string;
+    /** How wide the weapon's cone is on the screen, as a share of half the screen's height: the page turns it into pixels, so the crosshair opens as the shots scatter, at any size of the window. */
+    spread: number;
+}
+/** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
+export interface IHudMarker {
+    /** Which thing: the id of its entity, so the page keeps the same element for it from frame to frame. */
+    id: string;
+    x: number;
+    y: number;
+    /** What E does, shown in the box of the marker the player looks at. */
+    prompt: string;
+    /** The one the player looks at and can use now: the others are small marks. */
+    focused: boolean;
+    /** A focused marker with a line down to the thing, or without (a box on it). */
+    line: boolean;
 }
 export declare class Hud {
     state: IHudState;
@@ -27,11 +46,20 @@ export declare class Hud {
     }>;
     /** The player was hurt: how much. The page's red flash. */
     onDamaged: Signal<number>;
+    /** The things the player can use that are on the screen now, every frame they move. The page's markers. */
+    onMarkers: Signal<IHudMarker[]>;
     private messageTimer?;
+    private markersKey;
     setPrompt(text: string): void;
     setAmmo(ammo: number, magazine: number, reserve: number): void;
     setHealth(health: number, maxHealth: number): void;
     setStance(stance: string): void;
+    setCrosshair(crosshair: string): void;
+    /** The spread, rounded to a thousandth of half the screen (a pixel or two): a change smaller than that is not sent. */
+    setSpread(spread: number): void;
+    setTarget(target: boolean): void;
+    /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
+    setMarkers(markers: IHudMarker[]): void;
     setItems(items: string[]): void;
     /** A line for `seconds` of game time (an engine timer: it stops with Pause). */
     showMessage(text: string, seconds?: number): void;

@@ -6,6 +6,10 @@ import { Interactable } from './interactable';
  * under it, and stops at the nearest thing it meets. From the collider it hit it walks up through the parents to the first entity that has an `Interactable`, and tells the `Hud` what E does
  * on it (`hud.setPrompt`), or an empty line when there is nothing. E (`Input.keyboard.keyE`) uses it.
  *
+ * It also tells the `Hud` which things that can be used are near and in sight (`Marker Range`, at most `Max Markers`, the nearest first), where on the screen, so the page can mark them: the one looked at gets a
+ * glass box with what E does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The point on the screen comes from the camera on this entity (the eyes)
+ * and the anchor of each thing (the centre of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked.
+ *
  * It does nothing while the game is paused or when the entity it is on is off (the other one of two players, say).
  *
  * It also has the sound of the player's side of an interaction: what is heard from the player, not from the thing used (the pickup's: the item's entity is switched off when it is taken, and
@@ -17,6 +21,8 @@ export declare class Interactor extends ScriptComponent {
     audio?: AudioSource;
     denySound: string;
     pitchVariation: number;
+    markerRange: number;
+    maxMarkers: number;
     hud: Hud;
     /** What the player is looking at and can use now, or nothing. */
     target?: Interactable;
@@ -25,6 +31,8 @@ export declare class Interactor extends ScriptComponent {
     private key?;
     private readonly origin;
     private readonly direction;
+    private candidates;
+    private sinceScan;
     onStart(): void;
     onRestore(): void;
     onUpdate(): void;
@@ -39,6 +47,10 @@ export declare class Interactor extends ScriptComponent {
     play(clip: string): void;
     private listen;
     private look;
+    private mark;
+    private isBehindSomething;
+    private anchorOf;
+    private scan;
     private watch;
     private root;
     private get running();
