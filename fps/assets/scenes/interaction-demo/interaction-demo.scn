@@ -69223,7 +69223,7 @@
                                                       "spreadMoving": 3.6,
                                                       "spreadAir": 5.5,
                                                       "spreadTime": 0.14,
-                                                      "crosshair": "arcs",
+                                                      "crosshair": "twin-arcs",
                                                       "magazineSize": 6,
                                                       "startingReserve": 24,
                                                       "reloadTime": 3.0,

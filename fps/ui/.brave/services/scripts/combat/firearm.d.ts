@@ -1,6 +1,6 @@
 import { Entity, ScriptComponent } from '@brave/core';
-/** The crosshair a firearm has: a centre and four ticks, or two arcs and a small ring (the shotgun's: the arcs open with the spread, so they show where the pellets may go). */
-export type CrosshairStyle = 'dot' | 'arcs';
+/** The crosshair a firearm has: a centre and four ticks (`dot`), a ring of four arcs round a dot (`arcs`), or two arcs, one each side of a dot, with a thin arc outside each (`twin-arcs`, the shotgun's): the arcs open with the spread, so they show where the pellets may go. */
+export type CrosshairStyle = 'dot' | 'arcs' | 'twin-arcs';
 /**
  * One weapon the player can carry: its numbers, its parts and the rounds it holds. It sits on the weapon's own entity, a child of the `Weapons` entity in the right hand (the model, the `Muzzle` and the
  * `Grip Left` are its children), and does nothing by itself: the `Weapon` on the player reads the one in hand and fires it, reloads it and aims it, and keeps what each of them holds.
@@ -39,6 +39,7 @@ export declare class Firearm extends ScriptComponent {
     aimSide: number;
     aimLower: number;
     aimBack: number;
+    aimTilt: number;
     protected crosshairOptions: {
         value: string;
         description: string;

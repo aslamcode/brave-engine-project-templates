@@ -23,6 +23,8 @@ export interface IBullet {
  */
 export declare class Weapon extends ScriptComponent {
     private static readonly RELOAD_CUE_TIMES;
+    private static readonly PROBES;
+    private static readonly PROBE_RING;
     eyes: Entity;
     holder: Entity;
     startEquipped: boolean;
@@ -106,6 +108,7 @@ export declare class Weapon extends ScriptComponent {
     private bring;
     private makeBullet;
     private updateTarget;
+    private hurtsAlong;
     private scatter;
     private fireBullet;
     /** What a bullet does to what it hit. Returns the damage it still has: 0, it stops. */

@@ -28,9 +28,11 @@ function render(state) {
   crosshair.classList.toggle('-alert', state.stance === 'alert');
   crosshair.classList.toggle('-target', !!state.target);
   crosshair.classList.toggle('-arcs', state.crosshair === 'arcs');
+  crosshair.classList.toggle('-twin-arcs', state.crosshair === 'twin-arcs');
   crosshair.classList.toggle('-aiming', !!state.aiming);
   // The cone of the weapon on this window: a share of half the height, in pixels. The ticks and the arcs open by it.
   crosshair.style.setProperty('--spread', (state.spread * window.innerHeight / 2).toFixed(1) + 'px');
+  if (state.crosshair === 'twin-arcs') drawTwinArcs(Math.min(90, Math.max(18, state.spread * window.innerHeight / 2)));
 
   // The weapons the player carries: the number of the key and the name, the one in hand lit.
   weapons.innerHTML = '';
@@ -48,6 +50,18 @@ function render(state) {
     chip.textContent = name;
     items.appendChild(chip);
   });
+}
+
+// The twin arcs, drawn for the right side (the left one is the same mirrored by the markup): the main arc at the radius of the cone, a thin one 6 px outside it that reaches further round, and a tick from
+// the middle of the main arc towards the dot. The paths are set as the CSS property `d`, so that they glide when the cone opens or closes.
+var strokes = [].slice.call(document.querySelectorAll('.crosshair__stroke')), lastRadius = -1;
+function arcPoint(radius, degrees) { var angle = degrees * Math.PI / 180; return (radius * Math.cos(angle)).toFixed(1) + ' ' + (radius * Math.sin(angle)).toFixed(1); }
+function arcPath(radius, half) { return 'M ' + arcPoint(radius, -half) + ' A ' + radius.toFixed(1) + ' ' + radius.toFixed(1) + ' 0 0 1 ' + arcPoint(radius, half); }
+function drawTwinArcs(radius) {
+  if (Math.abs(radius - lastRadius) < 0.05) return;
+  lastRadius = radius;
+  var paths = { main: arcPath(radius, 30), thin: arcPath(radius + 6, 44), tick: 'M ' + (radius - 9).toFixed(1) + ' 0 L ' + (radius - 3).toFixed(1) + ' 0' };
+  strokes.forEach(function (stroke) { stroke.style.setProperty('d', "path('" + paths[stroke.getAttribute('data-kind')] + "')"); });
 }
 
 hud.state().then(render);

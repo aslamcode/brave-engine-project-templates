@@ -1,7 +1,7 @@
 import { Bool, Entity, Float, Int, JsonIgnore, Ref, Saved, Script, ScriptComponent, Select, String } from '@brave/core';
 
-/** The crosshair a firearm has: a centre and four ticks, or a ring of four arcs round a dot (the shotgun's: the ring opens with the spread, so it shows where the pellets may go). */
-export type CrosshairStyle = 'dot' | 'arcs';
+/** The crosshair a firearm has: a centre and four ticks (`dot`), a ring of four arcs round a dot (`arcs`), or two arcs, one each side of a dot, with a thin arc outside each (`twin-arcs`, the shotgun's): the arcs open with the spread, so they show where the pellets may go. */
+export type CrosshairStyle = 'dot' | 'arcs' | 'twin-arcs';
 
 /**
  * One weapon the player can carry: its numbers, its parts and the rounds it holds. It sits on the weapon's own entity, a child of the `Weapons` entity in the right hand (the model, the `Muzzle` and the
@@ -35,7 +35,7 @@ export class Firearm extends ScriptComponent {
   @Float({ label: 'In the Air', suffix: '°', tooltip: 'The same while jumping or falling.' }) spreadAir = 3;
   @Float({ label: 'Settle Time', suffix: 's', tooltip: 'How long the spread takes to follow what the player does.' }) spreadTime = 0.12;
 
-  @Select({ header: 'Crosshair', label: 'Crosshair', optionsKey: 'crosshairOptions', sort: false, tooltip: 'Dot: a centre and four ticks that open with the spread. Arcs: a ring of four arcs round a dot, that opens with the spread (the shotgun\'s).' }) crosshair: CrosshairStyle = 'dot';
+  @Select({ header: 'Crosshair', label: 'Crosshair', optionsKey: 'crosshairOptions', sort: false, tooltip: 'Dot: a centre and four ticks that open with the spread. Arcs: a ring of four arcs round a dot. Twin Arcs: two arcs, one each side of a dot, with a thin arc outside each (the shotgun\'s). All open with the spread.' }) crosshair: CrosshairStyle = 'dot';
 
   @Int({ header: 'Ammo', label: 'Magazine', tooltip: 'Rounds in a full magazine.' }) magazineSize = 30;
   @Int({ label: 'Reserve', tooltip: 'Rounds carried besides the magazine, when the game starts.' }) startingReserve = 120;
@@ -52,7 +52,7 @@ export class Firearm extends ScriptComponent {
   @Float({ label: 'Aim Back', suffix: 'm', tooltip: 'How far the weapon comes back, towards the body, while aiming (negative: forward).' }) aimBack = -0.35;
   @Float({ label: 'Aim Tilt', suffix: '°', tooltip: 'How far the barrel is raised about the hand while aiming (negative: lowered), so that it points where the camera looks.' }) aimTilt = 8.5;
 
-  @JsonIgnore() protected crosshairOptions = [{ value: 'dot', description: 'Dot' }, { value: 'arcs', description: 'Arcs' }];
+  @JsonIgnore() protected crosshairOptions = [{ value: 'dot', description: 'Dot' }, { value: 'arcs', description: 'Arcs' }, { value: 'twin-arcs', description: 'Twin Arcs' }];
 
   /** Rounds in the magazine and in reserve. In a save, not in the scene file. */
   @JsonIgnore() @Saved() ammo = 0;
