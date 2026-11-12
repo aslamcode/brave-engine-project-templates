@@ -33,7 +33,7 @@ A character is a few small components that read each other's state: a body (phys
 - **Look At**: a head (and the bones above it) follows a Target.
 - **Foot IK**: feet on stairs and slopes; visual only, the body is the controller's.
 - **Parent Constraint**: a weapon follows a hand, a camera rides a head (Damping smooths out the head's bob).
-- **Pelvis Turn**: the legs go the way it moves while the look goes elsewhere, up to **Max Offset** (the FPS player has 45: a diagonal, never a step to the side with the legs twisted 90 degrees under the chest; going backwards the legs keep to the look and the walk plays in reverse). **Step Turn**: turns the legs on the spot one foot at a time (needs a Pelvis Turn).
+- **Pelvis Turn**: the legs go the way it moves while the look goes elsewhere, up to **Max Offset** (the FPS player has 60: a little past the diagonal, never a step to the side with the legs twisted 90 degrees under the chest; going backwards the legs keep to the look and the walk plays in reverse). **Step Turn**: turns the legs on the spot one foot at a time (needs a Pelvis Turn).
 
 **A 2D character.** Right-click in the Scenes panel, **Sprite**. Pick the texture in its Material; on the Sprite Renderer set the sheet (Columns, Rows) and the **Animations** list (clips = ranges of frames). Add the same body and mind as above (Rigid Body, Collider Capsule, Character Controller, Player Movement), then **Sprite Animator**.
 

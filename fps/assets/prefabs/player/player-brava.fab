@@ -11379,7 +11379,7 @@
           "_weight": 1,
           "_order": -10,
           "_bone": "armature/pelvis",
-          "_maxOffset": 45,
+          "_maxOffset": 60,
           "_turnSpeed": 540,
           "_modelYaw": 0,
           "_walkBackwards": true,
