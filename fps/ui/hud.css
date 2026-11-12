@@ -26,9 +26,8 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .indicator { transition: opacity 0.7s ease-out; }
 
 /* The crosshair: thin, small and alive. Three styles, by the weapon in hand. `dot`: a centre and four ticks that show while the stance is alert (or over a target). `arcs`: the same 2 px dot inside a ring of four
-   arcs, broken at up, down, left and right. `twin-arcs`: the dot and, one each side of it, two arcs of three strokes each: the main arc, the edge of the cone; a thin arc a little outside it that reaches further
-   round; and a short tick from the middle of the main arc towards the dot (the shotgun's: its pellets land anywhere between them, the dot is where the middle is). All open with the cone the weapon shoots in:
-   hud.js sets --spread (pixels) and draws the twin arcs from it; the ticks never come nearer than 6 px and the arcs never closer than a radius of 18. */
+   arcs, broken at up, down, left and right. `twin-arcs`: the dot and, one each side of it, a hairline arc at the edge of the cone (the shotgun's: its pellets land anywhere between
+   them, the dot is where the middle is). All open with the cone the weapon shoots in: hud.js sets --spread (pixels) and draws the twin arcs from it; the ticks never come nearer than 6 px and the arcs never closer than a radius of 18. */
 .crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; --spread: 0px; --cross: var(--ink); --gap: max(6px, calc(var(--spread) + 4px)); --radius: min(90px, max(18px, var(--spread))); }
 .crosshair.-target { --cross: var(--target); }
 .crosshair__dot { position: absolute; left: -1px; top: -1px; width: 2px; height: 2px; border-radius: 50%; background: var(--cross); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
@@ -48,14 +47,8 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .crosshair__ring { fill: none; stroke: var(--cross); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 54 36; transform: rotate(18deg); r: var(--radius); transition: r 0.06s linear; }
 .crosshair__ring.-shade { stroke: rgba(0, 0, 0, 0.6); stroke-width: 4; }
 .crosshair.-twin-arcs .crosshair__twin { display: block; position: absolute; left: -120px; top: -120px; width: 240px; height: 240px; overflow: visible; }
-.crosshair__stroke { fill: none; stroke: var(--cross); transition: d 0.06s linear; }
-.crosshair__stroke.-main { stroke-width: 2; stroke-linecap: round; }
-.crosshair__stroke.-thin { stroke-width: 1; stroke-linecap: round; opacity: 0.75; }
-.crosshair__stroke.-tick { stroke-width: 1; }
-.crosshair__stroke.-shade { stroke: rgba(0, 0, 0, 0.6); opacity: 1; }
-.crosshair__stroke.-shade.-main { stroke-width: 4; }
-.crosshair__stroke.-shade.-thin { stroke-width: 3; }
-.crosshair__stroke.-shade.-tick { stroke-width: 3; }
+.crosshair__stroke { fill: none; stroke: var(--cross); stroke-width: 1.4; stroke-linecap: round; transition: d 0.06s linear; }
+.crosshair__stroke.-shade { stroke: rgba(0, 0, 0, 0.6); stroke-width: 3.4; }
 
 /* The hit marker: four short strokes that flash at the crosshair; red for a kill. */
 .hitmarker { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; opacity: 0; }

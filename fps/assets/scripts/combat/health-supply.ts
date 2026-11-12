@@ -6,7 +6,9 @@ import { Supply } from './supply';
 @Script({ inheritProperties: true })
 export class HealthSupply extends Supply {
 
+  prompt = 'Use first aid kit (+{amount} HP)';
   message = '+{amount} health';
+  fullMessage = 'Health full';
 
   @Float({ header: 'Health', label: 'Amount', suffix: 'HP', tooltip: 'How much it heals.' }) amount = 35;
 
@@ -16,5 +18,9 @@ export class HealthSupply extends Supply {
     const before = health.current;
     health.heal(this.amount);
     return health.current - before;
+  }
+
+  protected promptAmount(): number {
+    return this.amount;
   }
 }

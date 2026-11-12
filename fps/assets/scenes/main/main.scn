@@ -91653,7 +91653,7 @@
           "_weight": 1,
           "_order": -10,
           "_bone": "armature/pelvis",
-          "_maxOffset": 45,
+          "_maxOffset": 60,
           "_turnSpeed": 540,
           "_modelYaw": 0,
           "_walkBackwards": true,
@@ -95479,6 +95479,44 @@
                 "$ref": "k954015",
                 "$type": "Vector3"
               }
+            },
+            {
+              "$ref": "k960001_ref_18",
+              "$type": "Collider",
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "id": "d1881c2a-efc5-443c-bcc4-5e2b1788f296",
+              "entity": {
+                "$circular": "k954010"
+              },
+              "name": "Collider",
+              "_shape": "box",
+              "_size": {
+                "0": 0.54,
+                "1": 0.3,
+                "2": 0.34,
+                "$ref": "k960002",
+                "$type": "Vector3"
+              },
+              "_radius": 0.5,
+              "_height": 1.0,
+              "_center": {
+                "0": 0,
+                "1": 0.15,
+                "2": 0,
+                "$ref": "k960003",
+                "$type": "Vector3"
+              },
+              "_showWireframe": false,
+              "_terrainStep": 1,
+              "_isTrigger": false,
+              "_layer": -1,
+              "_friction": 0.5,
+              "_bounciness": 0,
+              "_density": 1,
+              "_physicsMaterialId": null
             }
           ],
           "scene": {
@@ -99335,6 +99373,44 @@
                 "$ref": "k954038",
                 "$type": "Vector3"
               }
+            },
+            {
+              "$ref": "k960004_ref_18",
+              "$type": "Collider",
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "id": "66c5a583-cb1d-490a-89da-2db30e32bb98",
+              "entity": {
+                "$circular": "k954033"
+              },
+              "name": "Collider",
+              "_shape": "box",
+              "_size": {
+                "0": 0.42,
+                "1": 0.2,
+                "2": 0.3,
+                "$ref": "k960005",
+                "$type": "Vector3"
+              },
+              "_radius": 0.5,
+              "_height": 1.0,
+              "_center": {
+                "0": 0,
+                "1": 0.1,
+                "2": 0,
+                "$ref": "k960006",
+                "$type": "Vector3"
+              },
+              "_showWireframe": false,
+              "_terrainStep": 1,
+              "_isTrigger": false,
+              "_layer": -1,
+              "_friction": 0.5,
+              "_bounciness": 0,
+              "_density": 1,
+              "_physicsMaterialId": null
             }
           ],
           "scene": {
