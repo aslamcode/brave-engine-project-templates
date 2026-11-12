@@ -11237,9 +11237,7 @@
           "_strideMax": 1.6,
           "entity": {
             "$circular": "p_ref_1132"
-          },
-          "_moveXParameter": "MoveX",
-          "_moveYParameter": "MoveY"
+          }
         },
         {
           "$ref": "p_ref_1608",
@@ -11419,10 +11417,10 @@
           "_weight": 1,
           "_order": -10,
           "_bone": "armature/pelvis",
-          "_maxOffset": 0,
+          "_maxOffset": 45,
           "_turnSpeed": 540,
           "_modelYaw": 0,
-          "_walkBackwards": false,
+          "_walkBackwards": true,
           "_torso": "armature/pelvis/spine-01/spine-02/spine-03",
           "_torsoBones": 3,
           "_holdWhenStill": true,

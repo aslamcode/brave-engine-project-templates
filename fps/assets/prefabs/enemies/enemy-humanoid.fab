@@ -5955,9 +5955,7 @@
           "_strideMax": 1.6,
           "entity": {
             "$circular": "k1"
-          },
-          "_moveXParameter": "MoveX",
-          "_moveYParameter": "MoveY"
+          }
         },
         {
           "$ref": "k163",
