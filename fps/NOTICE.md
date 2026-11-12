@@ -5,6 +5,8 @@
 (<https://creativecommons.org/licenses/by/4.0/>). A game made from this kit that ships these clips must show the credit "The 100STYLE Dataset - Ian Mason" with the link to the licence.
 Changes made: five takes were cut into loops of one stride, straightened to go along +Z, closed into loops, moved to Bravo's skeleton by the engine's retargeting, the head lifted and hands put on;
 in the walk, the run and the crouched walk only the pelvis's turn, the spine, the head and the arms are the person's, the legs are generated so that the feet stay planted at the speed of the game.
+The steps to the side and back (`walk-left`, `walk-right`, `run-right`, `walk-back`, `run-back`, `crouch-left`, `crouch-right`, `crouch-back`) are the person's whole body, from the dataset's sidestepping
+and backwards takes: a loop of one stride, turned to face +Z, moved to Bravo's skeleton by the engine's retargeting and played faster or slower to travel at the speed the controller places it at.
 
 **Sky.** `assets/textures/kloofendal_48d_partly_cloudy_puresky_4k.hdr`: Poly Haven, "Kloofendal 48d Partly Cloudy (Pure Sky)", by Greg Zaal (original) and Jarod Guest (sky edits), **CC0**
 (<https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky>).
