@@ -24,7 +24,7 @@ export interface IBullet {
  * a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
  *
  * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon is
- * put away or changed, or the player dies, and a shot cannot be fired while it lasts. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
+ * put away or changed, or the player dies, and a shot cannot be fired while it lasts. With `Auto Reload` on it begins by itself when the magazine runs empty. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
  * sprint, a reload, a switch.
  */
 @Script()
@@ -42,6 +42,8 @@ export class Weapon extends ScriptComponent {
   @Ref(Entity, { label: 'Weapons', tooltip: 'The entity in the right hand that has the weapons as its children: each child has a Firearm.' }) holder!: Entity;
 
   @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the first weapon is in hand when the game starts. Off: it starts put away, with the magazine loaded all the same, and its key brings it up.' }) startEquipped = true;
+
+  @Bool({ header: 'Reload', label: 'Auto Reload', tooltip: 'On: a magazine that runs empty is reloaded by itself, once the shot is over, if there are rounds in reserve (a weapon put in hand empty reloads too). Off: R reloads, and the trigger on an empty magazine clicks.' }) autoReload = true;
 
   @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game fires only while it holds the pointer (the click that locks it does not shoot). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
 
@@ -118,6 +120,7 @@ export class Weapon extends ScriptComponent {
     this.takeInHand();
     this.changeWeapon();
     this.pullTrigger();
+    this.reloadWhenEmpty();
     this.updateReload(deltaTime);
     this.updateAim(deltaTime);
     this.updateSpread(deltaTime);
@@ -412,6 +415,13 @@ export class Weapon extends ScriptComponent {
     if (!this.triggerHeld) return;
     if (!this.fireWithoutLock && !Cursor.isLocked) this.triggerHeld = false;
     else if (this.current?.automatic) this.fire();
+  }
+
+  // An empty magazine with rounds in reserve is reloaded once the shot that emptied it is over (the interval of the weapon: a shotgun's pump is part of it). `reload()` asks the rest: in hand, not already going.
+  private reloadWhenEmpty() {
+    const gun = this.current;
+    if (!this.autoReload || !gun || gun.ammo > 0 || this.clock < this.nextShotAt) return;
+    this.reload();
   }
 
   private updateReload(deltaTime: number) {

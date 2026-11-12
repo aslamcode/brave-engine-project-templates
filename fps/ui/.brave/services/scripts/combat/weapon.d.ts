@@ -18,7 +18,7 @@ export interface IBullet {
  * a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
  *
  * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon is
- * put away or changed, or the player dies, and a shot cannot be fired while it lasts. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
+ * put away or changed, or the player dies, and a shot cannot be fired while it lasts. With `Auto Reload` on it begins by itself when the magazine runs empty. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
  * sprint, a reload, a switch.
  */
 export declare class Weapon extends ScriptComponent {
@@ -29,6 +29,7 @@ export declare class Weapon extends ScriptComponent {
     eyes: Entity;
     holder: Entity;
     startEquipped: boolean;
+    autoReload: boolean;
     fireWithoutLock: boolean;
     hud: Hud;
     /** A reload is going on, and how far (0 to 1) it is. */
@@ -120,6 +121,7 @@ export declare class Weapon extends ScriptComponent {
     private hurt;
     private markScenery;
     private pullTrigger;
+    private reloadWhenEmpty;
     private updateReload;
     private cancelReload;
     private updateAim;

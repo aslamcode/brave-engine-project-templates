@@ -26,16 +26,6 @@
       "name": "Stride",
       "type": "float",
       "defaultValue": 1
-    },
-    {
-      "name": "MoveX",
-      "type": "float",
-      "defaultValue": 0
-    },
-    {
-      "name": "MoveY",
-      "type": "float",
-      "defaultValue": 0
     }
   ],
   "layers": [
@@ -92,9 +82,8 @@
           ],
           "motion": {
             "kind": "blendTree",
-            "blendType": "2dFreeformDirectional",
-            "parameter": "MoveX",
-            "parameterY": "MoveY",
+            "blendType": "1d",
+            "parameter": "Speed",
             "children": [
               {
                 "motion": {
@@ -111,9 +100,9 @@
                   "kind": "clip",
                   "clipId": "e997af74-dc54-4087-b951-b4fa7c7a730b"
                 },
-                "threshold": 0,
+                "threshold": 1.4,
                 "x": 0,
-                "y": 1.4,
+                "y": 0,
                 "timeScale": 1
               },
               {
@@ -121,71 +110,10 @@
                   "kind": "clip",
                   "clipId": "faab3e64-eb7e-45b5-a022-477351475b32"
                 },
-                "threshold": 0,
+                "threshold": 4,
                 "x": 0,
-                "y": 4,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "7819ff54-33ea-43d0-b46a-94b25dee912c"
-                },
-                "threshold": 0,
-                "x": 0,
-                "y": -1.1,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "719df069-3c64-4ebf-adbc-70dbd3afe643"
-                },
-                "threshold": 0,
-                "x": 0,
-                "y": -2.4,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "a877bf98-b54c-4e7a-b00a-ebbe4d89c22d"
-                },
-                "threshold": 0,
-                "x": 1,
                 "y": 0,
                 "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "538a373d-00b3-459b-91ae-45f37603da5d"
-                },
-                "threshold": 0,
-                "x": 2.4,
-                "y": 0,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "30b6ba3d-e0bf-49d3-8933-f34dedb31de0"
-                },
-                "threshold": 0,
-                "x": -1,
-                "y": 0,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "538a373d-00b3-459b-91ae-45f37603da5d"
-                },
-                "threshold": 0,
-                "x": -2.4,
-                "y": 0,
-                "timeScale": 1,
-                "mirror": true
               }
             ]
           },
@@ -246,9 +174,8 @@
           ],
           "motion": {
             "kind": "blendTree",
-            "blendType": "2dFreeformDirectional",
-            "parameter": "MoveX",
-            "parameterY": "MoveY",
+            "blendType": "1d",
+            "parameter": "Speed",
             "children": [
               {
                 "motion": {
@@ -265,38 +192,8 @@
                   "kind": "clip",
                   "clipId": "dcf8a2bf-57f2-46a3-a9ce-14f1c19b04b4"
                 },
-                "threshold": 0,
+                "threshold": 1.1,
                 "x": 0,
-                "y": 1.1,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "b93537a2-47a8-49bd-92b4-c3a0ed627d47"
-                },
-                "threshold": 0,
-                "x": 0,
-                "y": -0.9,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "d6bb4520-007d-4b86-b4df-8cc014287bbe"
-                },
-                "threshold": 0,
-                "x": 0.9,
-                "y": 0,
-                "timeScale": 1
-              },
-              {
-                "motion": {
-                  "kind": "clip",
-                  "clipId": "919e65e4-1e7b-4827-a072-21b6cfbb06f3"
-                },
-                "threshold": 0,
-                "x": -0.9,
                 "y": 0,
                 "timeScale": 1
               }
