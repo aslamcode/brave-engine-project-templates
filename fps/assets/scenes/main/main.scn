@@ -80215,7 +80215,9 @@
           "growth": 2,
           "waveSound": {
             "$circular": "k408_ref_62"
-          }
+          },
+          "secondPrefab": "enemy-humanoid.fab",
+          "secondShare": 0.35
         }
       ],
       "materials": [

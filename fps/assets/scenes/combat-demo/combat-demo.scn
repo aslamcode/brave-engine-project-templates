@@ -20093,7 +20093,9 @@
           "growth": 2,
           "waveSound": {
             "$circular": "k234_ref_62"
-          }
+          },
+          "secondPrefab": "enemy-humanoid.fab",
+          "secondShare": 0.35
         }
       ],
       "materials": [

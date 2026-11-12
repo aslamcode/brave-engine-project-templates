@@ -21,6 +21,8 @@ export class WaveSpawner extends ScriptComponent {
   private static readonly SCATTER = 1.5;
 
   @String({ header: 'Enemies', label: 'Prefab', tooltip: 'The name of the prefab of one enemy (it must be in the project).' }) prefab = 'enemy-cube.fab';
+  @String({ label: 'Second Prefab', tooltip: 'The name of the prefab of a second kind of enemy, mixed into every wave (a humanoid among the cubes). Empty: only the first.' }) secondPrefab = '';
+  @Float({ label: 'Second Share', tooltip: 'What share of each wave is the second kind: 0 none, 0.35 about a third, 1 all of it.' }) secondShare = 0;
   @Ref(Entity, { label: 'Target', tooltip: 'Who the enemies hunt, from the moment they appear. Empty: the player.' }) target?: Entity;
   @Int({ header: 'Waves', label: 'Waves', tooltip: 'How many waves there are.' }) waves = 3;
   @Int({ label: 'First Wave', tooltip: 'How many enemies the first wave has.' }) firstWave = 3;
@@ -44,7 +46,7 @@ export class WaveSpawner extends ScriptComponent {
 
   @Inject(Hud) hud!: Hud;
 
-  @JsonIgnore() private batch?: ISpawnBatch;
+  @JsonIgnore() private batches: ISpawnBatch[] = [];
 
   onStart() {
     this.bind();
@@ -58,14 +60,14 @@ export class WaveSpawner extends ScriptComponent {
       return;
     }
     // Still being made, or still alive: the dead stay a moment, then they are removed, and then the wave is over.
-    if ((this.batch && !this.batch.done) || SpawnSystem.countOf(this.entity) > 0) return;
+    if (this.batches.some(batch => !batch.done) || SpawnSystem.countOf(this.entity) > 0) return;
     this.clear();
   }
 
   // A save brings the component back as it was, started: the trigger has to be listened to again. (A wave that was still being made when the game was saved is dropped by the load.)
   onRestore() {
     this.bind();
-    this.batch = undefined;
+    this.batches = [];
   }
 
   /** Begins the first wave. Does nothing while the waves are going. */
@@ -92,8 +94,16 @@ export class WaveSpawner extends ScriptComponent {
     this.hud.showMessage(`Wave ${this.wave}`, 2.5);
     playSound(this.waveSound);
     this.onWaveStart.emit(this.wave);
-    this.batch = SpawnSystem.spawnMany(prefab, this.placements(this.firstWave + this.growth * (this.wave - 1)), { perFrame: 2 });
-    this.batch.onDone.on(batch => batch.spawned.forEach(enemy => enemy.getComponent(EnemyCube)?.hunt(this.target)), this);
+    const count = this.firstWave + this.growth * (this.wave - 1);
+    const places = this.placements(count);
+    const second = this.secondPrefab ? SpawnSystem.idOf(this.secondPrefab) : undefined;
+    const share = second ? Math.min(Math.max(Math.round(count * this.secondShare), 0), count) : 0;
+    const hunt = (batch: ISpawnBatch) => batch.onDone.on(done => done.spawned.forEach(enemy => enemy.getComponent(EnemyCube)?.hunt(this.target)), this);
+    // Each kind is a batch of its own (a batch makes one prefab); the second kind takes the last places, so that the two are mixed along the spawn points.
+    this.batches = [];
+    if (count - share > 0) this.batches.push(SpawnSystem.spawnMany(prefab, places.slice(0, count - share), { perFrame: 2 }));
+    if (second && share > 0) this.batches.push(SpawnSystem.spawnMany(second, places.slice(count - share), { perFrame: 2 }));
+    this.batches.forEach(hunt);
   }
 
   // One place for each enemy, the spawn points in turn. The spawner is the owner of what it makes: that is how it counts them.

@@ -13,6 +13,8 @@ import { Hud } from '../../services/hud.service';
 export declare class WaveSpawner extends ScriptComponent {
     private static readonly SCATTER;
     prefab: string;
+    secondPrefab: string;
+    secondShare: number;
     target?: Entity;
     waves: number;
     firstWave: number;
@@ -32,7 +34,7 @@ export declare class WaveSpawner extends ScriptComponent {
     /** The last wave was cleared. */
     onFinished: Signal<any>;
     hud: Hud;
-    private batch?;
+    private batches;
     onStart(): void;
     onUpdate(): void;
     onRestore(): void;
