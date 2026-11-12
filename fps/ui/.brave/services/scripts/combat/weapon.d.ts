@@ -25,6 +25,7 @@ export declare class Weapon extends ScriptComponent {
     private static readonly RELOAD_CUE_TIMES;
     private static readonly PROBES;
     private static readonly PROBE_RING;
+    private static readonly SHELL_LAYER;
     eyes: Entity;
     holder: Entity;
     startEquipped: boolean;
@@ -49,6 +50,7 @@ export declare class Weapon extends ScriptComponent {
     /** The player began to aim. */
     onAimStart: Signal<any>;
     private cache?;
+    private bulletMask?;
     private arms?;
     private health?;
     private body?;

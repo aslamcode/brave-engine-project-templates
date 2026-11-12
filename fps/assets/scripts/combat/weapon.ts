@@ -35,6 +35,8 @@ export class Weapon extends ScriptComponent {
   // The rays a weapon with several pellets asks along besides the middle one (to know whether the crosshair turns red): this many, round a ring this share of the way out in the cone.
   private static readonly PROBES = 6;
   private static readonly PROBE_RING = 0.8;
+  // The layer of the body shell of a character whose hit zones are on its bones (a capsule that is only for walking): a shot passes it and meets the zones.
+  private static readonly SHELL_LAYER = 'Enemy Shell';
 
   @Ref(Entity, { header: 'Parts', label: 'Eyes', tooltip: 'The camera: a shot starts here and goes where it looks.' }) eyes!: Entity;
   @Ref(Entity, { label: 'Weapons', tooltip: 'The entity in the right hand that has the weapons as its children: each child has a Firearm.' }) holder!: Entity;
@@ -66,6 +68,8 @@ export class Weapon extends ScriptComponent {
   onAimStart = new Signal();
 
   @JsonIgnore() private cache?: Firearm[];
+  // What a ray of this weapon can hit: everything but the body shells.
+  @JsonIgnore() private bulletMask?: number;
   @JsonIgnore() private arms?: FirstPersonArms;
   @JsonIgnore() private health?: Health;
   @JsonIgnore() private body?: CharacterController;
@@ -100,6 +104,8 @@ export class Weapon extends ScriptComponent {
   onStart() {
     this.bind();
     this.listen();
+    const shells = PhysicsSystem.layerMask(Weapon.SHELL_LAYER);
+    this.bulletMask = shells ? 0xFFFF & ~shells : undefined;
     const first = this.current ?? this.firearms[0];
     if (!first) return;
     this.firearms.forEach(firearm => { if (firearm.muzzle) firearm.muzzle.active = false; });
@@ -356,7 +362,7 @@ export class Weapon extends ScriptComponent {
   }
 
   private hurtsAlong(origin: Vector3, direction: Vector3, range: number): boolean {
-    const hit = PhysicsSystem.raycast(origin, direction, range, { ignore: this.entity });
+    const hit = PhysicsSystem.raycast(origin, direction, range, { ignore: this.entity, mask: this.bulletMask });
     const health = hit ? Health.find(hit.entity) : undefined;
     return !!health && !health.isDead;
   }
@@ -373,7 +379,7 @@ export class Weapon extends ScriptComponent {
   // The ray ignores the player's own body and every trigger (a zone is not a thing in the way). A bullet that goes on after a hit (through a thin wall, by the material and the thickness) is a loop here: cast
   // again from the hit point with what `onBulletHit()` leaves of the bullet, until nothing is left. Today a bullet stops at the first thing.
   private fireBullet(bullet: IBullet): void {
-    const hit = PhysicsSystem.raycast(bullet.origin, bullet.direction, bullet.range, { ignore: this.entity });
+    const hit = PhysicsSystem.raycast(bullet.origin, bullet.direction, bullet.range, { ignore: this.entity, mask: this.bulletMask });
     if (hit) this.onBulletHit(hit, bullet);
   }
 

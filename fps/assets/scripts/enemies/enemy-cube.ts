@@ -1,4 +1,4 @@
-import { Collider, Entity, Float, JsonIgnore, NavAgent, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, SpawnSystem, State, Time, Vector3 } from '@brave/core';
+import { Animator, Collider, Entity, Float, JsonIgnore, NavAgent, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, SpawnSystem, State, Time, Vector3 } from '@brave/core';
 import { Health, IDamageEvent } from '../combat/health';
 import { playSound } from '../combat/play-sound';
 
@@ -112,6 +112,9 @@ export class EnemyCube extends ScriptComponent {
       this.agent.stop();
       this.agent.active = false;
     }
+    // A body with a skeleton stops where it is (the corpse falls in the pose it died in).
+    const animator = this.entity.getComponent(Animator);
+    if (animator) animator.active = false;
     // Its parts stop being hit and stop being in the way: the dead are not shot again and the player walks through them.
     this.collidersBelow(this.entity).forEach(collider => { collider.active = false; });
     playSound(this.dieSound);

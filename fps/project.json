@@ -2,7 +2,8 @@
   "name": "First Person Shooter",
   "layers": [
     "Default",
-    "Arms"
+    "Arms",
+    "Enemy Shell"
   ],
   "quality": {
     "renderScale": 1,
