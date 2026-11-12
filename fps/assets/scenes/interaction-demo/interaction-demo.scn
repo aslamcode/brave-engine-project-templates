@@ -66565,7 +66565,8 @@
                                                       },
                                                       "boltSound": {
                                                         "$circular": "pl_k58"
-                                                      }
+                                                      },
+                                                      "reserveLimit": 240
                                                     }
                                                   ],
                                                   "materials": [],
@@ -69234,7 +69235,8 @@
                                                       "aimSpreadScale": 0.55,
                                                       "aimSide": -0.09,
                                                       "aimLower": -0.015,
-                                                      "aimBack": -0.3
+                                                      "aimBack": -0.3,
+                                                      "reserveLimit": 48
                                                     }
                                                   ],
                                                   "scene": {

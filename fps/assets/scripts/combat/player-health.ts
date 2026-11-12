@@ -80,8 +80,27 @@ export class PlayerHealth extends ScriptComponent {
   }
 
   private onHurt(event: IDamageEvent) {
-    this.hud.notifyDamaged(event.amount);
+    this.hud.notifyDamaged(event.amount, this.sideOf(event));
     playSound(this.hurtSound);
+  }
+
+  // Which side the blow came from, in degrees from where the player looks (positive to the right, 180 behind): towards what dealt it, or back along the way a shot was going. A fall or a trap has neither.
+  private sideOf(event: IDamageEvent): number | undefined {
+    const here = this.entity.transform.globalPosition;
+    let x = 0, z = 0;
+    if (event.source) {
+      const there = event.source.transform.globalPosition;
+      x = there.x - here.x;
+      z = there.z - here.z;
+    } else if (event.direction) {
+      x = -event.direction.x;
+      z = -event.direction.z;
+    }
+    if (Math.hypot(x, z) < 0.01 || !this.eyes) return undefined;
+    const look = this.eyes.transform.forward;
+    // The right of a body that looks along +Z is -X: the angle from the look to the blow, turned the other way.
+    const turn = Math.atan2(look.x, look.z) - Math.atan2(x, z);
+    return Math.round(((turn * 180 / Math.PI + 540) % 360) - 180);
   }
 
   private onDied() {

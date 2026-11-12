@@ -39,6 +39,7 @@ export class Firearm extends ScriptComponent {
 
   @Int({ header: 'Ammo', label: 'Magazine', tooltip: 'Rounds in a full magazine.' }) magazineSize = 30;
   @Int({ label: 'Reserve', tooltip: 'Rounds carried besides the magazine, when the game starts.' }) startingReserve = 120;
+  @Int({ label: 'Reserve Limit', tooltip: 'The most rounds carried besides the magazine: an ammo supply stops giving there. 0 is no limit.' }) reserveLimit = 0;
   @Float({ label: 'Reload Time', suffix: 's' }) reloadTime = 2.2;
 
   @Float({ header: 'Feel', label: 'Camera Kick', suffix: '°', tooltip: 'How far the view climbs at each shot before it settles back.' }) cameraKick = 0.8;

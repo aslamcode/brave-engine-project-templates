@@ -218,6 +218,17 @@ export class Weapon extends ScriptComponent {
     return true;
   }
 
+  /** Puts `rounds` in the reserve of the weapon of `slot` (0: the one in hand), up to its `Reserve Limit`. Returns how many went in: 0 for a weapon that is not carried or has no room. */
+  give(rounds: number, slot = 0): number {
+    const gun = slot > 0 ? this.firearms.find(firearm => firearm.slot === slot) : this.current ?? this.firearms[0];
+    if (!gun || !(rounds > 0)) return 0;
+    const room = gun.reserveLimit > 0 ? Math.max(gun.reserveLimit - gun.reserve, 0) : rounds;
+    const added = Math.min(Math.floor(rounds), room);
+    gun.reserve += added;
+    if (gun === this.current) this.showAmmo();
+    return added;
+  }
+
   /** Gives every weapon its magazine and its reserve back in full (the player is back from the dead). */
   refill(): void {
     this.cancelReload();

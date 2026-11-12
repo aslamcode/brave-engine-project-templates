@@ -7,7 +7,7 @@ var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
 var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items'), weapons = el('weapons');
 var markersEl = el('markers'), markerNodes = {};
-var hitTimer, damageTimer;
+var hitTimer, damageTimer, indicatorTimer, indicator = el('indicator');
 
 function render(state) {
   // The text stays while the prompt fades out, so that the key chip is never left alone on the screen.
@@ -74,7 +74,14 @@ hud.onHit.on(function (hit) {
   hitTimer = setTimeout(function () { hitmarker.classList.remove('-show'); }, 90);
 }, { sampleEvery: 0 });
 
-hud.onDamaged.on(function () {
+hud.onDamaged.on(function (event) {
+  // The mark of the side it came from: the ring turned by the angle (positive: to the right), shown and let go.
+  if (event && typeof event.angle === 'number') {
+    indicator.style.transform = 'rotate(' + event.angle + 'deg)';
+    indicator.classList.add('-show');
+    clearTimeout(indicatorTimer);
+    indicatorTimer = setTimeout(function () { indicator.classList.remove('-show'); }, 120);
+  }
   damage.classList.add('-hit');
   clearTimeout(damageTimer);
   damageTimer = setTimeout(function () { damage.classList.remove('-hit'); }, 60);

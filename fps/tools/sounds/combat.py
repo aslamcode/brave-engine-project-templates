@@ -185,6 +185,21 @@ def shell_in():
     return finish(mix((decay(highpass(noise(0.04, rng), 1200), 0.007), 0.8, 0), (decay(sine(0.08, 1500), 0.015), 0.3, 0.004), (clack(rng, 0.6), 0.8, 0.045)))
 
 
+def pickup_ammo():
+    """A box of rounds taken: a heavy knock of metal on metal and the rattle of what is inside it, a little behind."""
+    rng = random.Random(41)
+    rattle = mix(*[(decay(highpass(noise(0.03, rng), 2500), 0.006), 0.35 + 0.2 * rng.random(), 0.05 + 0.03 * i) for i in range(5)])
+    return finish(mix((clack(rng, 1.6), 1.0, 0), (rattle, 0.8, 0.02)))
+
+
+def pickup_health():
+    """A first aid kit taken: two soft rising notes, the second a fifth above the first, with a little shimmer."""
+    first = decay(sine(0.5, 660), 0.14, attack=0.004)
+    second = decay(sine(0.6, 990), 0.2, attack=0.004)
+    shimmer = decay(sine(0.6, 1980), 0.12, attack=0.004)
+    return finish(mix((first, 0.8, 0), (second, 0.8, 0.11), (shimmer, 0.18, 0.11)))
+
+
 def enemy_hit():
     """A dull thud: a low sine that falls in pitch and a puff of dark noise."""
     rng = random.Random(31)
@@ -241,6 +256,8 @@ SOUNDS = {
     'shotgun-3': lambda: shotgun(3),
     'pump': pump,
     'shell-in': shell_in,
+    'pickup-ammo': pickup_ammo,
+    'pickup-health': pickup_health,
     'enemy-hit': enemy_hit,
     'enemy-die': enemy_die,
     'player-hurt': player_hurt,

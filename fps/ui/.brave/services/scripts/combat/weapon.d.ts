@@ -94,6 +94,8 @@ export declare class Weapon extends ScriptComponent {
     fire(): boolean;
     /** Starts a reload, if there is something to reload and room for it. Returns whether it began. */
     reload(): boolean;
+    /** Puts `rounds` in the reserve of the weapon of `slot` (0: the one in hand), up to its `Reserve Limit`. Returns how many went in: 0 for a weapon that is not carried or has no room. */
+    give(rounds: number, slot?: number): number;
     /** Gives every weapon its magazine and its reserve back in full (the player is back from the dead). */
     refill(): void;
     /** Takes the weapon of a slot in hand: from the body, the arms come out with it; from another weapon, the arms go back first; the key of the weapon in hand puts it away. Returns whether the slot has a weapon. */

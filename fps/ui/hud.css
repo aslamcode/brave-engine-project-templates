@@ -19,6 +19,12 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .damage { position: fixed; inset: 0; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 40, 30, 0) 45%, rgba(255, 40, 30, 0.55) 100%); transition: opacity 0.45s ease-out; }
 .damage.-hit { opacity: 1; transition: none; }
 
+/* Which side a blow came from: a red arc on the side it came from, round the crosshair, for a moment. hud.js turns the whole ring by the angle. */
+.indicator { position: fixed; left: 50%; top: 50%; width: 0; height: 0; opacity: 0; }
+.indicator i { position: absolute; left: -90px; top: -150px; width: 180px; height: 60px; border-radius: 50% 50% 0 0 / 100% 100% 0 0; border-top: 6px solid var(--danger); filter: drop-shadow(0 0 6px rgba(255, 60, 40, 0.6)); mask-image: linear-gradient(to right, transparent, #000 25%, #000 75%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, #000 25%, #000 75%, transparent); }
+.indicator.-show { opacity: 1; transition: none; }
+.indicator { transition: opacity 0.7s ease-out; }
+
 /* The crosshair: thin, small and alive. Three styles, by the weapon in hand. `dot`: a centre and four ticks that show while the stance is alert (or over a target). `arcs`: the same 2 px dot inside a ring of four
    arcs, broken at up, down, left and right. `twin-arcs`: the dot and, one each side of it, two arcs of three strokes each: the main arc, the edge of the cone; a thin arc a little outside it that reaches further
    round; and a short tick from the middle of the main arc towards the dot (the shotgun's: its pellets land anywhere between them, the dot is where the middle is). All open with the cone the weapon shoots in:

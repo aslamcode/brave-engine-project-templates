@@ -49,8 +49,11 @@ export declare class Hud {
         zone: string;
         kill: boolean;
     }>;
-    /** The player was hurt: how much. The page's red flash. */
-    onDamaged: Signal<number>;
+    /** The player was hurt: how much, and from which side (degrees from straight ahead, positive to the right, 180 behind; none when nothing says where it came from). The page's red flash and its mark on that side. */
+    onDamaged: Signal<{
+        amount: number;
+        angle?: number;
+    }>;
     /** The things the player can use that are on the screen now, every frame they move. The page's markers. */
     onMarkers: Signal<IHudMarker[]>;
     private messageTimer?;
@@ -71,6 +74,6 @@ export declare class Hud {
     /** A line for `seconds` of game time (an engine timer: it stops with Pause). */
     showMessage(text: string, seconds?: number): void;
     notifyHit(zone: string, kill: boolean): void;
-    notifyDamaged(amount: number): void;
+    notifyDamaged(amount: number, angle?: number): void;
     private changed;
 }

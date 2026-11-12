@@ -51,8 +51,8 @@ export class Hud {
   onChange = new Signal<IHudState>();
   /** A shot that hit something that can be hurt: where on it (the zone's name) and whether it was the last blow. The page's hit marker. */
   onHit = new Signal<{ zone: string; kill: boolean }>();
-  /** The player was hurt: how much. The page's red flash. */
-  onDamaged = new Signal<number>();
+  /** The player was hurt: how much, and from which side (degrees from straight ahead, positive to the right, 180 behind; none when nothing says where it came from). The page's red flash and its mark on that side. */
+  onDamaged = new Signal<{ amount: number; angle?: number }>();
   /** The things the player can use that are on the screen now, every frame they move. The page's markers. */
   onMarkers = new Signal<IHudMarker[]>();
 
@@ -139,8 +139,8 @@ export class Hud {
     this.onHit.emit({ zone, kill });
   }
 
-  notifyDamaged(amount: number): void {
-    this.onDamaged.emit(amount);
+  notifyDamaged(amount: number, angle?: number): void {
+    this.onDamaged.emit({ amount, angle });
   }
 
   private changed(): void {

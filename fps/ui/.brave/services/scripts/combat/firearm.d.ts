@@ -30,6 +30,7 @@ export declare class Firearm extends ScriptComponent {
     crosshair: CrosshairStyle;
     magazineSize: number;
     startingReserve: number;
+    reserveLimit: number;
     reloadTime: number;
     cameraKick: number;
     flashSeconds: number;

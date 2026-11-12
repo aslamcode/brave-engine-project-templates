@@ -26,5 +26,6 @@ export declare class PlayerHealth extends ScriptComponent {
     private bind;
     private showHealth;
     private onHurt;
+    private sideOf;
     private onDied;
 }
