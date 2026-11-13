@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>FPS Kit HUD</title>
+  <link rel="stylesheet" href="reset.css">
   <link rel="stylesheet" href="hud.css">
 </head>
 <body>
@@ -54,7 +55,7 @@
       <label class="menu__row"><span class="menu__label">Field of View</span><input id="fieldOfView" class="menu__slider" type="range" min="50" max="110" step="1"><span id="fieldOfViewValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label">Volume</span><input id="volume" class="menu__slider" type="range" min="0" max="1" step="0.01"><span id="volumeValue" class="menu__value"></span></label>
       <button id="resume" class="menu__button" type="button">Resume</button>
-      <div class="menu__hint">or click anywhere on the game</div>
+      <div class="menu__hint">Esc, or click anywhere on the game</div>
     </div>
   </div>
 
@@ -64,7 +65,7 @@
       <nav class="journal__side">
         <div id="journalTitle" class="journal__heading"></div>
         <ul id="journalCategories" class="journal__categories"></ul>
-        <div class="journal__hint">Tab to close</div>
+        <div class="journal__hint">Tab or Esc to close</div>
       </nav>
       <section class="journal__stage">
         <div id="journalObject" class="journal__object"></div>

@@ -20,7 +20,7 @@ export type DoorEasing = 'linear' | 'smooth' | 'ease-in' | 'ease-out';
  * starts. With no `Leaf` set, the moving part is this entity itself.
  *
  * Locked: a locked door refuses E (the locked sound, `Locked Message`, `onLocked`) unless the player carries `Key Item` (then the bolt slides: the unlock sound, `onUnlocked`, and a moment later
- * the door opens; the key stays in the inventory). With no `Key Item` only a script unlocks it: `unlock()`, which a `Socket` or a Director calls.
+ * the door opens; the key is taken out of the inventory unless `Use Up Key` is off: the Journal still lists it, as used). With no `Key Item` only a script unlocks it: `unlock()`, which a `Socket` or a Director calls.
  *
  * What a Director or another script can use: `@State()` `isOpen` (it is open, or on its way to be) and `isLocked`; `@Callable()` `open()`, `close()`, `toggle()`, `lock()`, `unlock()` (these do not
  * ask for the key: a script that opens a locked door opens it); `Signal`s `onOpened` and `onClosed` (when the movement is finished), `onLocked` (the player tried it) and `onUnlocked`.
@@ -39,6 +39,7 @@ export declare class Door extends Interactable {
     startsOpen: boolean;
     locked: boolean;
     keyItemId: string;
+    consumesKey: boolean;
     closePrompt: string;
     lockedPrompt: string;
     unlockPrompt: string;

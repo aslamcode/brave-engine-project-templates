@@ -153,7 +153,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   var backdrop = el('journal'), heading = el('journalTitle'), categoriesList = el('journalCategories'), entriesList = el('journalEntries'), drawing = el('journalObject');
   var entryTitle = el('journalEntryTitle'), entryStatus = el('journalEntryStatus'), entryBody = el('journalEntryBody'), audioButton = el('journalAudio');
   var emptyNote = el('journalEmpty'), hint = el('journalHint'), hintTitle = el('journalHintTitle');
-  var current = { open: false, title: '', categories: [], entries: [], category: '', selected: '', playing: '', news: 0 };
+  var current = { open: false, title: '', categories: [], entries: [], category: '', selected: '', playing: '', news: 0, hintSeconds: 5 };
   var signatures = {}, drawnCategory = null;
 
   var STATUS_TEXT = { active: 'Active', done: 'Done', failed: 'Failed', unused: 'Not used yet', used: 'Used' };
@@ -252,19 +252,40 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     audioButton.textContent = entry && data.playing === entry.id ? 'Stop' : 'Play';
   }
 
+  // The chip is not always there: it fades in when something new goes into the menu, stays `hintSeconds` and fades out (0: it stays). What was new before the page came (a game that was loaded) does not show it,
+  // and it is gone while the menu is open.
+  var hintTimer, lastNews = -1;
+
+  function showHint(on) {
+    hint.classList.toggle('-shown', on);
+  }
+
   function renderHint(data) {
     hintTitle.textContent = data.title;
     hint.classList.toggle('-new', data.news > 0);
-    hint.classList.toggle('-hidden', data.open);
+    if (data.open) {
+      clearTimeout(hintTimer);
+      showHint(false);
+    } else if (data.hintSeconds <= 0) {
+      showHint(true);
+    } else if (lastNews >= 0 && data.news > lastNews) {
+      showHint(true);
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(function () { showHint(false); }, data.hintSeconds * 1000);
+    }
+    lastNews = data.news;
   }
 
   function renderJournal(state) {
     var data = {
       open: !!state.open, title: state.title || '', categories: state.categories || [], entries: state.entries || [],
-      category: state.category || '', selected: state.selected || '', playing: state.playing || '', news: state.news || 0
+      category: state.category || '', selected: state.selected || '', playing: state.playing || '', news: state.news || 0,
+      hintSeconds: typeof state.hintSeconds === 'number' ? state.hintSeconds : 5
     };
     current = data;
     backdrop.classList.toggle('-open', data.open);
+    // The Journal has the whole screen: the pause menu is not seen under it (see `body.-journal .menu`).
+    document.body.classList.toggle('-journal', data.open);
     backdrop.setAttribute('aria-hidden', data.open ? 'false' : 'true');
     heading.textContent = data.title;
     emptyNote.classList.toggle('-show', data.categories.length === 0);

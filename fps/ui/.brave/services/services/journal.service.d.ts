@@ -33,6 +33,8 @@ export interface IJournalState {
     playing: string;
     /** How many entries have not been looked at, in all the categories. */
     news: number;
+    /** How long the chip in the corner stays when something new goes in: 0, it is always there. */
+    hintSeconds: number;
 }
 /** What a script tells `add()`. */
 export interface IJournalEntryInput {
@@ -66,6 +68,8 @@ export declare class Journal {
     pauseMenu: PauseMenu;
     /** What the menu is called, on the page and in the messages. */
     title: string;
+    /** How long the chip in the corner stays on the screen when something new goes in (0: it is always there). */
+    hintSeconds: number;
     /** On: the game stands still while it is open. Off: it goes on behind it. */
     pausesGame: boolean;
     /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
@@ -79,6 +83,7 @@ export declare class Journal {
     private source?;
     private readonly buffers;
     private tabListener?;
+    private escapeListener?;
     state: IJournalState;
     onStart(): void;
     onDestroy(): void;
@@ -86,6 +91,7 @@ export declare class Journal {
     configure(settings: {
         title?: string;
         pausesGame?: boolean;
+        hintSeconds?: number;
     }): void;
     /** Puts what the player found in the Journal, once: an id that is in it already is left as it was. Says so on the screen. Returns whether it was new. */
     add(entry: IJournalEntryInput, announce?: boolean): boolean;

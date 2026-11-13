@@ -37,6 +37,8 @@ export interface IJournalState {
   playing: string;
   /** How many entries have not been looked at, in all the categories. */
   news: number;
+  /** How long the chip in the corner stays when something new goes in: 0, it is always there. */
+  hintSeconds: number;
 }
 
 /** What a script tells `add()`. */
@@ -85,6 +87,9 @@ export class Journal {
   /** What the menu is called, on the page and in the messages. */
   title = 'Journal';
 
+  /** How long the chip in the corner stays on the screen when something new goes in (0: it is always there). */
+  hintSeconds = 5;
+
   /** On: the game stands still while it is open. Off: it goes on behind it. */
   pausesGame = true;
 
@@ -100,6 +105,7 @@ export class Journal {
   private source?: AudioBufferSourceNode;
   private readonly buffers = new Map<string, AudioBuffer>();
   private tabListener?: Parameters<typeof Input.removeListner>[0];
+  private escapeListener?: Parameters<typeof Input.removeListner>[0];
 
   state: IJournalState = this.snapshot();
 
@@ -108,19 +114,24 @@ export class Journal {
       event.preventDefault();
       this.toggle();
     });
+    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page).
+    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(); });
   }
 
   onDestroy() {
     if (this.tabListener) Input.removeListner(this.tabListener);
     this.tabListener = undefined;
+    if (this.escapeListener) Input.removeListner(this.escapeListener);
+    this.escapeListener = undefined;
     this.stop();
     this.isOpen = false;
     this.pausedByJournal = false;
   }
 
   /** What a `JournalMenu` sets: the name of the menu and whether it pauses the game. */
-  configure(settings: { title?: string; pausesGame?: boolean }): void {
+  configure(settings: { title?: string; pausesGame?: boolean; hintSeconds?: number }): void {
     if (settings.title) this.title = settings.title;
+    if (settings.hintSeconds !== undefined && Number.isFinite(settings.hintSeconds)) this.hintSeconds = Math.max(settings.hintSeconds, 0);
     if (settings.pausesGame !== undefined) this.pausesGame = settings.pausesGame;
     this.changed();
   }
@@ -196,11 +207,9 @@ export class Journal {
       BraveEngine.pause();
       this.pausedByJournal = true;
     }
-    // The pointer is let go on purpose: the pause menu must not take it for the player's Esc.
-    if (Cursor.isLocked) {
-      this.pauseMenu.expectRelease();
-      Cursor.unlock();
-    }
+    // The pointer is let go on purpose: the pause menu must not take it for the player's Esc (and must not, whatever the browser sends about the pointer while this is open).
+    this.pauseMenu.expectRelease();
+    if (Cursor.isLocked) Cursor.unlock();
     this.markSeen();
     this.changed();
   }
@@ -321,7 +330,7 @@ export class Journal {
     const category = categories.some(candidate => candidate.id === this.category) ? this.category : categories[0]?.id ?? '';
     const entries = this.entries.filter(entry => entry.category === category).map(entry => ({ ...entry }));
     const selected = entries.some(entry => entry.id === this.selected) ? this.selected : entries[0]?.id ?? '';
-    return { open: this.isOpen, title: this.title, categories, category, entries, selected, playing: this.playing, news: this.entries.filter(entry => entry.isNew).length };
+    return { open: this.isOpen, title: this.title, categories, category, entries, selected, playing: this.playing, news: this.entries.filter(entry => entry.isNew).length, hintSeconds: this.hintSeconds };
   }
 
   private changed(): void {

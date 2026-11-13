@@ -8,7 +8,7 @@ The game's interface (menus, HUD, inventory) is a web page layered over the game
 - `ui/` is at the project root, a sibling of `assets/`, never inside it.
 
 ## Add it
-- Create `ui/` with an `index.html` in it (a plain page needs no build step). There is no starter yet.
+- Create `ui/` with an `index.html` in it (a plain page needs no build step). There is no starter yet. The kit's page loads `reset.css` before its own CSS (no focus ring or blue outline on anything that is clicked, no browser look on buttons, lists and headings): copy it when you start a page of your own, and write a `:focus-visible` style yourself if you want one.
 - Create the Services the page talks to: Assets panel, **New Service** (`save-and-services.md`).
 - The editor writes TypeScript declarations for the page into `ui/.brave/services/`, one `.d.ts` per `.ts` under `assets/` and mirroring its folders (`assets/services/wallet.service.ts` becomes `ui/.brave/services/services/wallet.service.d.ts`). It does so only when `ui/` exists, a moment after an asset changes. Import types from there; nothing of the engine reaches the page.
 - See it: the **Scene view** shows the overlay (header toggle **Show UI (Scene view)** / **Hide UI (Scene view)**); the Editor view hides it. It also shows while stopped, as a layout preview of the Services' editor-time state.

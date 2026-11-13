@@ -1,0 +1,24 @@
+/*
+ * A reset for the pages of a game's UI (load it first, before the page's own CSS). The browser dresses every element in its own look: a blue ring round whatever was clicked or focused, a grey button, a margin
+ * on a heading, bullets on a list. A game's page draws all of that itself, so none of it is wanted: what is on the screen is what the page's CSS says.
+ *
+ * The focus ring is gone for every element, not only for the mouse: a game's menu is used with the mouse (and Tab, Esc and the keys of the game are the game's own, read by its scripts), and a ring that
+ * shows round a row that was just clicked is the browser's, not the game's. A page that wants a keyboard focus style writes it itself, with `:focus-visible`.
+ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+html, body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { margin: 0; font: inherit; color: inherit; letter-spacing: inherit; }
+button { padding: 0; border: 0; background: none; text-align: center; cursor: pointer; -webkit-appearance: none; appearance: none; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+
+/* No ring, no flash on touch: whatever takes the focus (a button, a row with a tabindex, a slider) looks the same as before it. */
+:focus, :focus-visible { outline: none; }
+::-moz-focus-inner { border: 0; }
+a, button, input, select, textarea, [role="button"], [tabindex] { -webkit-tap-highlight-color: transparent; }
+
+[hidden] { display: none !important; }

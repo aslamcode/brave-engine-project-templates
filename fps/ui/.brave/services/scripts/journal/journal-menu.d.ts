@@ -6,6 +6,7 @@ import { Journal } from '../../services/journal.service';
  */
 export declare class JournalMenu extends ScriptComponent {
     title: string;
+    hintSeconds: number;
     pausesGame: boolean;
     journal: Journal;
     onStart(): void;

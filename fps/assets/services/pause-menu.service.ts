@@ -1,4 +1,4 @@
-import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, PlayerMovement, Service, Signal, Store, UISystem } from '@brave/core';
+import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Service, Signal, Store, UISystem } from '@brave/core';
 
 /** What the menu page shows: whether it is open, and the three settings the player can change. */
 export interface IPauseMenuState {
@@ -18,7 +18,7 @@ const VOLUME_SILENCE_DECIBELS = -80;
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
- * again, which closes it; so does the button. The page only reads `state` and calls the methods.
+ * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, so it may refuse the pointer: the menu closes and the game goes on all the same, and the next click holds it). The page only reads `state` and calls the methods.
  *
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
@@ -47,6 +47,7 @@ export class PauseMenu {
   private pausedByMenu = false;
   private releaseExpected = false;
   private listener = () => this.onLockChange();
+  private escapeListener?: Parameters<typeof Input.removeListner>[0];
 
   onStart() {
     this.state.sensitivity = this.savedSensitivity ?? SENSITIVITY.start;
@@ -55,17 +56,21 @@ export class PauseMenu {
     this.state.fieldOfView = this.savedFieldOfView ?? view?.fieldOfView ?? this.state.fieldOfView;
     this.apply();
     document.addEventListener('pointerlockchange', this.listener);
+    // Esc while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
+    this.escapeListener = Input.keyboard.escape.down(() => { if (this.state.open) this.resume(); });
     UISystem.interactive = false;
     this.changed();
   }
 
   onDestroy() {
     document.removeEventListener('pointerlockchange', this.listener);
+    if (this.escapeListener) Input.removeListner(this.escapeListener);
+    this.escapeListener = undefined;
     this.pausedByMenu = false;
     UISystem.interactive = true;
   }
 
-  /** Another menu (the journal) is about to let go of the pointer on purpose: that release is not the player's Esc, and does not open this menu. */
+  /** Another menu (the journal) has the screen: this one does not open when the pointer is let go (that is the other menu's doing, not the player's Esc) until the pointer is held again. It stays so for as many events as the browser sends, not for one. */
   expectRelease(): void {
     this.releaseExpected = true;
   }
@@ -126,10 +131,7 @@ export class PauseMenu {
       this.close();
       return;
     }
-    if (this.releaseExpected) {
-      this.releaseExpected = false;
-      return;
-    }
+    if (this.releaseExpected) return;
     if (this.armed) this.open();
   }
 
