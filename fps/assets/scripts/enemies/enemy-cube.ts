@@ -170,7 +170,7 @@ export class EnemyCube extends ScriptComponent {
   }
 
   private findPlayer(): Entity | undefined {
-    return this.entity.scene?.children.find(root => root.getComponent(PlayerMovement));
+    return this.entity.scene?.children.find(root => root.activeInHierarchy && root.getComponent(PlayerMovement));
   }
 
   private collidersBelow(entity: Entity): Collider[] {

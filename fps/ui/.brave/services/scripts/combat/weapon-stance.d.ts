@@ -55,6 +55,7 @@ export declare class WeaponStance extends ScriptComponent {
     onStart(): void;
     onUpdate(): void;
     onRestore(): void;
+    onEnable(): void;
     /** The character is alert from now, for `Alert Seconds`. */
     raise(): void;
     private updateAlert;

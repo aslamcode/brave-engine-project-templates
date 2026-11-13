@@ -121,3 +121,26 @@ function renderMarkers(list) {
 }
 
 hud.onMarkers.on(renderMarkers, { sampleEvery: 0 });
+
+// The pause menu: the `PauseMenu` service says whether it is open and what the three settings are; the controls say what the player changed. The sliders are not moved by the state while one is being dragged.
+var pause = BraveUiBridge.remote('PauseMenu');
+var menu = el('menu'), sliders = { sensitivity: el('sensitivity'), fieldOfView: el('fieldOfView'), volume: el('volume') };
+var shown = { sensitivity: function (v) { return Number(v).toFixed(2) + 'x'; }, fieldOfView: function (v) { return Math.round(v) + '\u00b0'; }, volume: function (v) { return Math.round(v * 100) + '%'; } };
+
+function renderMenu(state) {
+  menu.classList.toggle('-open', !!state.open);
+  menu.setAttribute('aria-hidden', state.open ? 'false' : 'true');
+  Object.keys(sliders).forEach(function (key) {
+    if (document.activeElement !== sliders[key]) sliders[key].value = state[key];
+    el(key + 'Value').textContent = shown[key](state[key]);
+  });
+}
+
+sliders.sensitivity.addEventListener('input', function () { pause.setSensitivity(Number(sliders.sensitivity.value)); el('sensitivityValue').textContent = shown.sensitivity(sliders.sensitivity.value); });
+sliders.fieldOfView.addEventListener('input', function () { pause.setFieldOfView(Number(sliders.fieldOfView.value)); el('fieldOfViewValue').textContent = shown.fieldOfView(sliders.fieldOfView.value); });
+sliders.volume.addEventListener('input', function () { pause.setVolume(Number(sliders.volume.value)); el('volumeValue').textContent = shown.volume(sliders.volume.value); });
+el('resume').addEventListener('click', function () { pause.resume(); });
+
+pause.state().then(renderMenu);
+pause.onChange.on(renderMenu, { sampleEvery: 0 });
+

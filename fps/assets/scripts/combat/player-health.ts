@@ -42,10 +42,16 @@ export class PlayerHealth extends ScriptComponent {
     if (this.respawnLeft <= 0) this.respawn();
   }
 
-  // A save brings the component back as it was, started: the handles and the listeners `onStart()` made are not there.
+  // A save brings the component back as it was, started: the handles and the listeners `onStart()` made are not there. The HUD is told only by a player that is on: one that is put away (the other player of
+  // the scene, switched off) is restored too, and must not write its health over the one that plays.
   onRestore() {
     this.bind();
-    this.showHealth();
+    if (this.started && this.activeInHierarchy) this.showHealth();
+  }
+
+  // Switched on again (a body brought back): the HUD is a service every player shares and holds what the last one told it.
+  onEnable() {
+    if (this.started) this.showHealth();
   }
 
   /** The player is put back at the start with full health, a full weapon and control of its body. */

@@ -100,7 +100,12 @@ export class WeaponStance extends ScriptComponent {
   // A save brings the component back as it was, started: what `onStart()` set up on the weapon has to be set up again.
   onRestore() {
     this.bind();
-    this.hud.setStance(this.isAlert ? 'alert' : 'relaxed');
+    if (this.started && this.activeInHierarchy) this.hud.setStance(this.isAlert ? 'alert' : 'relaxed');
+  }
+
+  // Switched on again (a body brought back): the HUD holds what the last player told it.
+  onEnable() {
+    if (this.started) this.hud.setStance(this.isAlert ? 'alert' : 'relaxed');
   }
 
   //#region Public

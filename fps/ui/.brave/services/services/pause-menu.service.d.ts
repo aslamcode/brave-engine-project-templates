@@ -1,0 +1,48 @@
+import { Signal } from '@brave/core';
+/** What the menu page shows: whether it is open, and the three settings the player can change. */
+export interface IPauseMenuState {
+    open: boolean;
+    /** How much the mouse turns the view, as a multiple of what the camera was made with (1: as it is). */
+    sensitivity: number;
+    /** The vertical field of view of the camera, in degrees. */
+    fieldOfView: number;
+    /** The master volume, 0 to 1. */
+    volume: number;
+}
+/**
+ * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
+ * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
+ * again, which closes it; so does the button. The page only reads `state` and calls the methods.
+ *
+ * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
+ * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
+ * not written). `pausesGame` off keeps the game running behind the menu.
+ */
+export declare class PauseMenu {
+    state: IPauseMenuState;
+    /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
+    onChange: Signal<IPauseMenuState>;
+    /** On: the game stands still while the menu is open. Off: it goes on behind it. */
+    pausesGame: boolean;
+    savedSensitivity?: number;
+    savedFieldOfView?: number;
+    savedVolume?: number;
+    private baseSensitivity;
+    private armed;
+    private pausedByMenu;
+    private listener;
+    onStart(): void;
+    onDestroy(): void;
+    /** Opens the menu (and pauses the game, when `pausesGame`). */
+    open(): void;
+    /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
+    resume(): void;
+    setSensitivity(value: number): void;
+    setFieldOfView(degrees: number): void;
+    setVolume(value: number): void;
+    private close;
+    private onLockChange;
+    private apply;
+    private eyes;
+    private changed;
+}

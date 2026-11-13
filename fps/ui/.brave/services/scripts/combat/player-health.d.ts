@@ -21,6 +21,7 @@ export declare class PlayerHealth extends ScriptComponent {
     onStart(): void;
     onUpdate(): void;
     onRestore(): void;
+    onEnable(): void;
     /** The player is put back at the start with full health, a full weapon and control of its body. */
     respawn(): void;
     private bind;

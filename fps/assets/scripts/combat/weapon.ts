@@ -4,6 +4,7 @@ import { FirstPersonArms } from '../player/first-person-arms';
 import { Firearm } from './firearm';
 import { Health } from './health';
 import { Hitbox } from './hitbox';
+import { MuzzleFlash } from './muzzle-flash';
 import { playSound } from './play-sound';
 
 /** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` is where a bullet that goes on after a hit would be handled. */
@@ -112,6 +113,12 @@ export class Weapon extends ScriptComponent {
     if (!first) return;
     this.firearms.forEach(firearm => { if (firearm.muzzle) firearm.muzzle.active = false; });
     this.bring(first);
+  }
+
+  // Switched off and on again (a body that is put away and brought back: the lab's V key): the HUD is a service every player shares and holds what the last one told it, so this one tells it its own again.
+  onEnable() {
+    const gun = this.current;
+    if (this.started && gun) this.showHud(gun);
   }
 
   onUpdate() {
@@ -324,10 +331,15 @@ export class Weapon extends ScriptComponent {
     this.triggerHeld = false;
     this.aimRaw = aim;
     this.spread = gun.spreadStill;
+    this.showHud(gun);
+    this.onSwitch.emit(gun);
+  }
+
+  // What the HUD shows of the weapon in hand: its crosshair, the list of weapons with it marked, and its rounds.
+  private showHud(gun: Firearm) {
     this.hud.setCrosshair(gun.crosshair);
     this.hud.setWeapons(this.firearms.map(firearm => firearm.label), this.firearms.indexOf(gun));
     this.showAmmo();
-    this.onSwitch.emit(gun);
   }
   //#endregion Switching
 
@@ -505,14 +517,11 @@ export class Weapon extends ScriptComponent {
     this.eyes.transform.rotation.x = this.camera.pitch + this.viewSpring.value;
   }
 
-  // The muzzle comes on for `Flash Time`, a little different every time (its size and how it is turned), as a flash is.
+  // The sparks and the glow are the weapon's `MuzzleFlash` (particles); the muzzle, whose light lights the weapon and the hands, comes on for `Flash Time`.
   private flash(gun: Firearm) {
     this.flashLeft = gun.flashSeconds;
-    if (!gun.muzzle) return;
-    const size = 0.7 + Math.random() * 0.45;
-    gun.muzzle.transform.scale.set(size, size, size);
-    gun.muzzle.transform.rotation.z = Math.random() * 90;
-    gun.muzzle.active = true;
+    gun.entity.getComponent(MuzzleFlash)?.fire();
+    if (gun.muzzle) gun.muzzle.active = true;
   }
 
   private updateFlash(deltaTime: number) {

@@ -79,7 +79,7 @@ export class WaveSpawner extends ScriptComponent {
   }
 
   private bind() {
-    this.target = this.target ?? this.entity.scene?.children.find(root => root.getComponent(PlayerMovement));
+    this.target = this.target ?? this.entity.scene?.children.find(root => root.activeInHierarchy && root.getComponent(PlayerMovement));
     this.entity.getComponent(Collider)?.onTriggerEnter.on(event => this.onEntered(event.entity), this);
   }
 

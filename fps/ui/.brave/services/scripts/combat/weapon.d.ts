@@ -75,6 +75,7 @@ export declare class Weapon extends ScriptComponent {
     private listeners;
     onAwake(): void;
     onStart(): void;
+    onEnable(): void;
     onUpdate(): void;
     onDestroy(): void;
     onAfterClone(): void;
@@ -111,6 +112,7 @@ export declare class Weapon extends ScriptComponent {
     private drawTo;
     private changeWeapon;
     private bring;
+    private showHud;
     private makeBullet;
     private updateTarget;
     private hurtsAlong;

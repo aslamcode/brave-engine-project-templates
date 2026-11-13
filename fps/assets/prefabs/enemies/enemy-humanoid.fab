@@ -5739,6 +5739,647 @@
           "parent": {
             "$circular": "k1"
           }
+        },
+        {
+          "$ref": "k970001",
+          "$type": "Entity",
+          "name": "Footstep Sounds",
+          "layer": 0,
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "materials": [],
+          "id": "a79b2fa4-822d-4132-9c98-67875008ffa5",
+          "children": [
+            {
+              "$ref": "k970007",
+              "$type": "Entity",
+              "name": "Step",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "d08ed1fb-d794-4bba-8c93-8a176af5c2bf",
+              "children": [
+                {
+                  "$ref": "k970013",
+                  "$type": "Entity",
+                  "name": "Step 1",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "1399ac48-afb0-45e5-bf1c-b717add1f1b4",
+                  "children": [],
+                  "components": [
+                    {
+                      "$ref": "k970014",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "6a7f2240-9bb0-4c33-9e67-63b6a96e9464",
+                      "entity": {
+                        "$circular": "k970013"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970015",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970016",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970017",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970018",
+                        "$type": "Vector3"
+                      }
+                    },
+                    {
+                      "$ref": "k970019_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                      "$type": "AudioSource",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "4b785bd1-b382-4c6a-87fd-bbb2d0e8aad5",
+                      "hasTransformChanges": false,
+                      "_src": "a80f8e70-8636-4277-85d9-5049492de0d0",
+                      "_gain": 1.0,
+                      "_loop": false,
+                      "_autoPlay": false,
+                      "_muted": false,
+                      "_speed": 1,
+                      "_bypassTimeScale": true,
+                      "_trackTime": 0,
+                      "_pooling": true,
+                      "_poolMinSize": 2,
+                      "_spatial": true,
+                      "_stereoPan": 0,
+                      "_rolloffMode": "inverse",
+                      "_minDistance": 2,
+                      "_maxDistance": 40,
+                      "_rolloffFactor": 1.5,
+                      "_coneInnerAngle": 60,
+                      "_coneOuterAngle": 90,
+                      "_coneOuterGain": 0.3,
+                      "_refDistance": 1,
+                      "entity": {
+                        "$circular": "k970013"
+                      },
+                      "open": false
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970014"
+                  },
+                  "parent": {
+                    "$circular": "k970007"
+                  }
+                },
+                {
+                  "$ref": "k970020",
+                  "$type": "Entity",
+                  "name": "Step 2",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "7d9aa329-9f15-4c84-894d-8f044eb3a28f",
+                  "children": [],
+                  "components": [
+                    {
+                      "$ref": "k970021",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "be7c631d-fdf7-489a-ba86-b21f8a43c379",
+                      "entity": {
+                        "$circular": "k970020"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970022",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970023",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970024",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970025",
+                        "$type": "Vector3"
+                      }
+                    },
+                    {
+                      "$ref": "k970026_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                      "$type": "AudioSource",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "234b39a9-68b6-4ec5-ad4d-7551e1f9f31e",
+                      "hasTransformChanges": false,
+                      "_src": "fd5cc1db-f515-461d-925d-3135e0ecd151",
+                      "_gain": 1.0,
+                      "_loop": false,
+                      "_autoPlay": false,
+                      "_muted": false,
+                      "_speed": 1,
+                      "_bypassTimeScale": true,
+                      "_trackTime": 0,
+                      "_pooling": true,
+                      "_poolMinSize": 2,
+                      "_spatial": true,
+                      "_stereoPan": 0,
+                      "_rolloffMode": "inverse",
+                      "_minDistance": 2,
+                      "_maxDistance": 40,
+                      "_rolloffFactor": 1.5,
+                      "_coneInnerAngle": 60,
+                      "_coneOuterAngle": 90,
+                      "_coneOuterGain": 0.3,
+                      "_refDistance": 1,
+                      "entity": {
+                        "$circular": "k970020"
+                      },
+                      "open": false
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970021"
+                  },
+                  "parent": {
+                    "$circular": "k970007"
+                  }
+                },
+                {
+                  "$ref": "k970027",
+                  "$type": "Entity",
+                  "name": "Step 3",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "481ffb65-514e-45ac-9ea3-93e7ad6840f9",
+                  "children": [],
+                  "components": [
+                    {
+                      "$ref": "k970028",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "ca971a96-be63-4ef3-b65c-ebb4f224b7b2",
+                      "entity": {
+                        "$circular": "k970027"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970029",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970030",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970031",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970032",
+                        "$type": "Vector3"
+                      }
+                    },
+                    {
+                      "$ref": "k970033_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                      "$type": "AudioSource",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "b41c3db8-deac-4ec9-922a-790e74a2a895",
+                      "hasTransformChanges": false,
+                      "_src": "dd962b14-f395-44c0-ad67-ebc51377b7bf",
+                      "_gain": 1.0,
+                      "_loop": false,
+                      "_autoPlay": false,
+                      "_muted": false,
+                      "_speed": 1,
+                      "_bypassTimeScale": true,
+                      "_trackTime": 0,
+                      "_pooling": true,
+                      "_poolMinSize": 2,
+                      "_spatial": true,
+                      "_stereoPan": 0,
+                      "_rolloffMode": "inverse",
+                      "_minDistance": 2,
+                      "_maxDistance": 40,
+                      "_rolloffFactor": 1.5,
+                      "_coneInnerAngle": 60,
+                      "_coneOuterAngle": 90,
+                      "_coneOuterGain": 0.3,
+                      "_refDistance": 1,
+                      "entity": {
+                        "$circular": "k970027"
+                      },
+                      "open": false
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970028"
+                  },
+                  "parent": {
+                    "$circular": "k970007"
+                  }
+                },
+                {
+                  "$ref": "k970034",
+                  "$type": "Entity",
+                  "name": "Step 4",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "12343d1c-3b7e-4a76-a909-7e1f2b2a448a",
+                  "children": [],
+                  "components": [
+                    {
+                      "$ref": "k970035",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "b01c486a-ddc1-4ff5-b816-2e3b1233737f",
+                      "entity": {
+                        "$circular": "k970034"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970036",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970037",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970038",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970039",
+                        "$type": "Vector3"
+                      }
+                    },
+                    {
+                      "$ref": "k970040_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                      "$type": "AudioSource",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "c7d50db9-0426-450a-9198-39f2d07ffe48",
+                      "hasTransformChanges": false,
+                      "_src": "51039759-cb7a-4246-a3f3-5514ce9cba7b",
+                      "_gain": 1.0,
+                      "_loop": false,
+                      "_autoPlay": false,
+                      "_muted": false,
+                      "_speed": 1,
+                      "_bypassTimeScale": true,
+                      "_trackTime": 0,
+                      "_pooling": true,
+                      "_poolMinSize": 2,
+                      "_spatial": true,
+                      "_stereoPan": 0,
+                      "_rolloffMode": "inverse",
+                      "_minDistance": 2,
+                      "_maxDistance": 40,
+                      "_rolloffFactor": 1.5,
+                      "_coneInnerAngle": 60,
+                      "_coneOuterAngle": 90,
+                      "_coneOuterGain": 0.3,
+                      "_refDistance": 1,
+                      "entity": {
+                        "$circular": "k970034"
+                      },
+                      "open": false
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970035"
+                  },
+                  "parent": {
+                    "$circular": "k970007"
+                  }
+                }
+              ],
+              "components": [
+                {
+                  "$ref": "k970008",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "a9965988-c269-416b-a662-50047c0d79aa",
+                  "entity": {
+                    "$circular": "k970007"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k970009",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k970010",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k970011",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k970012",
+                    "$type": "Vector3"
+                  }
+                }
+              ],
+              "scene": {
+                "$circular": "kscene"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k970008"
+              },
+              "parent": {
+                "$circular": "k970001"
+              }
+            },
+            {
+              "$ref": "k970041",
+              "$type": "Entity",
+              "name": "Land",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "fb034418-2217-422c-a2fa-415b41410d31",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k970042",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "a5beb4de-6a21-4307-8fea-e0669f74d025",
+                  "entity": {
+                    "$circular": "k970041"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k970043",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k970044",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k970045",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k970046",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k970047_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                  "$type": "AudioSource",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "d37e108a-1603-4ab5-bf26-bea91eaf07fa",
+                  "hasTransformChanges": false,
+                  "_src": "e11778a3-c580-4f4c-ad11-007f0447cf40",
+                  "_gain": 1.0,
+                  "_loop": false,
+                  "_autoPlay": false,
+                  "_muted": false,
+                  "_speed": 1,
+                  "_bypassTimeScale": true,
+                  "_trackTime": 0,
+                  "_pooling": true,
+                  "_poolMinSize": 2,
+                  "_spatial": true,
+                  "_stereoPan": 0,
+                  "_rolloffMode": "inverse",
+                  "_minDistance": 2,
+                  "_maxDistance": 40,
+                  "_rolloffFactor": 1.5,
+                  "_coneInnerAngle": 60,
+                  "_coneOuterAngle": 90,
+                  "_coneOuterGain": 0.3,
+                  "_refDistance": 1,
+                  "entity": {
+                    "$circular": "k970041"
+                  },
+                  "open": false
+                }
+              ],
+              "scene": {
+                "$circular": "kscene"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k970042"
+              },
+              "parent": {
+                "$circular": "k970001"
+              }
+            }
+          ],
+          "components": [
+            {
+              "$ref": "k970002",
+              "$type": "Transform",
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "id": "0b21b307-afdb-4ae1-b57c-6a1ed02da532",
+              "entity": {
+                "$circular": "k970001"
+              },
+              "hasChangesForNormalMatrix": false,
+              "_position": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "$ref": "k970003",
+                "$type": "Vector3"
+              },
+              "_rotation": {
+                "0": 0,
+                "1": 0.0,
+                "2": 0,
+                "$ref": "k970004",
+                "$type": "Vector3"
+              },
+              "_rotationQ": {
+                "0": 0,
+                "1": 0.0,
+                "2": 0,
+                "3": 1.0,
+                "$ref": "k970005",
+                "$type": "Quaternion"
+              },
+              "_scale": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "$ref": "k970006",
+                "$type": "Vector3"
+              }
+            }
+          ],
+          "scene": {
+            "$circular": "kscene"
+          },
+          "static": false,
+          "_transform": {
+            "$circular": "k970002"
+          },
+          "parent": {
+            "$circular": "k1"
+          }
         }
       ],
       "components": [
@@ -5994,6 +6635,30 @@
             "$circular": "k156"
           },
           "aggroRange": 14.0
+        },
+        {
+          "$ref": "k970048",
+          "$type": "e7103b46-50bb-455a-8472-d74129991698",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "92e56ce4-a950-41a8-9d10-799789cdc811",
+          "entity": {
+            "$circular": "k1"
+          },
+          "leftFoot": {
+            "$circular": "k15_p_ref_1497"
+          },
+          "rightFoot": {
+            "$circular": "k15_p_ref_1521"
+          },
+          "stepSound": {
+            "$circular": "k970007"
+          },
+          "landSound": {
+            "$circular": "k970041"
+          }
         }
       ],
       "scene": {
