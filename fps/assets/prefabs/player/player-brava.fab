@@ -8442,6 +8442,7 @@
               "_lookDownLimit": 75,
               "_invertY": false,
               "_lookWithoutLock": false,
+              "_lookSmoothing": 5,
               "entity": {
                 "$circular": "p_ref_2052"
               },

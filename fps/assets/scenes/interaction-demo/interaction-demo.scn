@@ -70256,6 +70256,7 @@
               "_lookDownLimit": 75,
               "_invertY": false,
               "_lookWithoutLock": false,
+              "_lookSmoothing": 5,
               "entity": {
                 "$circular": "pl_p_ref_1570"
               },
@@ -81534,6 +81535,7 @@
               "_lookDownLimit": 75,
               "_invertY": false,
               "_lookWithoutLock": false,
+              "_lookSmoothing": 5,
               "entity": {
                 "$circular": "pb_p_ref_2052"
               },
