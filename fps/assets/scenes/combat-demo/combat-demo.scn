@@ -29913,7 +29913,8 @@
           },
           "landSound": {
             "$circular": "k970041"
-          }
+          },
+          "bySurface": true
         }
       ],
       "materials": [],
@@ -39672,7 +39673,8 @@
           },
           "landSound": {
             "$circular": "k971041"
-          }
+          },
+          "bySurface": true
         }
       ],
       "materials": [],

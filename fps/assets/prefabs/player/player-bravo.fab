@@ -9799,7 +9799,8 @@
           },
           "landSound": {
             "$circular": "k970041"
-          }
+          },
+          "bySurface": true
         }
       ],
       "materials": [],
