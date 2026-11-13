@@ -66,7 +66,8 @@ export class Footsteps extends ScriptComponent {
 
   private step() {
     const body = this.body;
-    if (!body || !body.isGrounded) return;
+    // A body that is not driving the character (a ragdoll took it) says nothing: its last speed and its last ground are old, and its feet move because it falls.
+    if (!body || !body.active || !body.isGrounded) return;
     const velocity = body.actualVelocity;
     const speed = Math.hypot(velocity.x, velocity.z);
     if (speed < this.minSpeed) return;

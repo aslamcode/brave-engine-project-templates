@@ -114228,7 +114228,8 @@
           "attackSound": {
             "$circular": "k964001_k156"
           },
-          "aggroRange": 14.0
+          "aggroRange": 14.0,
+          "corpseSeconds": 5.0
         },
         {
           "$ref": "k972048",
@@ -114253,6 +114254,817 @@
           "landSound": {
             "$circular": "k972041"
           }
+        },
+        {
+          "$ref": "k980001_ref_371",
+          "$type": "Ragdoll",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "6baccdb3-d4d7-41cb-9b8a-f596f2c80fb1",
+          "entity": {
+            "$circular": "k964001_k1"
+          },
+          "name": "Ragdoll",
+          "_totalMass": 70,
+          "parts": [
+            {
+              "$ref": "k980001_ref_372",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis",
+              "shape": "box",
+              "size": {
+                "0": 0.3057419955730438,
+                "1": 0.27061766386032104,
+                "2": 0.23196372389793396,
+                "$ref": "k980001_ref_373",
+                "$type": "Vector3"
+              },
+              "mass": 14.2,
+              "joint": "ball",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0006092980620451272,
+                "1": -0.014267411082983017,
+                "2": -0.04207983240485191,
+                "$ref": "k980001_ref_374",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 6.672921742771739,
+                "1": -7.214488514633969e-23,
+                "2": 1.673058089591599e-23,
+                "$ref": "k980001_ref_375",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -1.5196427151560318e-23,
+                "1": 1.0458227396011353,
+                "2": 0.025729656219482422,
+                "$ref": "k980001_ref_376",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.05819931626319885,
+                "1": 6.370128723597929e-25,
+                "2": -1.8239566068786774e-25,
+                "3": 0.9983049631118774,
+                "$ref": "k980001_ref_377",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_378",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01",
+              "shape": "box",
+              "size": {
+                "0": 0.4242216646671295,
+                "1": 0.41096949577331543,
+                "2": 0.2699752151966095,
+                "$ref": "k980001_ref_379",
+                "$type": "Vector3"
+              },
+              "mass": 33.8,
+              "joint": "ball",
+              "twist": 25,
+              "swingYMin": -35,
+              "swingYMax": 35,
+              "swingZMin": -30,
+              "swingZMax": 30,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0049167051911354065,
+                "1": 0.23889034986495972,
+                "2": 0.00518852798268199,
+                "$ref": "k980001_ref_380",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 6.67283035088783,
+                "1": 5.796538592517132e-23,
+                "2": -5.4901969673925204e-24,
+                "$ref": "k980001_ref_381",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 1.7990534612529692e-23,
+                "1": 0.13378086686134338,
+                "2": 1.4955696769902715e-07,
+                "$ref": "k980001_ref_382",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 7.92141918282141e-07,
+                "1": -1.157959062012608e-24,
+                "2": 1.9259935462977193e-25,
+                "3": 1,
+                "$ref": "k980001_ref_383",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_384",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/neck-01/head",
+              "shape": "sphere",
+              "size": {
+                "0": 0.1848447620868683,
+                "1": 0.1848447620868683,
+                "2": 0.1848447620868683,
+                "$ref": "k980001_ref_385",
+                "$type": "Vector3"
+              },
+              "mass": 8.1,
+              "joint": "ball",
+              "twist": 50,
+              "swingYMin": -50,
+              "swingYMax": 50,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.00021697007468901575,
+                "1": 0.06086291745305061,
+                "2": -0.022489584982395172,
+                "$ref": "k980001_ref_386",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -42.2444881919233,
+                "1": -9.404516862340674e-06,
+                "2": 1.028237948800782e-07,
+                "$ref": "k980001_ref_387",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -3.971466711050198e-08,
+                "1": 0.448917031288147,
+                "2": 0.0010936175240203738,
+                "$ref": "k980001_ref_388",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.4140365719795227,
+                "1": 7.443086502689766e-08,
+                "2": 3.3125516551990586e-08,
+                "3": 0.9102602601051331,
+                "$ref": "k980001_ref_389",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_390",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.16076576709747314,
+                "1": 0.2619823217391968,
+                "2": 0.16076576709747314,
+                "$ref": "k980001_ref_391",
+                "$type": "Vector3"
+              },
+              "mass": 2.8,
+              "joint": "ball",
+              "twist": 70,
+              "swingYMin": -100,
+              "swingYMax": 100,
+              "swingZMin": -110,
+              "swingZMax": 110,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 4.367702999275025e-08,
+                "1": 0.1309911459684372,
+                "2": -8.16837939510151e-08,
+                "$ref": "k980001_ref_392",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 2.3803415460358074e-05,
+                "1": 100.09899952844432,
+                "2": -2.6668262762342906e-05,
+                "$ref": "k980001_ref_393",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 0.22574682533740997,
+                "1": 0.2917875647544861,
+                "2": -0.019466040655970573,
+                "$ref": "k980001_ref_394",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.5660276412963867,
+                "1": 0.4586223065853119,
+                "2": 0.515405535697937,
+                "3": -0.4512597918510437,
+                "$ref": "k980001_ref_395",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_396",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l/lowerarm-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.11242372542619705,
+                "1": 0.2779647707939148,
+                "2": 0.11242372542619705,
+                "$ref": "k980001_ref_397",
+                "$type": "Vector3"
+              },
+              "mass": 1.6,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": -12.121611415973891,
+              "hingeMax": 139.8783885840261,
+              "center": {
+                "0": -7.596582207725078e-08,
+                "1": 0.1389823704957962,
+                "2": -1.777256031232355e-08,
+                "$ref": "k980001_ref_398",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -3.02215336387895e-05,
+                "1": 90.01892226049347,
+                "2": -1.0686178476268899e-05,
+                "$ref": "k980001_ref_399",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 8.878592439032218e-08,
+                "1": 0.2619823217391968,
+                "2": -1.5831454902581754e-07,
+                "$ref": "k980001_ref_400",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.08821111917495728,
+                "1": -0.08521891385316849,
+                "2": -0.0005178196006454527,
+                "3": -0.9924495816230774,
+                "$ref": "k980001_ref_401",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_402",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l/lowerarm-l/hand-l",
+              "shape": "box",
+              "size": {
+                "0": 0.039089225232601166,
+                "1": 0.1883912980556488,
+                "2": 0.12027223408222198,
+                "$ref": "k980001_ref_403",
+                "$type": "Vector3"
+              },
+              "mass": 0.6,
+              "joint": "attached",
+              "twist": 40,
+              "swingYMin": -30,
+              "swingYMax": 30,
+              "swingZMin": -60,
+              "swingZMax": 60,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0050806463696062565,
+                "1": 0.10599532723426819,
+                "2": -0.003393328282982111,
+                "$ref": "k980001_ref_404",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 0.6416392497940095,
+                "1": 88.15604837166099,
+                "2": -2.7323000848088523,
+                "$ref": "k980001_ref_405",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -1.5090364513525856e-07,
+                "1": 0.2779647707939148,
+                "2": -3.5535617115556306e-08,
+                "$ref": "k980001_ref_406",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.01695006899535656,
+                "1": 0.016373472288250923,
+                "2": 0.005222621373832226,
+                "3": 0.9997085928916931,
+                "$ref": "k980001_ref_407",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_408",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.16183814406394958,
+                "1": 0.26198235154151917,
+                "2": 0.16183814406394958,
+                "$ref": "k980001_ref_409",
+                "$type": "Vector3"
+              },
+              "mass": 2.8,
+              "joint": "ball",
+              "twist": 70,
+              "swingYMin": -100,
+              "swingYMax": 100,
+              "swingZMin": -110,
+              "swingZMax": 110,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -1.3956070965548406e-08,
+                "1": 0.1309911608695984,
+                "2": -4.5414783045316653e-08,
+                "$ref": "k980001_ref_410",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 9.154302263837516e-06,
+                "1": -100.0990090691827,
+                "2": 4.3185494183491127e-05,
+                "$ref": "k980001_ref_411",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -0.22574687004089355,
+                "1": 0.29178744554519653,
+                "2": -0.019466055557131767,
+                "$ref": "k980001_ref_412",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.5660276412963867,
+                "1": -0.4586223065853119,
+                "2": -0.5154056549072266,
+                "3": -0.45125967264175415,
+                "$ref": "k980001_ref_413",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_414",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r/lowerarm-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.10998144000768661,
+                "1": 0.2779648005962372,
+                "2": 0.10998144000768661,
+                "$ref": "k980001_ref_415",
+                "$type": "Vector3"
+              },
+              "mass": 1.6,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": -12.121606322102028,
+              "hingeMax": 139.87839367789798,
+              "center": {
+                "0": 9.921863153294908e-08,
+                "1": 0.1389824002981186,
+                "2": 1.1143523437340264e-08,
+                "$ref": "k980001_ref_416",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.191907617982706e-05,
+                "1": -90.01892226050185,
+                "2": 1.8016701146660098e-05,
+                "$ref": "k980001_ref_417",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -7.699973103569846e-09,
+                "1": 0.2619823217391968,
+                "2": -2.0643886955440394e-07,
+                "$ref": "k980001_ref_418",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.08821112662553787,
+                "1": 0.08521890640258789,
+                "2": 0.0005178132560104132,
+                "3": -0.9924496412277222,
+                "$ref": "k980001_ref_419",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_420",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r/lowerarm-r/hand-r",
+              "shape": "box",
+              "size": {
+                "0": 0.03815590590238571,
+                "1": 0.18509913980960846,
+                "2": 0.11731934547424316,
+                "$ref": "k980001_ref_421",
+                "$type": "Vector3"
+              },
+              "mass": 0.6,
+              "joint": "attached",
+              "twist": 40,
+              "swingYMin": -30,
+              "swingYMax": 30,
+              "swingZMin": -60,
+              "swingZMax": 60,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -0.004881624132394791,
+                "1": 0.09704744070768356,
+                "2": -0.005482357461005449,
+                "$ref": "k980001_ref_422",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 0.8630139235033047,
+                "1": -88.16590376770935,
+                "2": 3.4264729166709533,
+                "$ref": "k980001_ref_423",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 1.9847529131311603e-07,
+                "1": 0.2779648005962372,
+                "2": -9.692222846524601e-08,
+                "$ref": "k980001_ref_424",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.016950037330389023,
+                "1": -0.01637350395321846,
+                "2": -0.005222592502832413,
+                "3": 0.9997085928916931,
+                "$ref": "k980001_ref_425",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_426",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.19400480389595032,
+                "1": 0.3977920711040497,
+                "2": 0.19400480389595032,
+                "$ref": "k980001_ref_427",
+                "$type": "Vector3"
+              },
+              "mass": 10,
+              "joint": "ball",
+              "twist": 40,
+              "swingYMin": -120,
+              "swingYMax": 30,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 1.1388022080893734e-08,
+                "1": 0.19889603555202484,
+                "2": -4.1131528405458084e-08,
+                "$ref": "k980001_ref_428",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 1.2162888282004767e-05,
+                "1": 173.9427332878163,
+                "2": 2.2910868866624903e-06,
+                "$ref": "k980001_ref_429",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 0.10147126019001007,
+                "1": -0.09790819138288498,
+                "2": -0.013924241065979004,
+                "$ref": "k980001_ref_430",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.9945985674858093,
+                "1": 0.04898678883910179,
+                "2": 0.055050767958164215,
+                "3": -0.07309918850660324,
+                "$ref": "k980001_ref_431",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_432",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l/calf-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.17796866595745087,
+                "1": 0.4044584333896637,
+                "2": 0.17796866595745087,
+                "$ref": "k980001_ref_433",
+                "$type": "Vector3"
+              },
+              "mass": 4.65,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "backward",
+              "hingeMin": -9.882222414869705,
+              "hingeMax": 142.11777758513028,
+              "center": {
+                "0": 1.778097002969048e-09,
+                "1": 0.20222921669483185,
+                "2": 1.7394572893181248e-08,
+                "$ref": "k980001_ref_434",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.899971954635721e-06,
+                "1": 174.5916967175657,
+                "2": 9.86815627848698e-07,
+                "$ref": "k980001_ref_435",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 2.2776044161787468e-08,
+                "1": 0.3977920711040497,
+                "2": -8.226305681091617e-08,
+                "$ref": "k980001_ref_436",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.06759341806173325,
+                "1": -0.005122673232108355,
+                "2": 0.01245290320366621,
+                "3": 0.9976220726966858,
+                "$ref": "k980001_ref_437",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_438",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l/calf-l/foot-l",
+              "shape": "box",
+              "size": {
+                "0": 0.1179371252655983,
+                "1": 0.19071239233016968,
+                "2": 0.2618234157562256,
+                "$ref": "k980001_ref_439",
+                "$type": "Vector3"
+              },
+              "mass": 1.45,
+              "joint": "attached",
+              "twist": 15,
+              "swingYMin": -45,
+              "swingYMax": 45,
+              "swingZMin": -25,
+              "swingZMax": 25,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -0.010233829729259014,
+                "1": 0.10349772125482559,
+                "2": 0.02254936844110489,
+                "$ref": "k980001_ref_440",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -26.902829902758906,
+                "1": 165.33593255672616,
+                "2": -5.765542841177801,
+                "$ref": "k980001_ref_441",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 3.556194005938096e-09,
+                "1": 0.4044584333896637,
+                "2": 3.4789145786362496e-08,
+                "$ref": "k980001_ref_442",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.44117793440818787,
+                "1": 0.06998875737190247,
+                "2": -0.12447448074817657,
+                "3": 0.8859851956367493,
+                "$ref": "k980001_ref_443",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_444",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.19494252038002013,
+                "1": 0.3977920711040497,
+                "2": 0.19494252038002013,
+                "$ref": "k980001_ref_445",
+                "$type": "Vector3"
+              },
+              "mass": 10,
+              "joint": "ball",
+              "twist": 40,
+              "swingYMin": -120,
+              "swingYMax": 30,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -1.1388022080893734e-08,
+                "1": 0.19889603555202484,
+                "2": -4.1131528405458084e-08,
+                "$ref": "k980001_ref_446",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 1.2162888282004767e-05,
+                "1": -173.9427332878163,
+                "2": -2.2910868866624903e-06,
+                "$ref": "k980001_ref_447",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -0.10147126019001007,
+                "1": -0.09790819138288498,
+                "2": -0.013924241065979004,
+                "$ref": "k980001_ref_448",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.9945985674858093,
+                "1": -0.04898678883910179,
+                "2": -0.055050767958164215,
+                "3": -0.07309918850660324,
+                "$ref": "k980001_ref_449",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_450",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r/calf-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.1785791516304016,
+                "1": 0.4044584333896637,
+                "2": 0.1785791516304016,
+                "$ref": "k980001_ref_451",
+                "$type": "Vector3"
+              },
+              "mass": 4.65,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "backward",
+              "hingeMin": -9.882222414869705,
+              "hingeMax": 142.11777758513028,
+              "center": {
+                "0": -3.3897260554027753e-09,
+                "1": 0.20222921669483185,
+                "2": 1.4491889466228258e-08,
+                "$ref": "k980001_ref_452",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.029360082774282e-06,
+                "1": -174.5916967175657,
+                "2": -1.367928133058618e-06,
+                "$ref": "k980001_ref_453",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -2.2776044161787468e-08,
+                "1": 0.3977920711040497,
+                "2": -8.226305681091617e-08,
+                "$ref": "k980001_ref_454",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.06759342551231384,
+                "1": 0.005122672766447067,
+                "2": -0.012452906928956509,
+                "3": 0.9976220726966858,
+                "$ref": "k980001_ref_455",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k980001_ref_456",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r/calf-r/foot-r",
+              "shape": "box",
+              "size": {
+                "0": 0.11809743195772171,
+                "1": 0.18785522878170013,
+                "2": 0.26212403178215027,
+                "$ref": "k980001_ref_457",
+                "$type": "Vector3"
+              },
+              "mass": 1.45,
+              "joint": "attached",
+              "twist": 15,
+              "swingYMin": -45,
+              "swingYMax": 45,
+              "swingZMin": -25,
+              "swingZMax": 25,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.011363588273525238,
+                "1": 0.10332588851451874,
+                "2": 0.02321190945804119,
+                "$ref": "k980001_ref_458",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -26.83582539731467,
+                "1": -165.676118056349,
+                "2": 4.980810532195746,
+                "$ref": "k980001_ref_459",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -6.7794521108055505e-09,
+                "1": 0.4044584333896637,
+                "2": 2.8983778932456516e-08,
+                "$ref": "k980001_ref_460",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.4411779046058655,
+                "1": -0.06998874247074127,
+                "2": 0.12447449564933777,
+                "3": 0.8859851956367493,
+                "$ref": "k980001_ref_461",
+                "$type": "Quaternion"
+              }
+            }
+          ]
         }
       ],
       "scene": {
@@ -120896,7 +121708,8 @@
           "attackSound": {
             "$circular": "k964002_k156"
           },
-          "aggroRange": 14.0
+          "aggroRange": 14.0,
+          "corpseSeconds": 5.0
         },
         {
           "$ref": "k973048",
@@ -120921,6 +121734,817 @@
           "landSound": {
             "$circular": "k973041"
           }
+        },
+        {
+          "$ref": "k981001_ref_371",
+          "$type": "Ragdoll",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "f01ded2e-0c8b-4161-9f56-bd98c5937b5c",
+          "entity": {
+            "$circular": "k964002_k1"
+          },
+          "name": "Ragdoll",
+          "_totalMass": 70,
+          "parts": [
+            {
+              "$ref": "k981001_ref_372",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis",
+              "shape": "box",
+              "size": {
+                "0": 0.3057419955730438,
+                "1": 0.27061766386032104,
+                "2": 0.23196372389793396,
+                "$ref": "k981001_ref_373",
+                "$type": "Vector3"
+              },
+              "mass": 14.2,
+              "joint": "ball",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0006092980620451272,
+                "1": -0.014267411082983017,
+                "2": -0.04207983240485191,
+                "$ref": "k981001_ref_374",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 6.672921742771739,
+                "1": -7.214488514633969e-23,
+                "2": 1.673058089591599e-23,
+                "$ref": "k981001_ref_375",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -1.5196427151560318e-23,
+                "1": 1.0458227396011353,
+                "2": 0.025729656219482422,
+                "$ref": "k981001_ref_376",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.05819931626319885,
+                "1": 6.370128723597929e-25,
+                "2": -1.8239566068786774e-25,
+                "3": 0.9983049631118774,
+                "$ref": "k981001_ref_377",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_378",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01",
+              "shape": "box",
+              "size": {
+                "0": 0.4242216646671295,
+                "1": 0.41096949577331543,
+                "2": 0.2699752151966095,
+                "$ref": "k981001_ref_379",
+                "$type": "Vector3"
+              },
+              "mass": 33.8,
+              "joint": "ball",
+              "twist": 25,
+              "swingYMin": -35,
+              "swingYMax": 35,
+              "swingZMin": -30,
+              "swingZMax": 30,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0049167051911354065,
+                "1": 0.23889034986495972,
+                "2": 0.00518852798268199,
+                "$ref": "k981001_ref_380",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 6.67283035088783,
+                "1": 5.796538592517132e-23,
+                "2": -5.4901969673925204e-24,
+                "$ref": "k981001_ref_381",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 1.7990534612529692e-23,
+                "1": 0.13378086686134338,
+                "2": 1.4955696769902715e-07,
+                "$ref": "k981001_ref_382",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 7.92141918282141e-07,
+                "1": -1.157959062012608e-24,
+                "2": 1.9259935462977193e-25,
+                "3": 1,
+                "$ref": "k981001_ref_383",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_384",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/neck-01/head",
+              "shape": "sphere",
+              "size": {
+                "0": 0.1848447620868683,
+                "1": 0.1848447620868683,
+                "2": 0.1848447620868683,
+                "$ref": "k981001_ref_385",
+                "$type": "Vector3"
+              },
+              "mass": 8.1,
+              "joint": "ball",
+              "twist": 50,
+              "swingYMin": -50,
+              "swingYMax": 50,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.00021697007468901575,
+                "1": 0.06086291745305061,
+                "2": -0.022489584982395172,
+                "$ref": "k981001_ref_386",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -42.2444881919233,
+                "1": -9.404516862340674e-06,
+                "2": 1.028237948800782e-07,
+                "$ref": "k981001_ref_387",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -3.971466711050198e-08,
+                "1": 0.448917031288147,
+                "2": 0.0010936175240203738,
+                "$ref": "k981001_ref_388",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.4140365719795227,
+                "1": 7.443086502689766e-08,
+                "2": 3.3125516551990586e-08,
+                "3": 0.9102602601051331,
+                "$ref": "k981001_ref_389",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_390",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.16076576709747314,
+                "1": 0.2619823217391968,
+                "2": 0.16076576709747314,
+                "$ref": "k981001_ref_391",
+                "$type": "Vector3"
+              },
+              "mass": 2.8,
+              "joint": "ball",
+              "twist": 70,
+              "swingYMin": -100,
+              "swingYMax": 100,
+              "swingZMin": -110,
+              "swingZMax": 110,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 4.367702999275025e-08,
+                "1": 0.1309911459684372,
+                "2": -8.16837939510151e-08,
+                "$ref": "k981001_ref_392",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 2.3803415460358074e-05,
+                "1": 100.09899952844432,
+                "2": -2.6668262762342906e-05,
+                "$ref": "k981001_ref_393",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 0.22574682533740997,
+                "1": 0.2917875647544861,
+                "2": -0.019466040655970573,
+                "$ref": "k981001_ref_394",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.5660276412963867,
+                "1": 0.4586223065853119,
+                "2": 0.515405535697937,
+                "3": -0.4512597918510437,
+                "$ref": "k981001_ref_395",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_396",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l/lowerarm-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.11242372542619705,
+                "1": 0.2779647707939148,
+                "2": 0.11242372542619705,
+                "$ref": "k981001_ref_397",
+                "$type": "Vector3"
+              },
+              "mass": 1.6,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": -12.121611415973891,
+              "hingeMax": 139.8783885840261,
+              "center": {
+                "0": -7.596582207725078e-08,
+                "1": 0.1389823704957962,
+                "2": -1.777256031232355e-08,
+                "$ref": "k981001_ref_398",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -3.02215336387895e-05,
+                "1": 90.01892226049347,
+                "2": -1.0686178476268899e-05,
+                "$ref": "k981001_ref_399",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 8.878592439032218e-08,
+                "1": 0.2619823217391968,
+                "2": -1.5831454902581754e-07,
+                "$ref": "k981001_ref_400",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.08821111917495728,
+                "1": -0.08521891385316849,
+                "2": -0.0005178196006454527,
+                "3": -0.9924495816230774,
+                "$ref": "k981001_ref_401",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_402",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-l/upperarm-l/lowerarm-l/hand-l",
+              "shape": "box",
+              "size": {
+                "0": 0.039089225232601166,
+                "1": 0.1883912980556488,
+                "2": 0.12027223408222198,
+                "$ref": "k981001_ref_403",
+                "$type": "Vector3"
+              },
+              "mass": 0.6,
+              "joint": "attached",
+              "twist": 40,
+              "swingYMin": -30,
+              "swingYMax": 30,
+              "swingZMin": -60,
+              "swingZMax": 60,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.0050806463696062565,
+                "1": 0.10599532723426819,
+                "2": -0.003393328282982111,
+                "$ref": "k981001_ref_404",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 0.6416392497940095,
+                "1": 88.15604837166099,
+                "2": -2.7323000848088523,
+                "$ref": "k981001_ref_405",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -1.5090364513525856e-07,
+                "1": 0.2779647707939148,
+                "2": -3.5535617115556306e-08,
+                "$ref": "k981001_ref_406",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.01695006899535656,
+                "1": 0.016373472288250923,
+                "2": 0.005222621373832226,
+                "3": 0.9997085928916931,
+                "$ref": "k981001_ref_407",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_408",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.16183814406394958,
+                "1": 0.26198235154151917,
+                "2": 0.16183814406394958,
+                "$ref": "k981001_ref_409",
+                "$type": "Vector3"
+              },
+              "mass": 2.8,
+              "joint": "ball",
+              "twist": 70,
+              "swingYMin": -100,
+              "swingYMax": 100,
+              "swingZMin": -110,
+              "swingZMax": 110,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -1.3956070965548406e-08,
+                "1": 0.1309911608695984,
+                "2": -4.5414783045316653e-08,
+                "$ref": "k981001_ref_410",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 9.154302263837516e-06,
+                "1": -100.0990090691827,
+                "2": 4.3185494183491127e-05,
+                "$ref": "k981001_ref_411",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -0.22574687004089355,
+                "1": 0.29178744554519653,
+                "2": -0.019466055557131767,
+                "$ref": "k981001_ref_412",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.5660276412963867,
+                "1": -0.4586223065853119,
+                "2": -0.5154056549072266,
+                "3": -0.45125967264175415,
+                "$ref": "k981001_ref_413",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_414",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r/lowerarm-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.10998144000768661,
+                "1": 0.2779648005962372,
+                "2": 0.10998144000768661,
+                "$ref": "k981001_ref_415",
+                "$type": "Vector3"
+              },
+              "mass": 1.6,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "forward",
+              "hingeMin": -12.121606322102028,
+              "hingeMax": 139.87839367789798,
+              "center": {
+                "0": 9.921863153294908e-08,
+                "1": 0.1389824002981186,
+                "2": 1.1143523437340264e-08,
+                "$ref": "k981001_ref_416",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.191907617982706e-05,
+                "1": -90.01892226050185,
+                "2": 1.8016701146660098e-05,
+                "$ref": "k981001_ref_417",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -7.699973103569846e-09,
+                "1": 0.2619823217391968,
+                "2": -2.0643886955440394e-07,
+                "$ref": "k981001_ref_418",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.08821112662553787,
+                "1": 0.08521890640258789,
+                "2": 0.0005178132560104132,
+                "3": -0.9924496412277222,
+                "$ref": "k981001_ref_419",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_420",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/spine-01/spine-02/spine-03/clavicle-r/upperarm-r/lowerarm-r/hand-r",
+              "shape": "box",
+              "size": {
+                "0": 0.03815590590238571,
+                "1": 0.18509913980960846,
+                "2": 0.11731934547424316,
+                "$ref": "k981001_ref_421",
+                "$type": "Vector3"
+              },
+              "mass": 0.6,
+              "joint": "attached",
+              "twist": 40,
+              "swingYMin": -30,
+              "swingYMax": 30,
+              "swingZMin": -60,
+              "swingZMax": 60,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -0.004881624132394791,
+                "1": 0.09704744070768356,
+                "2": -0.005482357461005449,
+                "$ref": "k981001_ref_422",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 0.8630139235033047,
+                "1": -88.16590376770935,
+                "2": 3.4264729166709533,
+                "$ref": "k981001_ref_423",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 1.9847529131311603e-07,
+                "1": 0.2779648005962372,
+                "2": -9.692222846524601e-08,
+                "$ref": "k981001_ref_424",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.016950037330389023,
+                "1": -0.01637350395321846,
+                "2": -0.005222592502832413,
+                "3": 0.9997085928916931,
+                "$ref": "k981001_ref_425",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_426",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.19400480389595032,
+                "1": 0.3977920711040497,
+                "2": 0.19400480389595032,
+                "$ref": "k981001_ref_427",
+                "$type": "Vector3"
+              },
+              "mass": 10,
+              "joint": "ball",
+              "twist": 40,
+              "swingYMin": -120,
+              "swingYMax": 30,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 1.1388022080893734e-08,
+                "1": 0.19889603555202484,
+                "2": -4.1131528405458084e-08,
+                "$ref": "k981001_ref_428",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 1.2162888282004767e-05,
+                "1": 173.9427332878163,
+                "2": 2.2910868866624903e-06,
+                "$ref": "k981001_ref_429",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 0.10147126019001007,
+                "1": -0.09790819138288498,
+                "2": -0.013924241065979004,
+                "$ref": "k981001_ref_430",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.9945985674858093,
+                "1": 0.04898678883910179,
+                "2": 0.055050767958164215,
+                "3": -0.07309918850660324,
+                "$ref": "k981001_ref_431",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_432",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l/calf-l",
+              "shape": "capsule",
+              "size": {
+                "0": 0.17796866595745087,
+                "1": 0.4044584333896637,
+                "2": 0.17796866595745087,
+                "$ref": "k981001_ref_433",
+                "$type": "Vector3"
+              },
+              "mass": 4.65,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "backward",
+              "hingeMin": -9.882222414869705,
+              "hingeMax": 142.11777758513028,
+              "center": {
+                "0": 1.778097002969048e-09,
+                "1": 0.20222921669483185,
+                "2": 1.7394572893181248e-08,
+                "$ref": "k981001_ref_434",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.899971954635721e-06,
+                "1": 174.5916967175657,
+                "2": 9.86815627848698e-07,
+                "$ref": "k981001_ref_435",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 2.2776044161787468e-08,
+                "1": 0.3977920711040497,
+                "2": -8.226305681091617e-08,
+                "$ref": "k981001_ref_436",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.06759341806173325,
+                "1": -0.005122673232108355,
+                "2": 0.01245290320366621,
+                "3": 0.9976220726966858,
+                "$ref": "k981001_ref_437",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_438",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-l/calf-l/foot-l",
+              "shape": "box",
+              "size": {
+                "0": 0.1179371252655983,
+                "1": 0.19071239233016968,
+                "2": 0.2618234157562256,
+                "$ref": "k981001_ref_439",
+                "$type": "Vector3"
+              },
+              "mass": 1.45,
+              "joint": "attached",
+              "twist": 15,
+              "swingYMin": -45,
+              "swingYMax": 45,
+              "swingZMin": -25,
+              "swingZMax": 25,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -0.010233829729259014,
+                "1": 0.10349772125482559,
+                "2": 0.02254936844110489,
+                "$ref": "k981001_ref_440",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -26.902829902758906,
+                "1": 165.33593255672616,
+                "2": -5.765542841177801,
+                "$ref": "k981001_ref_441",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": 3.556194005938096e-09,
+                "1": 0.4044584333896637,
+                "2": 3.4789145786362496e-08,
+                "$ref": "k981001_ref_442",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.44117793440818787,
+                "1": 0.06998875737190247,
+                "2": -0.12447448074817657,
+                "3": 0.8859851956367493,
+                "$ref": "k981001_ref_443",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_444",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.19494252038002013,
+                "1": 0.3977920711040497,
+                "2": 0.19494252038002013,
+                "$ref": "k981001_ref_445",
+                "$type": "Vector3"
+              },
+              "mass": 10,
+              "joint": "ball",
+              "twist": 40,
+              "swingYMin": -120,
+              "swingYMax": 30,
+              "swingZMin": -40,
+              "swingZMax": 40,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": -1.1388022080893734e-08,
+                "1": 0.19889603555202484,
+                "2": -4.1131528405458084e-08,
+                "$ref": "k981001_ref_446",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": 1.2162888282004767e-05,
+                "1": -173.9427332878163,
+                "2": -2.2910868866624903e-06,
+                "$ref": "k981001_ref_447",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -0.10147126019001007,
+                "1": -0.09790819138288498,
+                "2": -0.013924241065979004,
+                "$ref": "k981001_ref_448",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.9945985674858093,
+                "1": -0.04898678883910179,
+                "2": -0.055050767958164215,
+                "3": -0.07309918850660324,
+                "$ref": "k981001_ref_449",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_450",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r/calf-r",
+              "shape": "capsule",
+              "size": {
+                "0": 0.1785791516304016,
+                "1": 0.4044584333896637,
+                "2": 0.1785791516304016,
+                "$ref": "k981001_ref_451",
+                "$type": "Vector3"
+              },
+              "mass": 4.65,
+              "joint": "hinge",
+              "twist": 0,
+              "swingYMin": 0,
+              "swingYMax": 0,
+              "swingZMin": 0,
+              "swingZMax": 0,
+              "bends": "backward",
+              "hingeMin": -9.882222414869705,
+              "hingeMax": 142.11777758513028,
+              "center": {
+                "0": -3.3897260554027753e-09,
+                "1": 0.20222921669483185,
+                "2": 1.4491889466228258e-08,
+                "$ref": "k981001_ref_452",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -4.029360082774282e-06,
+                "1": -174.5916967175657,
+                "2": -1.367928133058618e-06,
+                "$ref": "k981001_ref_453",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -2.2776044161787468e-08,
+                "1": 0.3977920711040497,
+                "2": -8.226305681091617e-08,
+                "$ref": "k981001_ref_454",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": 0.06759342551231384,
+                "1": 0.005122672766447067,
+                "2": -0.012452906928956509,
+                "3": 0.9976220726966858,
+                "$ref": "k981001_ref_455",
+                "$type": "Quaternion"
+              }
+            },
+            {
+              "$ref": "k981001_ref_456",
+              "$type": "RagdollPart",
+              "bone": "armature/pelvis/thigh-r/calf-r/foot-r",
+              "shape": "box",
+              "size": {
+                "0": 0.11809743195772171,
+                "1": 0.18785522878170013,
+                "2": 0.26212403178215027,
+                "$ref": "k981001_ref_457",
+                "$type": "Vector3"
+              },
+              "mass": 1.45,
+              "joint": "attached",
+              "twist": 15,
+              "swingYMin": -45,
+              "swingYMax": 45,
+              "swingZMin": -25,
+              "swingZMax": 25,
+              "bends": "forward",
+              "hingeMin": 0,
+              "hingeMax": 0,
+              "center": {
+                "0": 0.011363588273525238,
+                "1": 0.10332588851451874,
+                "2": 0.02321190945804119,
+                "$ref": "k981001_ref_458",
+                "$type": "Vector3"
+              },
+              "rotation": {
+                "0": -26.83582539731467,
+                "1": -165.676118056349,
+                "2": 4.980810532195746,
+                "$ref": "k981001_ref_459",
+                "$type": "Vector3"
+              },
+              "hasBind": true,
+              "bindPosition": {
+                "0": -6.7794521108055505e-09,
+                "1": 0.4044584333896637,
+                "2": 2.8983778932456516e-08,
+                "$ref": "k981001_ref_460",
+                "$type": "Vector3"
+              },
+              "bindRotation": {
+                "0": -0.4411779046058655,
+                "1": -0.06998874247074127,
+                "2": 0.12447449564933777,
+                "3": 0.8859851956367493,
+                "$ref": "k981001_ref_461",
+                "$type": "Quaternion"
+              }
+            }
+          ]
         }
       ],
       "scene": {
