@@ -34,6 +34,8 @@ export declare class Interactable extends ScriptComponent {
     onUsed: Signal<Interactor>;
     /** What the player is told E does now. A kind with states (a door: open, close, locked) answers for the state it is in. */
     get currentPrompt(): string;
+    /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
+    promptFor(_interactor: Interactor): string;
     /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */
     get usable(): boolean;
     /** What E does. Returns whether it did anything. */

@@ -1,8 +1,9 @@
 import { AssetSystem, AudioMixerSystem, AudioSystem, BraveEngine, BraveEngineModeEnum, Cursor, Inject, Input, Service, Signal, UISystem } from '@brave/core';
 import { Hud } from './hud.service';
+import { Inventory } from './inventory.service';
 import { PauseMenu } from './pause-menu.service';
 
-/** How an entry stands: an objective is active, done or failed; an access (a key, a card) is unused or used; a note has no status. */
+/** How an entry stands: an objective is active, done or failed; an access (a key, a card) is unused or used; a note and an item have no status. */
 export type JournalStatus = '' | 'active' | 'done' | 'failed' | 'unused' | 'used';
 
 /** One thing the player knows: a note read, an audio log heard, a password found, an access carried, an objective given. */
@@ -16,6 +17,9 @@ export interface IJournalEntry {
   status: JournalStatus;
   /** Not looked at yet. */
   isNew: boolean;
+  /** An item the player carries: how many, and the most it can carry (0: no limit). Left out of everything else. */
+  count?: number;
+  limit?: number;
 }
 
 export interface IJournalCategory {
@@ -54,6 +58,7 @@ export interface IJournalEntryInput {
 // The categories the menu knows by name, in the order it lists them; any other category a script uses is listed after them, by its id.
 const CATEGORIES = [
   { id: 'objectives', name: 'Objectives' },
+  { id: 'items', name: 'Items' },
   { id: 'access', name: 'Access' },
   { id: 'passwords', name: 'Passwords' },
   { id: 'notes', name: 'Notes' },
@@ -62,8 +67,9 @@ const CATEGORIES = [
 
 /**
  * What the player has found out, to look at again whenever it likes: the notes it read, the audio logs it heard, the passwords it found, the access (keys, cards) it carries and whether it used them yet,
- * the objectives it was given. Not the things it uses: those are the `Inventory`'s (a key card is an item there, and here an entry that says whether it was used). Nothing in it is a consumable, and the
- * ammo is not in it: the HUD has that.
+ * the objectives it was given. The things it carries are the `Inventory`'s (a key card is an item there, and here an entry that says whether it was used), and the menu shows them too, in its Items category: the
+ * list the HUD shows for a moment when it changes, always there to look at. That category is only a view of the Inventory (an item the Journal has an entry for, such as an access, stays in its own category, and
+ * the ones the Inventory hides, the ammo, the grenades, are not listed): nothing is written into it, so it needs nothing from the pickups but the name and the description they gave the Inventory.
  *
  * Tab opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
  * audio log. The pointer is let go while it is open and held again when it closes. The game stands still behind it (`pausesGame`; off, it goes on). The menu has a name that only the game cares about
@@ -82,6 +88,7 @@ const CATEGORIES = [
 export class Journal {
 
   @Inject(Hud) hud!: Hud;
+  @Inject(Inventory) inventory!: Inventory;
   @Inject(PauseMenu) pauseMenu!: PauseMenu;
 
   /** What the menu is called, on the page and in the messages. */
@@ -106,10 +113,14 @@ export class Journal {
   private readonly buffers = new Map<string, AudioBuffer>();
   private tabListener?: Parameters<typeof Input.removeListner>[0];
   private escapeListener?: Parameters<typeof Input.removeListner>[0];
+  // The Inventory is a service that is not registered yet while this one is being made (its first `state` is built then): it is read from the start on.
+  private started = false;
 
   state: IJournalState = this.snapshot();
 
   onStart() {
+    this.started = true;
+    this.inventory.onChange.on(() => this.changed(), this);
     this.tabListener = Input.keyboard.tab.down((event: KeyboardEvent) => {
       event.preventDefault();
       this.toggle();
@@ -119,6 +130,7 @@ export class Journal {
   }
 
   onDestroy() {
+    this.started = false;
     if (this.tabListener) Input.removeListner(this.tabListener);
     this.tabListener = undefined;
     if (this.escapeListener) Input.removeListner(this.escapeListener);
@@ -128,9 +140,10 @@ export class Journal {
     this.pausedByJournal = false;
   }
 
-  /** What a `JournalMenu` sets: the name of the menu and whether it pauses the game. */
-  configure(settings: { title?: string; pausesGame?: boolean; hintSeconds?: number }): void {
+  /** What a `JournalMenu` sets: the name of the menu, whether it pauses the game, how long its chip stays and how long the list of what is carried stays on the screen when it changes. */
+  configure(settings: { title?: string; pausesGame?: boolean; hintSeconds?: number; itemsSeconds?: number }): void {
     if (settings.title) this.title = settings.title;
+    if (settings.itemsSeconds !== undefined) this.hud.setItemsSeconds(settings.itemsSeconds);
     if (settings.hintSeconds !== undefined && Number.isFinite(settings.hintSeconds)) this.hintSeconds = Math.max(settings.hintSeconds, 0);
     if (settings.pausesGame !== undefined) this.pausesGame = settings.pausesGame;
     this.changed();
@@ -321,14 +334,24 @@ export class Journal {
     if (this.isOpen && entry) entry.isNew = false;
   }
 
+  // What the player carries, as entries of the Items category: the visible kinds that the Journal has no entry for already. Never new: the HUD told the player when it came.
+  private carried(): IJournalEntry[] {
+    if (!this.started) return [];
+
+    return this.inventory.list()
+      .filter(item => !item.hidden && !this.has(item.id))
+      .map(item => ({ id: item.id, category: 'items', title: item.name.charAt(0).toUpperCase() + item.name.slice(1), body: item.description, audio: '', status: '' as JournalStatus, isNew: false, count: item.count, limit: item.limit }));
+  }
+
   private snapshot(): IJournalState {
-    const ids = [...CATEGORIES.map(category => category.id), ...this.entries.map(entry => entry.category)].filter((id, index, all) => all.indexOf(id) === index && this.entries.some(entry => entry.category === id));
+    const everything = [...this.entries, ...this.carried()];
+    const ids = [...CATEGORIES.map(category => category.id), ...everything.map(entry => entry.category)].filter((id, index, all) => all.indexOf(id) === index && everything.some(entry => entry.category === id));
     const categories = ids.map(id => {
-      const own = this.entries.filter(entry => entry.category === id);
+      const own = everything.filter(entry => entry.category === id);
       return { id, name: CATEGORIES.find(category => category.id === id)?.name ?? id.charAt(0).toUpperCase() + id.slice(1), count: own.length, news: own.filter(entry => entry.isNew).length };
     });
     const category = categories.some(candidate => candidate.id === this.category) ? this.category : categories[0]?.id ?? '';
-    const entries = this.entries.filter(entry => entry.category === category).map(entry => ({ ...entry }));
+    const entries = everything.filter(entry => entry.category === category).map(entry => ({ ...entry }));
     const selected = entries.some(entry => entry.id === this.selected) ? this.selected : entries[0]?.id ?? '';
     return { open: this.isOpen, title: this.title, categories, category, entries, selected, playing: this.playing, news: this.entries.filter(entry => entry.isNew).length, hintSeconds: this.hintSeconds };
   }

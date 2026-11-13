@@ -23,7 +23,7 @@ export class Pickup extends Interactable {
   @Int({ label: 'Limit', tooltip: 'The most of this item the player can carry (0: no limit, as keys and credits have). It is set by the first pickup of the id that starts; one that finds the player full stays where it is.' }) limit = 0;
   @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {item} is its name. Empty: none.' }) message = 'Picked up {item}';
   @String({ header: 'Journal', label: 'Journal Category', tooltip: 'Empty: it is not written in the Journal. \'access\' (a key, a card) lists it under Access, and the Journal says whether it was used; anything else is a category of its own.' }) journalCategory = '';
-  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu.' }) description = '';
+  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu: in its Items category while the player carries it, or in its own category when it has one.' }) description = '';
   @Ref(AudioTrack, { header: 'Sound', label: 'Pickup Sound' }) pickupSound = '';
 
   @Inject(Inventory) inventory!: Inventory;
@@ -33,9 +33,10 @@ export class Pickup extends Interactable {
   /** It was taken: the Interactor that took it. */
   @JsonIgnore() onPickedUp = new Signal<Interactor>();
 
+  // The Inventory is told what the item is when the scene starts, not when it is taken: a lock that asks for it can name it ("Needs power cell") before the player has one, and the Journal can describe it.
   onStart() {
     if (!this.itemId) console.warn(`[Pickup] "${this.entity.name}": Item Id is empty, so the inventory cannot tell it from anything else.`);
-    if (this.limit > 0) this.inventory.define(this.itemId, { name: this.label, limit: this.limit });
+    this.inventory.define(this.itemId, { name: this.label, description: this.description, limit: this.limit > 0 ? this.limit : undefined });
   }
 
   get currentPrompt(): string {

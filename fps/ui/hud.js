@@ -45,13 +45,39 @@ function render(state) {
     weapons.appendChild(chip);
   });
 
-  items.innerHTML = '';
-  state.items.forEach(function (name) {
-    var chip = document.createElement('div');
-    chip.className = 'item';
-    chip.textContent = name;
-    items.appendChild(chip);
-  });
+  renderItems(state);
+}
+
+// What the player carries is not always on the screen: the list fades in when it changes (something was picked up, used or spent), stays `itemsSeconds` and fades out (0: it stays). What is new in it is lit. The
+// list that was there before the page came (a game that was loaded) does not show it, and an empty list is let go of with its last content, so that it fades out whole. The Journal has the whole list, under Items.
+var itemsTimer, lastItems = null;
+function renderItems(state) {
+  var names = state.items || [];
+  var signature = JSON.stringify(names);
+  var seconds = typeof state.itemsSeconds === 'number' ? state.itemsSeconds : 4;
+
+  if (signature !== lastItems) {
+    var before = lastItems === null ? [] : JSON.parse(lastItems);
+    var first = lastItems === null;
+    lastItems = signature;
+    if (names.length > 0) {
+      items.innerHTML = '';
+      names.forEach(function (name) {
+        var chip = document.createElement('div');
+        chip.className = 'item' + (!first && before.indexOf(name) === -1 ? ' -new' : '');
+        chip.textContent = name;
+        items.appendChild(chip);
+      });
+    }
+    clearTimeout(itemsTimer);
+    if (names.length === 0) {
+      items.classList.remove('-shown');
+    } else if (!first && seconds > 0) {
+      items.classList.add('-shown');
+      itemsTimer = setTimeout(function () { items.classList.remove('-shown'); }, seconds * 1000);
+    }
+  }
+  if (seconds <= 0) items.classList.toggle('-shown', names.length > 0);
 }
 
 // The twin arcs, drawn for the right side (the left one is the same mirrored by the markup): one hairline arc at the radius of the cone, the edge of where the pellets may land. The path is set as the CSS
@@ -164,7 +190,8 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     audio: '<path d="M18 46 H36 L60 26 V94 L36 74 H18 Z"/><path d="M74 44 Q84 60 74 76 M86 34 Q104 60 86 86"/>',
     access: '<rect x="18" y="36" width="84" height="48" rx="6"/><path d="M18 50 H102"/><rect x="32" y="62" width="16" height="12" rx="2"/>',
     objectives: '<path d="M34 16 V104"/><path d="M34 20 H92 L80 42 L92 64 H34"/>',
-    passwords: '<rect x="28" y="54" width="64" height="48" rx="6"/><path d="M42 54 V40 A18 18 0 0 1 78 40 V54"/>'
+    passwords: '<rect x="28" y="54" width="64" height="48" rx="6"/><path d="M42 54 V40 A18 18 0 0 1 78 40 V54"/>',
+    items: '<path d="M60 16 L100 38 V82 L60 104 L20 82 V38 Z"/><path d="M20 38 L60 60 L100 38 M60 60 V104"/>'
   };
   var PLAIN_DRAWING = '<rect x="24" y="24" width="72" height="72" rx="14"/>';
 
@@ -220,6 +247,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
       row.classList.toggle('-new', !!entry.isNew);
       addText(row, 'journal__row-name', entry.title);
       if (STATUS_TEXT.hasOwnProperty(entry.status)) addText(row, 'journal__badge ' + STATUS_TONE[entry.status], STATUS_TEXT[entry.status]);
+      if (entry.count > 1) addText(row, 'journal__badge', '\u00d7' + entry.count);
       row.addEventListener('click', function () { journal.choose(entry.id); });
       entriesList.appendChild(row);
     });
@@ -245,8 +273,10 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     if (!changed('detail', entry ? JSON.stringify(entry) + '|' + data.playing : '')) return;
     var known = !!entry && STATUS_TEXT.hasOwnProperty(entry.status);
     entryTitle.textContent = entry ? entry.title : '';
-    entryStatus.textContent = known ? STATUS_TEXT[entry.status] : '';
-    entryStatus.className = 'journal__status' + (known ? ' ' + STATUS_TONE[entry.status] : '');
+    // An item is not given a status: it says how many of it are carried.
+    var carrying = !!entry && typeof entry.count === 'number';
+    entryStatus.textContent = known ? STATUS_TEXT[entry.status] : carrying ? 'Carrying ' + entry.count + (entry.limit > 0 ? ' of ' + entry.limit : '') : '';
+    entryStatus.className = 'journal__status' + (known ? ' ' + STATUS_TONE[entry.status] : carrying ? ' -accent' : '');
     entryBody.textContent = entry ? entry.body : '';
     audioButton.hidden = !(entry && entry.audio);
     audioButton.textContent = entry && data.playing === entry.id ? 'Stop' : 'Play';

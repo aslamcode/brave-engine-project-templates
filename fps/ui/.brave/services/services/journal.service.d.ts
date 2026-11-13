@@ -1,7 +1,8 @@
 import { Signal } from '@brave/core';
 import { Hud } from './hud.service';
+import { Inventory } from './inventory.service';
 import { PauseMenu } from './pause-menu.service';
-/** How an entry stands: an objective is active, done or failed; an access (a key, a card) is unused or used; a note has no status. */
+/** How an entry stands: an objective is active, done or failed; an access (a key, a card) is unused or used; a note and an item have no status. */
 export type JournalStatus = '' | 'active' | 'done' | 'failed' | 'unused' | 'used';
 /** One thing the player knows: a note read, an audio log heard, a password found, an access carried, an objective given. */
 export interface IJournalEntry {
@@ -14,6 +15,9 @@ export interface IJournalEntry {
     status: JournalStatus;
     /** Not looked at yet. */
     isNew: boolean;
+    /** An item the player carries: how many, and the most it can carry (0: no limit). Left out of everything else. */
+    count?: number;
+    limit?: number;
 }
 export interface IJournalCategory {
     id: string;
@@ -47,8 +51,9 @@ export interface IJournalEntryInput {
 }
 /**
  * What the player has found out, to look at again whenever it likes: the notes it read, the audio logs it heard, the passwords it found, the access (keys, cards) it carries and whether it used them yet,
- * the objectives it was given. Not the things it uses: those are the `Inventory`'s (a key card is an item there, and here an entry that says whether it was used). Nothing in it is a consumable, and the
- * ammo is not in it: the HUD has that.
+ * the objectives it was given. The things it carries are the `Inventory`'s (a key card is an item there, and here an entry that says whether it was used), and the menu shows them too, in its Items category: the
+ * list the HUD shows for a moment when it changes, always there to look at. That category is only a view of the Inventory (an item the Journal has an entry for, such as an access, stays in its own category, and
+ * the ones the Inventory hides, the ammo, the grenades, are not listed): nothing is written into it, so it needs nothing from the pickups but the name and the description they gave the Inventory.
  *
  * Tab opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
  * audio log. The pointer is let go while it is open and held again when it closes. The game stands still behind it (`pausesGame`; off, it goes on). The menu has a name that only the game cares about
@@ -65,6 +70,7 @@ export interface IJournalEntryInput {
  */
 export declare class Journal {
     hud: Hud;
+    inventory: Inventory;
     pauseMenu: PauseMenu;
     /** What the menu is called, on the page and in the messages. */
     title: string;
@@ -84,14 +90,16 @@ export declare class Journal {
     private readonly buffers;
     private tabListener?;
     private escapeListener?;
+    private started;
     state: IJournalState;
     onStart(): void;
     onDestroy(): void;
-    /** What a `JournalMenu` sets: the name of the menu and whether it pauses the game. */
+    /** What a `JournalMenu` sets: the name of the menu, whether it pauses the game, how long its chip stays and how long the list of what is carried stays on the screen when it changes. */
     configure(settings: {
         title?: string;
         pausesGame?: boolean;
         hintSeconds?: number;
+        itemsSeconds?: number;
     }): void;
     /** Puts what the player found in the Journal, once: an id that is in it already is left as it was. Says so on the screen. Returns whether it was new. */
     add(entry: IJournalEntryInput, announce?: boolean): boolean;
@@ -126,6 +134,7 @@ export declare class Journal {
         entries: IJournalEntry[];
     }): void;
     private markSeen;
+    private carried;
     private snapshot;
     private changed;
 }

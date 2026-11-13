@@ -14,8 +14,10 @@ export interface IHudState {
   stance: string;
   /** A line shown for a few seconds ("The door is locked"), or empty. */
   message: string;
-  /** What the player carries, one name for each item. */
+  /** What the player carries, one name for each item. The page shows the list when it changes, not all the time. */
   items: string[];
+  /** How long the list stays on the screen after it changed: 0, it is always there. */
+  itemsSeconds: number;
   /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
   target: boolean;
   /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (a ring of four arcs round a dot) or 'twin-arcs' (two arcs, one each side of a dot, the shotgun's). */
@@ -45,7 +47,7 @@ export interface IHudMarker {
 
 @Service()
 export class Hud {
-  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false };
+  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IHudState>();
@@ -125,6 +127,14 @@ export class Hud {
 
   setItems(items: string[]): void {
     this.state.items = [...items];
+    this.changed();
+  }
+
+  /** How long the list of what the player carries stays after it changed (0: always). */
+  setItemsSeconds(seconds: number): void {
+    const wanted = Number.isFinite(seconds) ? Math.max(seconds, 0) : 4;
+    if (this.state.itemsSeconds === wanted) return;
+    this.state.itemsSeconds = wanted;
     this.changed();
   }
 

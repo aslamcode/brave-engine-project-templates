@@ -94,8 +94,11 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .weapons__chip.-current { color: var(--accent); }
 
 /* What the player carries. */
-.items { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 8px; }
+/* What the player carries: only on the screen for a moment after it changes (`-shown`, for the game's Items Seconds), fading in and out. The whole list is in the Journal, under Items. */
+.items { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 10px); display: flex; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; }
+.items.-shown { opacity: 1; transform: translate(-50%, 0); }
 .item { padding: 7px 13px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); border: 1px solid rgba(255, 180, 84, 0.45); font-size: 13px; letter-spacing: 0.04em; }
+.item.-new { border-color: var(--accent); }
 
 /* Markers: what can be used, over it on the screen. The one looked at is a glass box with what E does (the page behind it blurred, its colours pushed), tied to the thing by a line; the others are a small mark. */
 .markers { position: fixed; inset: 0; overflow: hidden; }

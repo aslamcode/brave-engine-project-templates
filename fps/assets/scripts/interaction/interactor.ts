@@ -1,7 +1,8 @@
 import { AudioSource, AudioTrack, BraveEngine, BraveEngineModeEnum, Camera, Entity, Float, IEntity, Inject, Input, Int, JsonIgnore, MeshRenderer, PhysicsSystem, Ref, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
 import { Hud, IHudMarker } from '../../services/hud.service';
-import { Interactable } from './interactable';
+import { biggestRenderer, centerOf } from '../shared/drawn';
 import { playClip } from '../shared/sound';
+import { Interactable } from './interactable';
 
 /**
  * The player's side of interaction: put it on the player's eyes (the camera). Every frame a ray goes from the eyes along the look, `Reach` metres, ignoring the player's own body and everything
@@ -155,7 +156,7 @@ export class Interactor extends ScriptComponent {
         if (markers.length >= this.maxMarkers) break;
         if (item.thing !== focused && this.isBehindSomething(item.thing, item.point, item.distance)) continue;
 
-        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: item.thing === focused ? item.thing.currentPrompt : '', focused: item.thing === focused, line: item.thing.marker === 'line' });
+        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: item.thing === focused ? item.thing.promptFor(this) : '', focused: item.thing === focused, line: item.thing.marker === 'line' });
       }
     }
 
@@ -175,42 +176,29 @@ export class Interactor extends ScriptComponent {
   // Where a marker is tied: the centre of the biggest thing the entity is drawn with (the leaf of a door, a pickup's model), as it is now, and `Marker Height` above it; the origin when nothing is drawn.
   private anchorOf(candidate: ICandidate): Vector3 {
     const { thing, renderer } = candidate;
-    const bounds = renderer?.mesh?.localBounds;
-    if (!renderer || !bounds) {
+    const center = renderer && centerOf(renderer);
+    if (!center) {
       const place = thing.entity.transform.globalPosition;
       return new Vector3(place.x, place.y + thing.markerHeight, place.z);
     }
 
-    const m = renderer.entity.transform.worldMatrix;
-    const x = (bounds.min.x + bounds.max.x) / 2, y = (bounds.min.y + bounds.max.y) / 2, z = (bounds.min.z + bounds.max.z) / 2;
-    return new Vector3(m[0] * x + m[4] * y + m[8] * z + m[12], m[1] * x + m[5] * y + m[9] * z + m[13] + thing.markerHeight, m[2] * x + m[6] * y + m[10] * z + m[14]);
+    center.y += thing.markerHeight;
+    return center;
   }
 
   // Every Interactable of the running scenes, each with the biggest renderer in it (by the size it has in the world).
   private scan(): void {
     this.candidates = [];
-    const volume = (renderer: MeshRenderer) => {
-      const bounds = renderer.mesh?.localBounds;
-      if (!bounds) return 0;
-      const m = renderer.entity.transform.worldMatrix;
-      return (bounds.max.x - bounds.min.x) * Math.hypot(m[0], m[1], m[2]) * (bounds.max.y - bounds.min.y) * Math.hypot(m[4], m[5], m[6]) * (bounds.max.z - bounds.min.z) * Math.hypot(m[8], m[9], m[10]);
-    };
-    const biggest = (entity: Entity, best?: MeshRenderer): MeshRenderer | undefined => {
-      const renderer = entity.getComponent(MeshRenderer);
-      if (renderer && volume(renderer) > (best ? volume(best) : 0)) best = renderer;
-      entity.children.forEach(child => { best = biggest(child, best); });
-      return best;
-    };
     const visit = (entity: Entity) => {
       const thing = entity.getComponent(Interactable);
-      if (thing) this.candidates.push({ thing, renderer: biggest(entity) });
+      if (thing) this.candidates.push({ thing, renderer: biggestRenderer(entity) });
       entity.children.forEach(visit);
     };
     BraveEngine.scenes.forEach(scene => scene.children.forEach(visit));
   }
 
   private watch(target: Interactable | undefined): void {
-    this.hud?.setPrompt(target ? target.currentPrompt : '');
+    this.hud?.setPrompt(target ? target.promptFor(this) : '');
     if (target === this.target) return;
 
     this.target = target;

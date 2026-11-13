@@ -44,6 +44,11 @@ export class Interactable extends ScriptComponent {
     return this.prompt;
   }
 
+  /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
+  promptFor(_interactor: Interactor): string {
+    return this.currentPrompt;
+  }
+
   /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */
   get usable(): boolean {
     return true;

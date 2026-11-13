@@ -13,8 +13,10 @@ export interface IHudState {
     stance: string;
     /** A line shown for a few seconds ("The door is locked"), or empty. */
     message: string;
-    /** What the player carries, one name for each item. */
+    /** What the player carries, one name for each item. The page shows the list when it changes, not all the time. */
     items: string[];
+    /** How long the list stays on the screen after it changed: 0, it is always there. */
+    itemsSeconds: number;
     /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
     target: boolean;
     /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (a ring of four arcs round a dot) or 'twin-arcs' (two arcs, one each side of a dot, the shotgun's). */
@@ -72,6 +74,8 @@ export declare class Hud {
     /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
     setMarkers(markers: IHudMarker[]): void;
     setItems(items: string[]): void;
+    /** How long the list of what the player carries stays after it changed (0: always). */
+    setItemsSeconds(seconds: number): void;
     /** A line for `seconds` of game time (an engine timer: it stops with Pause). */
     showMessage(text: string, seconds?: number): void;
     notifyHit(zone: string, kill: boolean): void;

@@ -1,10 +1,11 @@
 import { Inject, Service, Signal } from '@brave/core';
 import { Hud } from './hud.service';
 
-/** What the player carries of one kind: the id a script asks for, the name the player reads, how many, the most that can be carried (0: no limit) and whether it is left out of the list the HUD shows. */
+/** What the player carries of one kind: the id a script asks for, the name the player reads, what the Journal says about it, how many, the most that can be carried (0: no limit) and whether it is left out of the lists. */
 export interface IInventoryEntry {
   id: string;
   name: string;
+  description: string;
   count: number;
   limit: number;
   hidden: boolean;
@@ -14,9 +15,11 @@ export interface IInventoryEntry {
 export interface IItemDefinition {
   /** What the player reads. */
   name?: string;
+  /** What the Journal says about it, in its Items category. */
+  description?: string;
   /** The most that can be carried: 0 or left out, no limit (credits, keys). */
   limit?: number;
-  /** Left out of the list the HUD shows (rounds are in the ammo counter, not in the list). */
+  /** Left out of the lists (rounds are in the ammo counter, not in the list the HUD and the Journal show). */
   hidden?: boolean;
   /** How many the player starts the game with: given once per game, the first time the kind is defined. */
   start?: number;
@@ -24,6 +27,7 @@ export interface IItemDefinition {
 
 interface IKind {
   name: string;
+  description: string;
   limit: number;
   hidden: boolean;
 }
@@ -59,8 +63,9 @@ export class Inventory {
   define(id: string, definition: IItemDefinition = {}): void {
     if (!id) return;
 
-    const kind = this.kinds.get(id) ?? { name: '', limit: 0, hidden: false };
+    const kind = this.kinds.get(id) ?? { name: '', description: '', limit: 0, hidden: false };
     if (definition.name) kind.name = definition.name;
+    if (definition.description) kind.description = definition.description;
     if (definition.limit !== undefined) kind.limit = Math.max(Math.floor(definition.limit), 0);
     if (definition.hidden !== undefined) kind.hidden = definition.hidden;
     this.kinds.set(id, kind);
@@ -137,6 +142,11 @@ export class Inventory {
     return this.kinds.get(id)?.name || this.entries.get(id)?.name || id;
   }
 
+  /** What the Journal says about an item: empty when nobody described it. */
+  descriptionOf(id: string): string {
+    return this.kinds.get(id)?.description ?? '';
+  }
+
   /** One line for each visible kind carried, in the order they were first picked up: the name, and `x2` after it when there is more than one. */
   names(): string[] {
     return this.list().filter(entry => !entry.hidden).map(entry => {
@@ -147,7 +157,7 @@ export class Inventory {
 
   /** A copy of what is carried. */
   list(): IInventoryEntry[] {
-    return [...this.entries.values()].map(entry => ({ ...entry, name: this.nameOf(entry.id), limit: this.limitOf(entry.id), hidden: this.kinds.get(entry.id)?.hidden ?? false }));
+    return [...this.entries.values()].map(entry => ({ ...entry, name: this.nameOf(entry.id), description: this.descriptionOf(entry.id), limit: this.limitOf(entry.id), hidden: this.kinds.get(entry.id)?.hidden ?? false }));
   }
 
   /** Empties it (a new game): what the kinds are is kept, and they are given their starting count again. */
@@ -171,7 +181,7 @@ export class Inventory {
 
   private kind(id: string): IKind {
     let kind = this.kinds.get(id);
-    if (!kind) this.kinds.set(id, kind = { name: '', limit: 0, hidden: false });
+    if (!kind) this.kinds.set(id, kind = { name: '', description: '', limit: 0, hidden: false });
     return kind;
   }
 
