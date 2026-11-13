@@ -11,7 +11,8 @@ import { Entity, ScriptComponent } from '@brave/core';
  * With `By Surface` on it steps by the ground: one ray down from the character at each step finds the collider under it, and the `Footstep Surface` of the scene that has that collider's physics material gives
  * the sounds (walk or run, by the speed). A ground with no surface of its own is stepped on with `Step Sound`, which stays the default of everything else.
  *
- * `Step Sound` is an entity with an Audio Source for each variation as children (one plays at random), or one Audio Source; each has Pooling on so that two steps may overlap. The script sets the gain of the
+ * `Step Sound` is an entity with an Audio Source for each variation as children, or one Audio Source; they play in the ORDER the children are in (drag them in the Hierarchy to change it) and start again, or at
+ * random without ever repeating the one before (`Step Order`): a sound that plays twice in a row, which a plain random choice does now and then, is what makes a walk sound like a machine; each has Pooling on so that two steps may overlap. The script sets the gain of the
  * one it plays: `Volume` is the loudest, the Audio Source's own gain is not used. Read from the entity's origin, so on stairs a foot that lands higher than `Contact Height` is not heard: raise it for a level with steps.
  */
 export declare class Footsteps extends ScriptComponent {
@@ -19,6 +20,7 @@ export declare class Footsteps extends ScriptComponent {
     rightFoot?: Entity;
     stepSound?: Entity;
     landSound?: Entity;
+    order: 'sequence' | 'random';
     bySurface: boolean;
     contactHeight: number;
     minSpeed: number;
@@ -27,6 +29,10 @@ export declare class Footsteps extends ScriptComponent {
     walkShare: number;
     crouchShare: number;
     landVolume: number;
+    protected orderOptions: {
+        value: string;
+        description: string;
+    }[];
     private body?;
     private surfaces?;
     private landListener?;

@@ -1,6 +1,7 @@
 import { Signal } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
+import { Journal } from '../../services/journal.service';
 import { Interactable } from './interactable';
 import type { Interactor } from './interactor';
 /**
@@ -15,10 +16,14 @@ export declare class Pickup extends Interactable {
     itemId: string;
     itemName: string;
     count: number;
+    limit: number;
     message: string;
+    journalCategory: string;
+    description: string;
     pickupSound: string;
     inventory: Inventory;
     hud: Hud;
+    journal: Journal;
     /** It was taken: the Interactor that took it. */
     onPickedUp: Signal<Interactor>;
     onStart(): void;

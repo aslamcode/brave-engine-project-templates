@@ -1,6 +1,6 @@
 import { Entity, Float, JsonIgnore, Ref, Saved, Script, ScriptComponent, State, Time } from '@brave/core';
-import { Health } from '../combat/health';
-import { playSound } from '../combat/play-sound';
+import { Health } from '../health/health';
+import { playSound } from '../shared/sound';
 
 /**
  * A target for practice: it does not move or hit back, it squashes when it is shot, falls over when it dies and stands up again `Stand Up After` seconds later with full health. The hit zones are

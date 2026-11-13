@@ -1,6 +1,8 @@
 import { AudioTrack, Bool, Entity, IEntity, Inject, JsonIgnore, Ref, Saved, Script, Signal, State, String } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
+import { Journal } from '../../services/journal.service';
+import { Objective } from '../journal/objective';
 import { Interactable } from './interactable';
 import type { Interactor } from './interactor';
 
@@ -28,6 +30,7 @@ export class Socket extends Interactable {
   @Ref(Entity, { header: 'When Filled', label: 'Placed Object', tooltip: 'A child entity that starts switched off: the item in place. It is switched on.' }) placed?: IEntity;
   @Ref(Entity, { label: 'Switch On', tooltip: 'An entity that starts switched off (a lamp): it is switched on.' }) switchOn?: IEntity;
   @Ref(Interactable, { label: 'Target', tooltip: 'What it acts on: a Door, or any Interactable that can be unlocked or opened.' }) target?: Interactable;
+  @Ref(Objective, { label: 'Completes Objective', tooltip: 'An Objective of the Journal that is done when this is filled.' }) objective?: Objective;
   @Bool({ label: 'Unlock Target' }) unlocksTarget = true;
   @Bool({ label: 'Open Target' }) opensTarget = false;
   @String({ label: 'Filled Message', tooltip: 'A line on the screen when it is filled. {item} is the item. Empty: none.' }) filledMessage = 'Placed {item}';
@@ -35,6 +38,7 @@ export class Socket extends Interactable {
 
   @Inject(Inventory) inventory!: Inventory;
   @Inject(Hud) hud!: Hud;
+  @Inject(Journal) journal!: Journal;
 
   /** The item is in: the Interactor that put it. */
   @JsonIgnore() onFilled = new Signal<Interactor>();
@@ -57,6 +61,7 @@ export class Socket extends Interactable {
 
     const label = this.label;
     this.inventory.remove(this.itemId);
+    this.journal.markUsed(this.itemId);
     this.isFilled = true;
     if (this.placed) this.placed.active = true;
     if (this.switchOn) this.switchOn.active = true;
@@ -65,6 +70,7 @@ export class Socket extends Interactable {
 
     if (this.unlocksTarget) this.target?.unlock();
     if (this.opensTarget) this.target?.open();
+    this.objective?.complete();
     this.onFilled.emit(interactor);
   }
 

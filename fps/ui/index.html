@@ -58,6 +58,32 @@
     </div>
   </div>
 
+  <!-- The Journal (Datapad, its name comes from the game): what the player has found out, opened with Tab. Shown by the `Journal` service on the game side. Its controls are the only clickable things of the panel. -->
+  <div id="journal" class="journal" aria-hidden="true">
+    <div class="journal__frame">
+      <nav class="journal__side">
+        <div id="journalTitle" class="journal__heading"></div>
+        <ul id="journalCategories" class="journal__categories"></ul>
+        <div class="journal__hint">Tab to close</div>
+      </nav>
+      <section class="journal__stage">
+        <div id="journalObject" class="journal__object"></div>
+        <ul id="journalEntries" class="journal__entries"></ul>
+      </section>
+      <aside class="journal__detail">
+        <h2 id="journalEntryTitle" class="journal__entry-title"></h2>
+        <div id="journalEntryStatus" class="journal__status"></div>
+        <div id="journalEntryBody" class="journal__body"></div>
+        <button id="journalAudio" class="journal__audio" type="button" hidden>Play</button>
+      </aside>
+      <button id="journalClose" class="journal__close" type="button" aria-label="Close">&times;</button>
+      <div id="journalEmpty" class="journal__empty">Nothing found yet.</div>
+    </div>
+  </div>
+
+  <!-- The chip that says the Journal can be opened, and whether something new is in it. Not clickable; hidden while the Journal is open. -->
+  <div id="journalHint" class="journal-hint"><span class="journal-hint__key">Tab</span><span id="journalHintTitle"></span><i class="journal-hint__dot"></i></div>
+
   <script src="vendor/ui-bridge.global.js"></script>
   <script src="hud.js"></script>
 </body>

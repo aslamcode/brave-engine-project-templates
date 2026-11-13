@@ -1,4 +1,4 @@
-import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, PlayerMovement, Service, Signal, Store } from '@brave/core';
+import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, PlayerMovement, Service, Signal, Store, UISystem } from '@brave/core';
 
 /** What the menu page shows: whether it is open, and the three settings the player can change. */
 export interface IPauseMenuState {
@@ -23,6 +23,9 @@ const VOLUME_SILENCE_DECIBELS = -80;
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
  * not written). `pausesGame` off keeps the game running behind the menu.
+ *
+ * The page takes the mouse and the keyboard only while a menu is open (`UISystem.interactive`): closing one hands the keyboard back to the game, which a button or a slider that was clicked would otherwise keep inside
+ * the page (the mouse still reached the game through the page's pointer bridging, the keys did not: the player could aim and shoot but not walk).
  */
 @Service()
 export class PauseMenu {
@@ -42,6 +45,7 @@ export class PauseMenu {
   private baseSensitivity = new WeakMap<FirstPersonCamera, number>();
   private armed = false;
   private pausedByMenu = false;
+  private releaseExpected = false;
   private listener = () => this.onLockChange();
 
   onStart() {
@@ -51,18 +55,26 @@ export class PauseMenu {
     this.state.fieldOfView = this.savedFieldOfView ?? view?.fieldOfView ?? this.state.fieldOfView;
     this.apply();
     document.addEventListener('pointerlockchange', this.listener);
+    UISystem.interactive = false;
     this.changed();
   }
 
   onDestroy() {
     document.removeEventListener('pointerlockchange', this.listener);
     this.pausedByMenu = false;
+    UISystem.interactive = true;
+  }
+
+  /** Another menu (the journal) is about to let go of the pointer on purpose: that release is not the player's Esc, and does not open this menu. */
+  expectRelease(): void {
+    this.releaseExpected = true;
   }
 
   /** Opens the menu (and pauses the game, when `pausesGame`). */
   open(): void {
     if (this.state.open) return;
     this.state.open = true;
+    UISystem.interactive = true;
     if (this.pausesGame && BraveEngine.mode === BraveEngineModeEnum.Running) {
       BraveEngine.pause();
       this.pausedByMenu = true;
@@ -100,6 +112,7 @@ export class PauseMenu {
   private close(): void {
     if (!this.state.open) return;
     this.state.open = false;
+    UISystem.interactive = false;
     if (this.pausedByMenu && BraveEngine.mode === BraveEngineModeEnum.Paused) BraveEngine.play();
     this.pausedByMenu = false;
     this.changed();
@@ -109,7 +122,12 @@ export class PauseMenu {
   private onLockChange(): void {
     if (Cursor.isLocked) {
       this.armed = true;
+      this.releaseExpected = false;
       this.close();
+      return;
+    }
+    if (this.releaseExpected) {
+      this.releaseExpected = false;
       return;
     }
     if (this.armed) this.open();

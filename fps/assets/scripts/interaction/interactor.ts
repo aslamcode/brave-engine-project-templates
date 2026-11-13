@@ -1,7 +1,7 @@
 import { AudioSource, AudioTrack, BraveEngine, BraveEngineModeEnum, Camera, Entity, Float, IEntity, Inject, Input, Int, JsonIgnore, MeshRenderer, PhysicsSystem, Ref, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
 import { Hud, IHudMarker } from '../../services/hud.service';
 import { Interactable } from './interactable';
-import { playClip } from './play-clip';
+import { playClip } from '../shared/sound';
 
 /**
  * The player's side of interaction: put it on the player's eyes (the camera). Every frame a ray goes from the eyes along the look, `Reach` metres, ignoring the player's own body and everything

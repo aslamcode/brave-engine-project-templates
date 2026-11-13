@@ -1,18 +1,35 @@
 import { Signal } from '@brave/core';
 import { Hud } from './hud.service';
-/** What the player carries, kind by kind: the id a script asks for, the name the player reads, and how many. */
+/** What the player carries of one kind: the id a script asks for, the name the player reads, how many, the most that can be carried (0: no limit) and whether it is left out of the list the HUD shows. */
 export interface IInventoryEntry {
     id: string;
     name: string;
     count: number;
+    limit: number;
+    hidden: boolean;
+}
+/** What a kind of item is, as whoever knows it says (a weapon says what its rounds are, a pickup what it is). Every field is optional. */
+export interface IItemDefinition {
+    /** What the player reads. */
+    name?: string;
+    /** The most that can be carried: 0 or left out, no limit (credits, keys). */
+    limit?: number;
+    /** Left out of the list the HUD shows (rounds are in the ammo counter, not in the list). */
+    hidden?: boolean;
+    /** How many the player starts the game with: given once per game, the first time the kind is defined. */
+    start?: number;
 }
 /**
- * What the player carries: a count for each item id (`'key'`, `'power-cell'`), and the name to show for it. A `Pickup` adds, a `Socket` removes, a locked `Door` asks `has('key')`. It keeps the
- * `Hud` up to date (`hud.setItems`: one line for each kind, with the count when there is more than one), and a game save keeps it (`onSave` / `onRestore`).
+ * What the player carries: a count for each item id (`'key'`, `'power-cell'`, `'ammo-rifle'`), and the name to show for it. A `Pickup` adds, a `Socket` removes, a locked `Door` asks `has('key')`, a
+ * `Firearm` draws its reserve from its `ammoType`. A kind may have a LIMIT (the most that can be carried: 0 is none, as credits or keys have) and may be HIDDEN from the list the HUD shows. It keeps
+ * the `Hud` up to date (`hud.setItems`: one line for each visible kind, with the count when there is more than one), and a game save keeps it (`onSave` / `onRestore`).
+ *
+ * Whoever knows a kind says what it is, with `define()`: the first thing that starts is enough (a weapon for its rounds, a pickup for its item). The rest of the game only uses the id.
  *
  * ```ts
  * @Inject(Inventory) inventory!: Inventory;
  * ...
+ * this.inventory.define('grenade', { name: 'Grenade', limit: 4 });
  * if (this.inventory.has('key')) this.inventory.remove('key');
  * ```
  */
@@ -21,25 +38,46 @@ export declare class Inventory {
     /** Something was added or removed: the whole list as it is now. */
     onChange: Signal<IInventoryEntry[]>;
     private readonly entries;
-    /** Adds `count` of an item. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. */
+    private readonly kinds;
+    private readonly started;
+    /** Says what a kind of item is. A kind that has a `start` is given that many, once per game. Defining again changes what is given (the limit), never the count. */
+    define(id: string, definition?: IItemDefinition): void;
+    /** Adds `count` of an item, up to its limit. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. */
     add(id: string, name?: string, count?: number): number;
     /** Takes `count` of an item away. Returns whether there were that many (when there were not, nothing is taken). */
     remove(id: string, count?: number): boolean;
+    /** Makes the count of an item exactly `count`, up to its limit (a respawn gives the starting rounds back; nothing is added to what there was). */
+    set(id: string, count: number): void;
     has(id: string, count?: number): boolean;
     count(id: string): number;
-    /** The name the player reads for an id: the one the last pickup gave, or the id. */
+    /** The most of an item that can be carried; 0 when there is no limit. */
+    limitOf(id: string): number;
+    /** How many more of an item fit: no end (`Infinity`) when it has no limit. */
+    room(id: string): number;
+    /** The name the player reads for an id: the one it was defined or last picked up with, or the id. */
     nameOf(id: string): string;
-    /** One line for each kind carried, in the order they were first picked up: the name, and `x2` after it when there is more than one. */
+    /** One line for each visible kind carried, in the order they were first picked up: the name, and `x2` after it when there is more than one. */
     names(): string[];
     /** A copy of what is carried. */
     list(): IInventoryEntry[];
-    /** Empties it (a new game). */
+    /** Empties it (a new game): what the kinds are is kept, and they are given their starting count again. */
     clear(): void;
     onSave(): {
-        entries: IInventoryEntry[];
+        entries: {
+            id: string;
+            name: string;
+            count: number;
+        }[];
+        started: string[];
     };
     onRestore(data: {
-        entries: IInventoryEntry[];
+        entries: {
+            id: string;
+            name: string;
+            count: number;
+        }[];
+        started?: string[];
     }): void;
+    private kind;
     private changed;
 }

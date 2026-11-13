@@ -24,6 +24,8 @@ function render(state) {
   ammo.textContent = state.ammo;
   ammo.classList.toggle('-empty', state.magazine > 0 && state.ammo === 0);
   reserve.textContent = state.reserve;
+  // A reserve below zero is a gear that is only counted (a grenade, a medkit): the count alone, with no magazine and no slash.
+  ammo.parentNode.classList.toggle('-single', state.reserve < 0);
   stance.textContent = state.stance === 'alert' ? 'Alert' : 'Relaxed';
   crosshair.classList.toggle('-alert', state.stance === 'alert');
   crosshair.classList.toggle('-target', !!state.target);
@@ -143,4 +145,170 @@ el('resume').addEventListener('click', function () { pause.resume(); });
 
 pause.state().then(renderMenu);
 pause.onChange.on(renderMenu, { sampleEvery: 0 });
+
+// The Journal (Datapad, Journal... its name comes from the game, never from this page): the `Journal` service says what is shown; the page draws it and sends the choices back. Tab opens and closes it;
+// while it is open the arrows move through the entries (up and down) and the categories (left and right). The lists are rebuilt only when their content changes, so a state sent again does not flicker.
+(function () {
+  var journal = BraveUiBridge.remote('Journal');
+  var backdrop = el('journal'), heading = el('journalTitle'), categoriesList = el('journalCategories'), entriesList = el('journalEntries'), drawing = el('journalObject');
+  var entryTitle = el('journalEntryTitle'), entryStatus = el('journalEntryStatus'), entryBody = el('journalEntryBody'), audioButton = el('journalAudio');
+  var emptyNote = el('journalEmpty'), hint = el('journalHint'), hintTitle = el('journalHintTitle');
+  var current = { open: false, title: '', categories: [], entries: [], category: '', selected: '', playing: '', news: 0 };
+  var signatures = {}, drawnCategory = null;
+
+  var STATUS_TEXT = { active: 'Active', done: 'Done', failed: 'Failed', unused: 'Not used yet', used: 'Used' };
+  var STATUS_TONE = { active: '-accent', unused: '-accent', done: '-ok', used: '-ok', failed: '-danger' };
+  // The drawings, one per category of the entry: 120 by 120, drawn with the stroke of the colour of the page's accent.
+  var DRAWINGS = {
+    notes: '<rect x="30" y="16" width="60" height="88" rx="4"/><path d="M42 40 H78 M42 56 H78 M42 72 H78 M42 88 H66"/>',
+    audio: '<path d="M18 46 H36 L60 26 V94 L36 74 H18 Z"/><path d="M74 44 Q84 60 74 76 M86 34 Q104 60 86 86"/>',
+    access: '<rect x="18" y="36" width="84" height="48" rx="6"/><path d="M18 50 H102"/><rect x="32" y="62" width="16" height="12" rx="2"/>',
+    objectives: '<path d="M34 16 V104"/><path d="M34 20 H92 L80 42 L92 64 H34"/>',
+    passwords: '<rect x="28" y="54" width="64" height="48" rx="6"/><path d="M42 54 V40 A18 18 0 0 1 78 40 V54"/>'
+  };
+  var PLAIN_DRAWING = '<rect x="24" y="24" width="72" height="72" rx="14"/>';
+
+  function drawingFor(category) {
+    var shape = DRAWINGS.hasOwnProperty(category) ? DRAWINGS[category] : PLAIN_DRAWING;
+    return '<svg viewBox="0 0 120 120" width="120" height="120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + shape + '</svg>';
+  }
+
+  function changed(name, signature) {
+    if (signatures[name] === signature) return false;
+    signatures[name] = signature;
+    return true;
+  }
+
+  function makeRow(isCurrent) {
+    var row = document.createElement('li');
+    row.className = 'journal__row' + (isCurrent ? ' -current' : '');
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '-1');
+    return row;
+  }
+
+  function addText(parent, className, text) {
+    var span = document.createElement('span');
+    span.className = className;
+    span.textContent = text;
+    parent.appendChild(span);
+    return span;
+  }
+
+  function renderCategories(data) {
+    if (!changed('categories', data.category + '|' + JSON.stringify(data.categories))) return;
+    categoriesList.textContent = '';
+    data.categories.forEach(function (category) {
+      var row = makeRow(category.id === data.category);
+      addText(row, 'journal__row-name', category.name);
+      addText(row, 'journal__row-count', category.count);
+      if (category.news > 0) {
+        var dot = document.createElement('span');
+        dot.className = 'journal__dot';
+        row.appendChild(dot);
+      }
+      row.addEventListener('click', function () { journal.select(category.id); });
+      categoriesList.appendChild(row);
+    });
+  }
+
+  function renderEntries(data) {
+    if (!changed('entries', data.category + '|' + data.selected + '|' + JSON.stringify(data.entries))) return;
+    entriesList.textContent = '';
+    data.entries.forEach(function (entry) {
+      var row = makeRow(entry.id === data.selected);
+      row.classList.toggle('-new', !!entry.isNew);
+      addText(row, 'journal__row-name', entry.title);
+      if (STATUS_TEXT.hasOwnProperty(entry.status)) addText(row, 'journal__badge ' + STATUS_TONE[entry.status], STATUS_TEXT[entry.status]);
+      row.addEventListener('click', function () { journal.choose(entry.id); });
+      entriesList.appendChild(row);
+    });
+  }
+
+  function selectedEntry(data) {
+    var index = data.entries.map(function (entry) { return entry.id; }).indexOf(data.selected);
+    return index === -1 ? null : data.entries[index];
+  }
+
+  function renderDrawing(entry) {
+    var category = entry ? entry.category : null;
+    if (category !== drawnCategory) {
+      drawing.innerHTML = entry ? drawingFor(entry.category) : '';
+      drawnCategory = category;
+    }
+    var status = entry ? entry.status : '';
+    drawing.classList.toggle('-done', status === 'done' || status === 'used');
+    drawing.classList.toggle('-failed', status === 'failed');
+  }
+
+  function renderDetail(data, entry) {
+    if (!changed('detail', entry ? JSON.stringify(entry) + '|' + data.playing : '')) return;
+    var known = !!entry && STATUS_TEXT.hasOwnProperty(entry.status);
+    entryTitle.textContent = entry ? entry.title : '';
+    entryStatus.textContent = known ? STATUS_TEXT[entry.status] : '';
+    entryStatus.className = 'journal__status' + (known ? ' ' + STATUS_TONE[entry.status] : '');
+    entryBody.textContent = entry ? entry.body : '';
+    audioButton.hidden = !(entry && entry.audio);
+    audioButton.textContent = entry && data.playing === entry.id ? 'Stop' : 'Play';
+  }
+
+  function renderHint(data) {
+    hintTitle.textContent = data.title;
+    hint.classList.toggle('-new', data.news > 0);
+    hint.classList.toggle('-hidden', data.open);
+  }
+
+  function renderJournal(state) {
+    var data = {
+      open: !!state.open, title: state.title || '', categories: state.categories || [], entries: state.entries || [],
+      category: state.category || '', selected: state.selected || '', playing: state.playing || '', news: state.news || 0
+    };
+    current = data;
+    backdrop.classList.toggle('-open', data.open);
+    backdrop.setAttribute('aria-hidden', data.open ? 'false' : 'true');
+    heading.textContent = data.title;
+    emptyNote.classList.toggle('-show', data.categories.length === 0);
+    renderCategories(data);
+    renderEntries(data);
+    var entry = selectedEntry(data);
+    renderDrawing(entry);
+    renderDetail(data, entry);
+    renderHint(data);
+  }
+
+  // The item after (direction 1) or before (-1) the one with this id, held at the ends of the list; the first one when none is chosen yet.
+  function neighbour(list, id, direction) {
+    if (list.length === 0) return null;
+    var index = list.map(function (item) { return item.id; }).indexOf(id);
+    return list[Math.max(0, Math.min(list.length - 1, index + direction))];
+  }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.code === 'Tab') {
+      event.preventDefault();
+      journal.toggle();
+      return;
+    }
+    if (!current.open) return;
+    var direction = { ArrowUp: -1, ArrowDown: 1, ArrowLeft: -1, ArrowRight: 1 }[event.code];
+    if (!direction) return;
+    event.preventDefault();
+    if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+      var entry = neighbour(current.entries, current.selected, direction);
+      if (entry && entry.id !== current.selected) journal.choose(entry.id);
+      return;
+    }
+    var category = neighbour(current.categories, current.category, direction);
+    if (category && category.id !== current.category) journal.select(category.id);
+  });
+
+  el('journalClose').addEventListener('click', function () { journal.close(); });
+  audioButton.addEventListener('click', function () {
+    if (current.playing !== '' && current.playing === current.selected) journal.stop();
+    else if (current.selected !== '') journal.play(current.selected);
+  });
+
+  journal.state().then(renderJournal);
+  journal.onChange.on(renderJournal, { sampleEvery: 0 });
+})();
 

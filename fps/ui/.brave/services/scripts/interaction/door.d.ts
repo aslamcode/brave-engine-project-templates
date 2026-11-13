@@ -1,6 +1,7 @@
 import { IEntity, Signal, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
+import { Journal } from '../../services/journal.service';
 import { Interactable } from './interactable';
 export type DoorMode = 'rotate' | 'slide';
 export type DoorEasing = 'linear' | 'smooth' | 'ease-in' | 'ease-out';
@@ -49,6 +50,7 @@ export declare class Door extends Interactable {
     unlockDelay: number;
     closeSoundWhenShut: boolean;
     inventory: Inventory;
+    journal: Journal;
     hud: Hud;
     /** The movement to open is finished. */
     onOpened: Signal<any>;

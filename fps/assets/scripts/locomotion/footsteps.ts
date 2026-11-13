@@ -1,4 +1,5 @@
-import { AudioSource, Bool, CharacterController, Entity, Float, JsonIgnore, PhysicsSystem, Ref, Script, ScriptComponent, Vector3 } from '@brave/core';
+import { Bool, CharacterController, Entity, Float, JsonIgnore, PhysicsSystem, Ref, Script, ScriptComponent, Select, Vector3 } from '@brave/core';
+import { playSound } from '../shared/sound';
 import { FootstepSurface } from './footstep-surface';
 
 /**
@@ -13,7 +14,8 @@ import { FootstepSurface } from './footstep-surface';
  * With `By Surface` on it steps by the ground: one ray down from the character at each step finds the collider under it, and the `Footstep Surface` of the scene that has that collider's physics material gives
  * the sounds (walk or run, by the speed). A ground with no surface of its own is stepped on with `Step Sound`, which stays the default of everything else.
  *
- * `Step Sound` is an entity with an Audio Source for each variation as children (one plays at random), or one Audio Source; each has Pooling on so that two steps may overlap. The script sets the gain of the
+ * `Step Sound` is an entity with an Audio Source for each variation as children, or one Audio Source; they play in the ORDER the children are in (drag them in the Hierarchy to change it) and start again, or at
+ * random without ever repeating the one before (`Step Order`): a sound that plays twice in a row, which a plain random choice does now and then, is what makes a walk sound like a machine; each has Pooling on so that two steps may overlap. The script sets the gain of the
  * one it plays: `Volume` is the loudest, the Audio Source's own gain is not used. Read from the entity's origin, so on stairs a foot that lands higher than `Contact Height` is not heard: raise it for a level with steps.
  */
 @Script()
@@ -24,6 +26,7 @@ export class Footsteps extends ScriptComponent {
 
   @Ref(Entity, { header: 'Sounds', label: 'Step Sound', tooltip: 'An entity with an Audio Source for each variation as children (one plays at each step), or one Audio Source.' }) stepSound?: Entity;
   @Ref(Entity, { label: 'Land Sound', tooltip: 'The same, for the body landing from a fall.' }) landSound?: Entity;
+  @Select({ label: 'Step Order', optionsKey: 'orderOptions', sort: false, tooltip: 'Sequence: the variations play in the order of the Hierarchy, one after the other, and start again (put the ones that sound good together next to each other). Random: any but the one that just played. Each surface has its own place in its sequence.' }) order: 'sequence' | 'random' = 'sequence';
   @Bool({ label: 'By Surface', tooltip: 'The step sounds are those of the Footstep Surface that has the physics material of the ground under the foot, found in the scene; a ground with none plays Step Sound. Off for a character that is heard from far away (an enemy keeps its own spatial sounds).' }) bySurface = false;
 
   @Float({ header: 'Detection', label: 'Contact Height', suffix: 'm', tooltip: 'A foot that gets to its farthest point ahead of the body counts as down only when its bone is this low or lower above the entity\'s origin (the ankle is about 0.17 m up on level ground, and about 0.18 at a heel strike): a foot swung high past the body is not a step. On stairs raise it.' }) contactHeight = 0.24;
@@ -35,7 +38,10 @@ export class Footsteps extends ScriptComponent {
   @Float({ label: 'Crouch Share', tooltip: 'What share a crouched step keeps.' }) crouchShare = 0.5;
   @Float({ label: 'Land Volume', tooltip: 'The gain of a landing at 6 m/s or more; a gentler one is softer, and one under 1.5 m/s is silent.' }) landVolume = 1;
 
+  @JsonIgnore() protected orderOptions = [{ value: 'sequence', description: 'Sequence' }, { value: 'random', description: 'Random' }];
+
   @JsonIgnore() private body?: CharacterController;
+  // Which variation of a holder played last, by holder: the next step plays the one after it (or another, at random).
   @JsonIgnore() private surfaces?: Map<string, FootstepSurface>;
   @JsonIgnore() private landListener?: { off(): void };
   @JsonIgnore() private leftStride: IFootStride = { known: false, swinging: false, mark: 0 };
@@ -156,13 +162,7 @@ export class Footsteps extends ScriptComponent {
 
   // One of the Audio Sources of the entity (or its own), at the gain asked.
   private play(holder: Entity | undefined, gain: number) {
-    if (!holder) return;
-    const own = holder.getComponent(AudioSource);
-    const sources = own ? [own] : holder.children.map(child => child.getComponent(AudioSource)).filter((source): source is AudioSource => !!source);
-    const source = sources[Math.floor(Math.random() * sources.length)];
-    if (!source) return;
-    source.gain = Math.max(gain, 0);
-    void source.play();
+    playSound(holder, { gain, order: this.order });
   }
 }
 

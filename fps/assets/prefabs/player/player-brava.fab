@@ -3578,7 +3578,8 @@
                                                       "boltSound": {
                                                         "$circular": "k58"
                                                       },
-                                                      "reserveLimit": 240
+                                                      "reserveLimit": 240,
+                                                      "ammoType": "ammo-rifle"
                                                     },
                                                     {
                                                       "$ref": "k980001",
@@ -5050,7 +5051,8 @@
                                                       "aimSide": -0.09,
                                                       "aimLower": -0.015,
                                                       "aimBack": -0.3,
-                                                      "reserveLimit": 48
+                                                      "reserveLimit": 48,
+                                                      "ammoType": "ammo-shotgun"
                                                     },
                                                     {
                                                       "$ref": "k981001",
@@ -5077,6 +5079,1480 @@
                                                   "static": false,
                                                   "_transform": {
                                                     "$circular": "k900049"
+                                                  },
+                                                  "parent": {
+                                                    "$circular": "k900042"
+                                                  }
+                                                },
+                                                {
+                                                  "$ref": "k997001",
+                                                  "$type": "Entity",
+                                                  "name": "Grenade",
+                                                  "layer": 1,
+                                                  "_active": false,
+                                                  "_activeInHierarchy": false,
+                                                  "_awaked": false,
+                                                  "_started": false,
+                                                  "materials": [],
+                                                  "id": "f425a05d-cb5b-44fc-bd6d-e6e6ea70a0d6",
+                                                  "children": [
+                                                    {
+                                                      "$ref": "k997007_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Grenade Body",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997007_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "3e68a53c-3069-4d2c-8788-1227f3a8bd10",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": -0.05,
+                                                            "$ref": "k997007_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997007_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997007_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.065,
+                                                            "1": 0.1,
+                                                            "2": 0.065,
+                                                            "$ref": "k997007_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997007_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997007_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "dd365ef2-4c18-4f9b-a045-6ffd07afec1b",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997007_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997007_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "9cdc16ea-0ec3-4733-ab53-952b4ff6cf09",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997007_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997007_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997007_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997007_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997007_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.12,
+                                                              "1": 0.17,
+                                                              "2": 0.08,
+                                                              "3": 1,
+                                                              "$ref": "k997007_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.2,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.55,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997007_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997007_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997007_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997007_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997007_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "6e4e2645-3a0e-43ee-9082-3d8a1621e21a",
+                                                      "_transform": {
+                                                        "$circular": "k997007_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997001"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997007_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997008_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Grenade Top",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997008_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "b28844c2-9859-4acc-aac4-2e0fe9d58b0e",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": 0.06,
+                                                            "2": -0.05,
+                                                            "$ref": "k997008_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997008_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997008_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.03,
+                                                            "1": 0.025,
+                                                            "2": 0.03,
+                                                            "$ref": "k997008_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997008_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997008_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "fc6dba48-c28c-4fc7-9ba9-33c2b1f500e6",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997008_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997008_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "6046e040-ece3-4ace-92cd-70865146aa9d",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997008_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997008_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997008_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997008_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997008_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.14,
+                                                              "1": 0.15,
+                                                              "2": 0.16,
+                                                              "3": 1,
+                                                              "$ref": "k997008_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.7,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.35,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997008_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997008_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997008_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997008_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997008_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "3e1a12ba-b3c9-4f0b-9bee-d55adbf0f993",
+                                                      "_transform": {
+                                                        "$circular": "k997008_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997001"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997008_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997009_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Grenade Lever",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997009_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "13083231-2456-40a1-8035-6d29449bee12",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0.026,
+                                                            "1": 0.05,
+                                                            "2": -0.05,
+                                                            "$ref": "k997009_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997009_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997009_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.012,
+                                                            "1": 0.012,
+                                                            "2": 0.075,
+                                                            "$ref": "k997009_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997009_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997009_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "cd25d375-06b2-4c5c-9d7e-502af773a76d",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997009_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997009_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "b93157a4-c14d-4419-807b-59ebafa299b1",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997009_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997009_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997009_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997009_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997009_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.14,
+                                                              "1": 0.15,
+                                                              "2": 0.16,
+                                                              "3": 1,
+                                                              "$ref": "k997009_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.7,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.35,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997009_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997009_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997009_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997009_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997009_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "d054b669-c793-4f99-a0ea-5908a5ba5cd8",
+                                                      "_transform": {
+                                                        "$circular": "k997009_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997001"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997009_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997010",
+                                                      "$type": "Entity",
+                                                      "name": "Grip Left",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "materials": [],
+                                                      "id": "6cec6980-2e3e-4213-b46d-c61cafb8bdcc",
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997011",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "30832410-bfe3-4215-8153-96a6b0f13c22",
+                                                          "entity": {
+                                                            "$circular": "k997010"
+                                                          },
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": -0.04,
+                                                            "2": -0.2,
+                                                            "$ref": "k997012",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0.0,
+                                                            "2": 0,
+                                                            "$ref": "k997013",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0.0,
+                                                            "2": 0,
+                                                            "3": 1.0,
+                                                            "$ref": "k997014",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 1,
+                                                            "1": 1,
+                                                            "2": 1,
+                                                            "$ref": "k997015",
+                                                            "$type": "Vector3"
+                                                          }
+                                                        }
+                                                      ],
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "static": false,
+                                                      "_transform": {
+                                                        "$circular": "k997011"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997001"
+                                                      }
+                                                    }
+                                                  ],
+                                                  "components": [
+                                                    {
+                                                      "$ref": "k997002",
+                                                      "$type": "Transform",
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "id": "bb897abf-e870-4073-958e-e4b70f0796c7",
+                                                      "entity": {
+                                                        "$circular": "k997001"
+                                                      },
+                                                      "hasChangesForNormalMatrix": false,
+                                                      "_position": {
+                                                        "0": 0.0287,
+                                                        "1": 0.0744,
+                                                        "2": 0.1168,
+                                                        "$ref": "k997003",
+                                                        "$type": "Vector3"
+                                                      },
+                                                      "_rotation": {
+                                                        "0": -1.4450000000000076,
+                                                        "1": -120.99800000000002,
+                                                        "2": -47.984,
+                                                        "$ref": "k997004",
+                                                        "$type": "Vector3"
+                                                      },
+                                                      "_rotationQ": {
+                                                        "0": 0.3481898976800164,
+                                                        "1": -0.7976126778221532,
+                                                        "2": -0.21024074226888578,
+                                                        "3": 0.4453949277003295,
+                                                        "$ref": "k997005",
+                                                        "$type": "Quaternion"
+                                                      },
+                                                      "_scale": {
+                                                        "0": 1,
+                                                        "1": 1,
+                                                        "2": 1,
+                                                        "$ref": "k997006",
+                                                        "$type": "Vector3"
+                                                      }
+                                                    },
+                                                    {
+                                                      "$ref": "k997031",
+                                                      "$type": "1d0d43d9-ae88-468b-87c3-366c0f23dfdf",
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "id": "838ca630-9888-4a77-9d68-1bda1622e1f8",
+                                                      "entity": {
+                                                        "$circular": "k997001"
+                                                      },
+                                                      "gripLeft": {
+                                                        "$circular": "k997010"
+                                                      },
+                                                      "eyes": {
+                                                        "$circular": "p_ref_2052"
+                                                      },
+                                                      "projectile": "285abaf3-888b-4900-ae9a-15bb765698d5"
+                                                    }
+                                                  ],
+                                                  "scene": {
+                                                    "$circular": "p_ref_8"
+                                                  },
+                                                  "static": false,
+                                                  "_transform": {
+                                                    "$circular": "k997002"
+                                                  },
+                                                  "parent": {
+                                                    "$circular": "k900042"
+                                                  }
+                                                },
+                                                {
+                                                  "$ref": "k997016",
+                                                  "$type": "Entity",
+                                                  "name": "Medkit",
+                                                  "layer": 1,
+                                                  "_active": false,
+                                                  "_activeInHierarchy": false,
+                                                  "_awaked": false,
+                                                  "_started": false,
+                                                  "materials": [],
+                                                  "id": "e5efe639-cb24-4ac6-aa73-749b4c561ea6",
+                                                  "children": [
+                                                    {
+                                                      "$ref": "k997022_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Medkit Case",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997022_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "9991a3a5-3b06-4df3-a6ac-f0097764b489",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": -0.06,
+                                                            "$ref": "k997022_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997022_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997022_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.13,
+                                                            "1": 0.08,
+                                                            "2": 0.2,
+                                                            "$ref": "k997022_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997022_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997022_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "7781d5ad-66d2-48f8-9258-19ce5f9779ae",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997022_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997022_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "fabaeccb-bcae-4d97-8400-1e6ce108f511",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997022_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997022_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997022_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997022_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997022_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.82,
+                                                              "1": 0.82,
+                                                              "2": 0.8,
+                                                              "3": 1,
+                                                              "$ref": "k997022_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.0,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.6,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997022_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997022_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997022_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997022_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997022_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "4f5c030f-7ac0-4764-996c-2811cd863734",
+                                                      "_transform": {
+                                                        "$circular": "k997022_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997016"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997022_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997023_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Medkit Cross Bar",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997023_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "8c99bc8a-35e0-4044-b42e-130a406807ac",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": 0.044,
+                                                            "2": -0.06,
+                                                            "$ref": "k997023_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997023_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997023_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.12,
+                                                            "1": 0.012,
+                                                            "2": 0.045,
+                                                            "$ref": "k997023_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997023_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997023_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "f0794182-af4d-4a92-8943-402f53c11a71",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997023_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997023_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "06c4af3a-3262-405c-b9a2-4409ec3b33f4",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997023_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997023_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997023_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997023_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997023_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.7,
+                                                              "1": 0.05,
+                                                              "2": 0.04,
+                                                              "3": 1,
+                                                              "$ref": "k997023_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.0,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.5,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997023_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997023_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997023_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997023_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997023_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "b9693052-c4ff-47b7-b22d-302da81da94f",
+                                                      "_transform": {
+                                                        "$circular": "k997023_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997016"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997023_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997024_p_ref_1845",
+                                                      "$type": "Entity",
+                                                      "name": "Medkit Cross Stem",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997024_p_ref_1846",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "91ea5115-b265-4c4e-8bc8-9c3ca8ebcf0e",
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": 0.044,
+                                                            "2": -0.06,
+                                                            "$ref": "k997024_p_ref_1847",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "$ref": "k997024_p_ref_1848",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0,
+                                                            "2": 0,
+                                                            "3": 1,
+                                                            "$ref": "k997024_p_ref_1849",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 0.045,
+                                                            "1": 0.012,
+                                                            "2": 0.12,
+                                                            "$ref": "k997024_p_ref_1850",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "entity": {
+                                                            "$circular": "k997024_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997024_p_ref_1851",
+                                                          "$type": "MeshRenderer",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "2067d97c-1c70-4ead-b6f6-5edb8c1273cc",
+                                                          "modelId": null,
+                                                          "meshIndex": 0,
+                                                          "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+                                                          "generatedMesh": false,
+                                                          "entity": {
+                                                            "$circular": "k997024_p_ref_1845"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$ref": "k997024_p_ref_1853",
+                                                          "$type": "Material",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "d5433976-92b3-4981-b983-9197e03b8c14",
+                                                          "materialId": null,
+                                                          "_cullingFace": true,
+                                                          "_cullingMode": 2,
+                                                          "_layer": -1,
+                                                          "cullingModeOptions": [
+                                                            {
+                                                              "$ref": "k997024_p_ref_1854",
+                                                              "value": 0,
+                                                              "description": "None"
+                                                            },
+                                                            {
+                                                              "$ref": "k997024_p_ref_1855",
+                                                              "value": 1,
+                                                              "description": "Front"
+                                                            },
+                                                            {
+                                                              "$ref": "k997024_p_ref_1856",
+                                                              "value": 2,
+                                                              "description": "Back"
+                                                            }
+                                                          ],
+                                                          "entity": {
+                                                            "$circular": "k997024_p_ref_1845"
+                                                          },
+                                                          "shaderType": "Pbr",
+                                                          "shaderOverrides": {
+                                                            "$ref": "k997024_p_ref_1857",
+                                                            "surfaceType": 0,
+                                                            "transparent": false,
+                                                            "alphaCutoff": 0,
+                                                            "baseColor": {
+                                                              "0": 0.7,
+                                                              "1": 0.05,
+                                                              "2": 0.04,
+                                                              "3": 1,
+                                                              "$ref": "k997024_p_ref_1858",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "baseColorTextureId": "",
+                                                            "metallic": 0.0,
+                                                            "metallicTextureId": "",
+                                                            "roughness": 0.5,
+                                                            "roughnessTextureId": "",
+                                                            "normalScale": 1,
+                                                            "normalTextureId": "",
+                                                            "reflectance": 0.5,
+                                                            "reflectanceTextureId": "",
+                                                            "tiling": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "$ref": "k997024_p_ref_1859",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "offset": {
+                                                              "0": 0,
+                                                              "1": 0,
+                                                              "$ref": "k997024_p_ref_1860",
+                                                              "$type": "Vector2"
+                                                            },
+                                                            "ior": 1.5,
+                                                            "thickness": 1,
+                                                            "attenuationColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997024_p_ref_1861",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "attenuationDistance": 1,
+                                                            "frost": 0,
+                                                            "frostTextureId": "",
+                                                            "emissiveColor": {
+                                                              "0": 1,
+                                                              "1": 1,
+                                                              "2": 1,
+                                                              "3": 1,
+                                                              "$ref": "k997024_p_ref_1862",
+                                                              "$type": "RgbaColor"
+                                                            },
+                                                            "emissiveTextureId": "",
+                                                            "emissiveIntensity": 0,
+                                                            "gpuInstancing": false,
+                                                            "adaptiveNormal": false,
+                                                            "adaptiveNormalMode": "automatic",
+                                                            "adaptiveNormalCompensation": 0.4,
+                                                            "adaptiveNormalMaxStrength": 8,
+                                                            "adaptiveNormalFarStrength": 0,
+                                                            "adaptiveNormalStartMip": 1,
+                                                            "adaptiveNormalEndMip": 4,
+                                                            "metallicChannel": 0,
+                                                            "roughnessChannel": 0,
+                                                            "normalFormat": 0
+                                                          },
+                                                          "cullingFace": true,
+                                                          "cullingMode": 2
+                                                        }
+                                                      ],
+                                                      "materials": [
+                                                        {
+                                                          "$circular": "k997024_p_ref_1853"
+                                                        }
+                                                      ],
+                                                      "id": "b22a6582-775f-49a1-87b0-69c8de4b77ce",
+                                                      "_transform": {
+                                                        "$circular": "k997024_p_ref_1846"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997016"
+                                                      },
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "meshRenderer": {
+                                                        "$circular": "k997024_p_ref_1851"
+                                                      },
+                                                      "static": false
+                                                    },
+                                                    {
+                                                      "$ref": "k997025",
+                                                      "$type": "Entity",
+                                                      "name": "Grip Left",
+                                                      "layer": 1,
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "materials": [],
+                                                      "id": "cf2f0e07-5d69-4e74-b352-7c01784d29e3",
+                                                      "children": [],
+                                                      "components": [
+                                                        {
+                                                          "$ref": "k997026",
+                                                          "$type": "Transform",
+                                                          "_active": true,
+                                                          "_activeInHierarchy": false,
+                                                          "_awaked": false,
+                                                          "_started": false,
+                                                          "id": "0699f765-a242-4dc3-bdda-cf0277668991",
+                                                          "entity": {
+                                                            "$circular": "k997025"
+                                                          },
+                                                          "hasChangesForNormalMatrix": false,
+                                                          "_position": {
+                                                            "0": 0,
+                                                            "1": -0.04,
+                                                            "2": -0.2,
+                                                            "$ref": "k997027",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotation": {
+                                                            "0": 0,
+                                                            "1": 0.0,
+                                                            "2": 0,
+                                                            "$ref": "k997028",
+                                                            "$type": "Vector3"
+                                                          },
+                                                          "_rotationQ": {
+                                                            "0": 0,
+                                                            "1": 0.0,
+                                                            "2": 0,
+                                                            "3": 1.0,
+                                                            "$ref": "k997029",
+                                                            "$type": "Quaternion"
+                                                          },
+                                                          "_scale": {
+                                                            "0": 1,
+                                                            "1": 1,
+                                                            "2": 1,
+                                                            "$ref": "k997030",
+                                                            "$type": "Vector3"
+                                                          }
+                                                        }
+                                                      ],
+                                                      "scene": {
+                                                        "$circular": "p_ref_8"
+                                                      },
+                                                      "static": false,
+                                                      "_transform": {
+                                                        "$circular": "k997026"
+                                                      },
+                                                      "parent": {
+                                                        "$circular": "k997016"
+                                                      }
+                                                    }
+                                                  ],
+                                                  "components": [
+                                                    {
+                                                      "$ref": "k997017",
+                                                      "$type": "Transform",
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "id": "1144b7d9-6ed6-43fe-a4f5-ba2428f1dfec",
+                                                      "entity": {
+                                                        "$circular": "k997016"
+                                                      },
+                                                      "hasChangesForNormalMatrix": false,
+                                                      "_position": {
+                                                        "0": 0.0287,
+                                                        "1": 0.0744,
+                                                        "2": 0.1168,
+                                                        "$ref": "k997018",
+                                                        "$type": "Vector3"
+                                                      },
+                                                      "_rotation": {
+                                                        "0": -1.4450000000000076,
+                                                        "1": -120.99800000000002,
+                                                        "2": -47.984,
+                                                        "$ref": "k997019",
+                                                        "$type": "Vector3"
+                                                      },
+                                                      "_rotationQ": {
+                                                        "0": 0.3481898976800164,
+                                                        "1": -0.7976126778221532,
+                                                        "2": -0.21024074226888578,
+                                                        "3": 0.4453949277003295,
+                                                        "$ref": "k997020",
+                                                        "$type": "Quaternion"
+                                                      },
+                                                      "_scale": {
+                                                        "0": 1,
+                                                        "1": 1,
+                                                        "2": 1,
+                                                        "$ref": "k997021",
+                                                        "$type": "Vector3"
+                                                      }
+                                                    },
+                                                    {
+                                                      "$ref": "k997032",
+                                                      "$type": "0c6a93f7-cb11-4489-a3e5-39849e5c84a0",
+                                                      "_active": true,
+                                                      "_activeInHierarchy": false,
+                                                      "_awaked": false,
+                                                      "_started": false,
+                                                      "id": "182f7c53-0525-4359-9712-ea2865d56fbe",
+                                                      "entity": {
+                                                        "$circular": "k997016"
+                                                      },
+                                                      "gripLeft": {
+                                                        "$circular": "k997025"
+                                                      }
+                                                    }
+                                                  ],
+                                                  "scene": {
+                                                    "$circular": "p_ref_8"
+                                                  },
+                                                  "static": false,
+                                                  "_transform": {
+                                                    "$circular": "k997017"
                                                   },
                                                   "parent": {
                                                     "$circular": "k900042"
@@ -8538,6 +10014,647 @@
               "parent": {
                 "$circular": "k4"
               }
+            },
+            {
+              "$ref": "k970001",
+              "$type": "Entity",
+              "name": "Footstep Sounds",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "38681af1-10ea-4309-b8a4-f7fc3a08fcd3",
+              "children": [
+                {
+                  "$ref": "k970007",
+                  "$type": "Entity",
+                  "name": "Step",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "4f5a7b37-11be-4036-bc85-5f6de866597e",
+                  "children": [
+                    {
+                      "$ref": "k970013",
+                      "$type": "Entity",
+                      "name": "Step 1",
+                      "layer": 0,
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "materials": [],
+                      "id": "029b5f48-0175-4a3c-a51b-6099c2c2d13e",
+                      "children": [],
+                      "components": [
+                        {
+                          "$ref": "k970014",
+                          "$type": "Transform",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "53da570b-b77d-4fc1-ac4e-6cdb6ad4ec61",
+                          "entity": {
+                            "$circular": "k970013"
+                          },
+                          "hasChangesForNormalMatrix": false,
+                          "_position": {
+                            "0": 0,
+                            "1": 0,
+                            "2": 0,
+                            "$ref": "k970015",
+                            "$type": "Vector3"
+                          },
+                          "_rotation": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "$ref": "k970016",
+                            "$type": "Vector3"
+                          },
+                          "_rotationQ": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "3": 1.0,
+                            "$ref": "k970017",
+                            "$type": "Quaternion"
+                          },
+                          "_scale": {
+                            "0": 1,
+                            "1": 1,
+                            "2": 1,
+                            "$ref": "k970018",
+                            "$type": "Vector3"
+                          }
+                        },
+                        {
+                          "$ref": "k970019_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                          "$type": "AudioSource",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "f9466695-7c41-405e-a287-e6eac257f0a3",
+                          "hasTransformChanges": false,
+                          "_src": "a80f8e70-8636-4277-85d9-5049492de0d0",
+                          "_gain": 1.0,
+                          "_loop": false,
+                          "_autoPlay": false,
+                          "_muted": false,
+                          "_speed": 1,
+                          "_bypassTimeScale": true,
+                          "_trackTime": 0,
+                          "_pooling": true,
+                          "_poolMinSize": 2,
+                          "_spatial": false,
+                          "_stereoPan": 0,
+                          "_rolloffMode": "inverse",
+                          "_minDistance": 2,
+                          "_maxDistance": 40,
+                          "_rolloffFactor": 1.5,
+                          "_coneInnerAngle": 60,
+                          "_coneOuterAngle": 90,
+                          "_coneOuterGain": 0.3,
+                          "_refDistance": 1,
+                          "entity": {
+                            "$circular": "k970013"
+                          },
+                          "open": false
+                        }
+                      ],
+                      "scene": {
+                        "$circular": "kscene"
+                      },
+                      "static": false,
+                      "_transform": {
+                        "$circular": "k970014"
+                      },
+                      "parent": {
+                        "$circular": "k970007"
+                      }
+                    },
+                    {
+                      "$ref": "k970020",
+                      "$type": "Entity",
+                      "name": "Step 2",
+                      "layer": 0,
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "materials": [],
+                      "id": "24078d72-074b-42ef-802d-f5956e4cbfc3",
+                      "children": [],
+                      "components": [
+                        {
+                          "$ref": "k970021",
+                          "$type": "Transform",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "b67940b5-f28e-499f-b2e5-c6ffc29ef9be",
+                          "entity": {
+                            "$circular": "k970020"
+                          },
+                          "hasChangesForNormalMatrix": false,
+                          "_position": {
+                            "0": 0,
+                            "1": 0,
+                            "2": 0,
+                            "$ref": "k970022",
+                            "$type": "Vector3"
+                          },
+                          "_rotation": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "$ref": "k970023",
+                            "$type": "Vector3"
+                          },
+                          "_rotationQ": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "3": 1.0,
+                            "$ref": "k970024",
+                            "$type": "Quaternion"
+                          },
+                          "_scale": {
+                            "0": 1,
+                            "1": 1,
+                            "2": 1,
+                            "$ref": "k970025",
+                            "$type": "Vector3"
+                          }
+                        },
+                        {
+                          "$ref": "k970026_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                          "$type": "AudioSource",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "3895a870-73d5-4eaa-973d-97212b9ce3ee",
+                          "hasTransformChanges": false,
+                          "_src": "fd5cc1db-f515-461d-925d-3135e0ecd151",
+                          "_gain": 1.0,
+                          "_loop": false,
+                          "_autoPlay": false,
+                          "_muted": false,
+                          "_speed": 1,
+                          "_bypassTimeScale": true,
+                          "_trackTime": 0,
+                          "_pooling": true,
+                          "_poolMinSize": 2,
+                          "_spatial": false,
+                          "_stereoPan": 0,
+                          "_rolloffMode": "inverse",
+                          "_minDistance": 2,
+                          "_maxDistance": 40,
+                          "_rolloffFactor": 1.5,
+                          "_coneInnerAngle": 60,
+                          "_coneOuterAngle": 90,
+                          "_coneOuterGain": 0.3,
+                          "_refDistance": 1,
+                          "entity": {
+                            "$circular": "k970020"
+                          },
+                          "open": false
+                        }
+                      ],
+                      "scene": {
+                        "$circular": "kscene"
+                      },
+                      "static": false,
+                      "_transform": {
+                        "$circular": "k970021"
+                      },
+                      "parent": {
+                        "$circular": "k970007"
+                      }
+                    },
+                    {
+                      "$ref": "k970027",
+                      "$type": "Entity",
+                      "name": "Step 3",
+                      "layer": 0,
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "materials": [],
+                      "id": "429bb448-31d5-4f32-be1f-8fda0bb759cc",
+                      "children": [],
+                      "components": [
+                        {
+                          "$ref": "k970028",
+                          "$type": "Transform",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "2ef000dc-5cd7-4a46-8442-db2415e19194",
+                          "entity": {
+                            "$circular": "k970027"
+                          },
+                          "hasChangesForNormalMatrix": false,
+                          "_position": {
+                            "0": 0,
+                            "1": 0,
+                            "2": 0,
+                            "$ref": "k970029",
+                            "$type": "Vector3"
+                          },
+                          "_rotation": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "$ref": "k970030",
+                            "$type": "Vector3"
+                          },
+                          "_rotationQ": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "3": 1.0,
+                            "$ref": "k970031",
+                            "$type": "Quaternion"
+                          },
+                          "_scale": {
+                            "0": 1,
+                            "1": 1,
+                            "2": 1,
+                            "$ref": "k970032",
+                            "$type": "Vector3"
+                          }
+                        },
+                        {
+                          "$ref": "k970033_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                          "$type": "AudioSource",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "1248f5bb-ac53-4a31-93ac-06447ebca88b",
+                          "hasTransformChanges": false,
+                          "_src": "dd962b14-f395-44c0-ad67-ebc51377b7bf",
+                          "_gain": 1.0,
+                          "_loop": false,
+                          "_autoPlay": false,
+                          "_muted": false,
+                          "_speed": 1,
+                          "_bypassTimeScale": true,
+                          "_trackTime": 0,
+                          "_pooling": true,
+                          "_poolMinSize": 2,
+                          "_spatial": false,
+                          "_stereoPan": 0,
+                          "_rolloffMode": "inverse",
+                          "_minDistance": 2,
+                          "_maxDistance": 40,
+                          "_rolloffFactor": 1.5,
+                          "_coneInnerAngle": 60,
+                          "_coneOuterAngle": 90,
+                          "_coneOuterGain": 0.3,
+                          "_refDistance": 1,
+                          "entity": {
+                            "$circular": "k970027"
+                          },
+                          "open": false
+                        }
+                      ],
+                      "scene": {
+                        "$circular": "kscene"
+                      },
+                      "static": false,
+                      "_transform": {
+                        "$circular": "k970028"
+                      },
+                      "parent": {
+                        "$circular": "k970007"
+                      }
+                    },
+                    {
+                      "$ref": "k970034",
+                      "$type": "Entity",
+                      "name": "Step 4",
+                      "layer": 0,
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "materials": [],
+                      "id": "c1805ab9-519b-40c8-b726-8beb4f49e975",
+                      "children": [],
+                      "components": [
+                        {
+                          "$ref": "k970035",
+                          "$type": "Transform",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "4912e53a-f785-4fdc-a10c-d8aba6c165a9",
+                          "entity": {
+                            "$circular": "k970034"
+                          },
+                          "hasChangesForNormalMatrix": false,
+                          "_position": {
+                            "0": 0,
+                            "1": 0,
+                            "2": 0,
+                            "$ref": "k970036",
+                            "$type": "Vector3"
+                          },
+                          "_rotation": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "$ref": "k970037",
+                            "$type": "Vector3"
+                          },
+                          "_rotationQ": {
+                            "0": 0,
+                            "1": 0.0,
+                            "2": 0,
+                            "3": 1.0,
+                            "$ref": "k970038",
+                            "$type": "Quaternion"
+                          },
+                          "_scale": {
+                            "0": 1,
+                            "1": 1,
+                            "2": 1,
+                            "$ref": "k970039",
+                            "$type": "Vector3"
+                          }
+                        },
+                        {
+                          "$ref": "k970040_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                          "$type": "AudioSource",
+                          "_active": true,
+                          "_activeInHierarchy": true,
+                          "_awaked": false,
+                          "_started": false,
+                          "id": "a5ff2939-47df-412f-8a5b-0586dfb640cf",
+                          "hasTransformChanges": false,
+                          "_src": "51039759-cb7a-4246-a3f3-5514ce9cba7b",
+                          "_gain": 1.0,
+                          "_loop": false,
+                          "_autoPlay": false,
+                          "_muted": false,
+                          "_speed": 1,
+                          "_bypassTimeScale": true,
+                          "_trackTime": 0,
+                          "_pooling": true,
+                          "_poolMinSize": 2,
+                          "_spatial": false,
+                          "_stereoPan": 0,
+                          "_rolloffMode": "inverse",
+                          "_minDistance": 2,
+                          "_maxDistance": 40,
+                          "_rolloffFactor": 1.5,
+                          "_coneInnerAngle": 60,
+                          "_coneOuterAngle": 90,
+                          "_coneOuterGain": 0.3,
+                          "_refDistance": 1,
+                          "entity": {
+                            "$circular": "k970034"
+                          },
+                          "open": false
+                        }
+                      ],
+                      "scene": {
+                        "$circular": "kscene"
+                      },
+                      "static": false,
+                      "_transform": {
+                        "$circular": "k970035"
+                      },
+                      "parent": {
+                        "$circular": "k970007"
+                      }
+                    }
+                  ],
+                  "components": [
+                    {
+                      "$ref": "k970008",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "7dd63ae1-a5d9-4e9c-ae48-3aad69af8791",
+                      "entity": {
+                        "$circular": "k970007"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970009",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970010",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970011",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970012",
+                        "$type": "Vector3"
+                      }
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970008"
+                  },
+                  "parent": {
+                    "$circular": "k970001"
+                  }
+                },
+                {
+                  "$ref": "k970041",
+                  "$type": "Entity",
+                  "name": "Land",
+                  "layer": 0,
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "materials": [],
+                  "id": "d1fe1219-bc2d-4fec-ae7a-2f1ea580b246",
+                  "children": [],
+                  "components": [
+                    {
+                      "$ref": "k970042",
+                      "$type": "Transform",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "63ddc972-161a-48ad-9255-f70d7adef0ab",
+                      "entity": {
+                        "$circular": "k970041"
+                      },
+                      "hasChangesForNormalMatrix": false,
+                      "_position": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "$ref": "k970043",
+                        "$type": "Vector3"
+                      },
+                      "_rotation": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "$ref": "k970044",
+                        "$type": "Vector3"
+                      },
+                      "_rotationQ": {
+                        "0": 0,
+                        "1": 0.0,
+                        "2": 0,
+                        "3": 1.0,
+                        "$ref": "k970045",
+                        "$type": "Quaternion"
+                      },
+                      "_scale": {
+                        "0": 1,
+                        "1": 1,
+                        "2": 1,
+                        "$ref": "k970046",
+                        "$type": "Vector3"
+                      }
+                    },
+                    {
+                      "$ref": "k970047_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                      "$type": "AudioSource",
+                      "_active": true,
+                      "_activeInHierarchy": true,
+                      "_awaked": false,
+                      "_started": false,
+                      "id": "ebdf1bbe-11b4-483d-a174-3673ad95165b",
+                      "hasTransformChanges": false,
+                      "_src": "e11778a3-c580-4f4c-ad11-007f0447cf40",
+                      "_gain": 1.0,
+                      "_loop": false,
+                      "_autoPlay": false,
+                      "_muted": false,
+                      "_speed": 1,
+                      "_bypassTimeScale": true,
+                      "_trackTime": 0,
+                      "_pooling": true,
+                      "_poolMinSize": 2,
+                      "_spatial": false,
+                      "_stereoPan": 0,
+                      "_rolloffMode": "inverse",
+                      "_minDistance": 2,
+                      "_maxDistance": 40,
+                      "_rolloffFactor": 1.5,
+                      "_coneInnerAngle": 60,
+                      "_coneOuterAngle": 90,
+                      "_coneOuterGain": 0.3,
+                      "_refDistance": 1,
+                      "entity": {
+                        "$circular": "k970041"
+                      },
+                      "open": false
+                    }
+                  ],
+                  "scene": {
+                    "$circular": "kscene"
+                  },
+                  "static": false,
+                  "_transform": {
+                    "$circular": "k970042"
+                  },
+                  "parent": {
+                    "$circular": "k970001"
+                  }
+                }
+              ],
+              "components": [
+                {
+                  "$ref": "k970002",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "fea473db-f269-4a85-b5bd-96f68090bd9e",
+                  "entity": {
+                    "$circular": "k970001"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k970003",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k970004",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k970005",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k970006",
+                    "$type": "Vector3"
+                  }
+                }
+              ],
+              "scene": {
+                "$circular": "kscene"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k970002"
+              },
+              "parent": {
+                "$circular": "k4"
+              }
             }
           ],
           "components": [
@@ -8590,647 +10707,6 @@
           "static": false,
           "_transform": {
             "$circular": "k5"
-          },
-          "parent": {
-            "$circular": "p_ref_1618"
-          }
-        },
-        {
-          "$ref": "k970001",
-          "$type": "Entity",
-          "name": "Footstep Sounds",
-          "layer": 0,
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "materials": [],
-          "id": "38681af1-10ea-4309-b8a4-f7fc3a08fcd3",
-          "children": [
-            {
-              "$ref": "k970007",
-              "$type": "Entity",
-              "name": "Step",
-              "layer": 0,
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "materials": [],
-              "id": "4f5a7b37-11be-4036-bc85-5f6de866597e",
-              "children": [
-                {
-                  "$ref": "k970013",
-                  "$type": "Entity",
-                  "name": "Step 1",
-                  "layer": 0,
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "materials": [],
-                  "id": "029b5f48-0175-4a3c-a51b-6099c2c2d13e",
-                  "children": [],
-                  "components": [
-                    {
-                      "$ref": "k970014",
-                      "$type": "Transform",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "53da570b-b77d-4fc1-ac4e-6cdb6ad4ec61",
-                      "entity": {
-                        "$circular": "k970013"
-                      },
-                      "hasChangesForNormalMatrix": false,
-                      "_position": {
-                        "0": 0,
-                        "1": 0,
-                        "2": 0,
-                        "$ref": "k970015",
-                        "$type": "Vector3"
-                      },
-                      "_rotation": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "$ref": "k970016",
-                        "$type": "Vector3"
-                      },
-                      "_rotationQ": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "3": 1.0,
-                        "$ref": "k970017",
-                        "$type": "Quaternion"
-                      },
-                      "_scale": {
-                        "0": 1,
-                        "1": 1,
-                        "2": 1,
-                        "$ref": "k970018",
-                        "$type": "Vector3"
-                      }
-                    },
-                    {
-                      "$ref": "k970019_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
-                      "$type": "AudioSource",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "f9466695-7c41-405e-a287-e6eac257f0a3",
-                      "hasTransformChanges": false,
-                      "_src": "a80f8e70-8636-4277-85d9-5049492de0d0",
-                      "_gain": 1.0,
-                      "_loop": false,
-                      "_autoPlay": false,
-                      "_muted": false,
-                      "_speed": 1,
-                      "_bypassTimeScale": true,
-                      "_trackTime": 0,
-                      "_pooling": true,
-                      "_poolMinSize": 2,
-                      "_spatial": false,
-                      "_stereoPan": 0,
-                      "_rolloffMode": "inverse",
-                      "_minDistance": 2,
-                      "_maxDistance": 40,
-                      "_rolloffFactor": 1.5,
-                      "_coneInnerAngle": 60,
-                      "_coneOuterAngle": 90,
-                      "_coneOuterGain": 0.3,
-                      "_refDistance": 1,
-                      "entity": {
-                        "$circular": "k970013"
-                      },
-                      "open": false
-                    }
-                  ],
-                  "scene": {
-                    "$circular": "kscene"
-                  },
-                  "static": false,
-                  "_transform": {
-                    "$circular": "k970014"
-                  },
-                  "parent": {
-                    "$circular": "k970007"
-                  }
-                },
-                {
-                  "$ref": "k970020",
-                  "$type": "Entity",
-                  "name": "Step 2",
-                  "layer": 0,
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "materials": [],
-                  "id": "24078d72-074b-42ef-802d-f5956e4cbfc3",
-                  "children": [],
-                  "components": [
-                    {
-                      "$ref": "k970021",
-                      "$type": "Transform",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "b67940b5-f28e-499f-b2e5-c6ffc29ef9be",
-                      "entity": {
-                        "$circular": "k970020"
-                      },
-                      "hasChangesForNormalMatrix": false,
-                      "_position": {
-                        "0": 0,
-                        "1": 0,
-                        "2": 0,
-                        "$ref": "k970022",
-                        "$type": "Vector3"
-                      },
-                      "_rotation": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "$ref": "k970023",
-                        "$type": "Vector3"
-                      },
-                      "_rotationQ": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "3": 1.0,
-                        "$ref": "k970024",
-                        "$type": "Quaternion"
-                      },
-                      "_scale": {
-                        "0": 1,
-                        "1": 1,
-                        "2": 1,
-                        "$ref": "k970025",
-                        "$type": "Vector3"
-                      }
-                    },
-                    {
-                      "$ref": "k970026_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
-                      "$type": "AudioSource",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "3895a870-73d5-4eaa-973d-97212b9ce3ee",
-                      "hasTransformChanges": false,
-                      "_src": "fd5cc1db-f515-461d-925d-3135e0ecd151",
-                      "_gain": 1.0,
-                      "_loop": false,
-                      "_autoPlay": false,
-                      "_muted": false,
-                      "_speed": 1,
-                      "_bypassTimeScale": true,
-                      "_trackTime": 0,
-                      "_pooling": true,
-                      "_poolMinSize": 2,
-                      "_spatial": false,
-                      "_stereoPan": 0,
-                      "_rolloffMode": "inverse",
-                      "_minDistance": 2,
-                      "_maxDistance": 40,
-                      "_rolloffFactor": 1.5,
-                      "_coneInnerAngle": 60,
-                      "_coneOuterAngle": 90,
-                      "_coneOuterGain": 0.3,
-                      "_refDistance": 1,
-                      "entity": {
-                        "$circular": "k970020"
-                      },
-                      "open": false
-                    }
-                  ],
-                  "scene": {
-                    "$circular": "kscene"
-                  },
-                  "static": false,
-                  "_transform": {
-                    "$circular": "k970021"
-                  },
-                  "parent": {
-                    "$circular": "k970007"
-                  }
-                },
-                {
-                  "$ref": "k970027",
-                  "$type": "Entity",
-                  "name": "Step 3",
-                  "layer": 0,
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "materials": [],
-                  "id": "429bb448-31d5-4f32-be1f-8fda0bb759cc",
-                  "children": [],
-                  "components": [
-                    {
-                      "$ref": "k970028",
-                      "$type": "Transform",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "2ef000dc-5cd7-4a46-8442-db2415e19194",
-                      "entity": {
-                        "$circular": "k970027"
-                      },
-                      "hasChangesForNormalMatrix": false,
-                      "_position": {
-                        "0": 0,
-                        "1": 0,
-                        "2": 0,
-                        "$ref": "k970029",
-                        "$type": "Vector3"
-                      },
-                      "_rotation": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "$ref": "k970030",
-                        "$type": "Vector3"
-                      },
-                      "_rotationQ": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "3": 1.0,
-                        "$ref": "k970031",
-                        "$type": "Quaternion"
-                      },
-                      "_scale": {
-                        "0": 1,
-                        "1": 1,
-                        "2": 1,
-                        "$ref": "k970032",
-                        "$type": "Vector3"
-                      }
-                    },
-                    {
-                      "$ref": "k970033_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
-                      "$type": "AudioSource",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "1248f5bb-ac53-4a31-93ac-06447ebca88b",
-                      "hasTransformChanges": false,
-                      "_src": "dd962b14-f395-44c0-ad67-ebc51377b7bf",
-                      "_gain": 1.0,
-                      "_loop": false,
-                      "_autoPlay": false,
-                      "_muted": false,
-                      "_speed": 1,
-                      "_bypassTimeScale": true,
-                      "_trackTime": 0,
-                      "_pooling": true,
-                      "_poolMinSize": 2,
-                      "_spatial": false,
-                      "_stereoPan": 0,
-                      "_rolloffMode": "inverse",
-                      "_minDistance": 2,
-                      "_maxDistance": 40,
-                      "_rolloffFactor": 1.5,
-                      "_coneInnerAngle": 60,
-                      "_coneOuterAngle": 90,
-                      "_coneOuterGain": 0.3,
-                      "_refDistance": 1,
-                      "entity": {
-                        "$circular": "k970027"
-                      },
-                      "open": false
-                    }
-                  ],
-                  "scene": {
-                    "$circular": "kscene"
-                  },
-                  "static": false,
-                  "_transform": {
-                    "$circular": "k970028"
-                  },
-                  "parent": {
-                    "$circular": "k970007"
-                  }
-                },
-                {
-                  "$ref": "k970034",
-                  "$type": "Entity",
-                  "name": "Step 4",
-                  "layer": 0,
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "materials": [],
-                  "id": "c1805ab9-519b-40c8-b726-8beb4f49e975",
-                  "children": [],
-                  "components": [
-                    {
-                      "$ref": "k970035",
-                      "$type": "Transform",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "4912e53a-f785-4fdc-a10c-d8aba6c165a9",
-                      "entity": {
-                        "$circular": "k970034"
-                      },
-                      "hasChangesForNormalMatrix": false,
-                      "_position": {
-                        "0": 0,
-                        "1": 0,
-                        "2": 0,
-                        "$ref": "k970036",
-                        "$type": "Vector3"
-                      },
-                      "_rotation": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "$ref": "k970037",
-                        "$type": "Vector3"
-                      },
-                      "_rotationQ": {
-                        "0": 0,
-                        "1": 0.0,
-                        "2": 0,
-                        "3": 1.0,
-                        "$ref": "k970038",
-                        "$type": "Quaternion"
-                      },
-                      "_scale": {
-                        "0": 1,
-                        "1": 1,
-                        "2": 1,
-                        "$ref": "k970039",
-                        "$type": "Vector3"
-                      }
-                    },
-                    {
-                      "$ref": "k970040_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
-                      "$type": "AudioSource",
-                      "_active": true,
-                      "_activeInHierarchy": true,
-                      "_awaked": false,
-                      "_started": false,
-                      "id": "a5ff2939-47df-412f-8a5b-0586dfb640cf",
-                      "hasTransformChanges": false,
-                      "_src": "51039759-cb7a-4246-a3f3-5514ce9cba7b",
-                      "_gain": 1.0,
-                      "_loop": false,
-                      "_autoPlay": false,
-                      "_muted": false,
-                      "_speed": 1,
-                      "_bypassTimeScale": true,
-                      "_trackTime": 0,
-                      "_pooling": true,
-                      "_poolMinSize": 2,
-                      "_spatial": false,
-                      "_stereoPan": 0,
-                      "_rolloffMode": "inverse",
-                      "_minDistance": 2,
-                      "_maxDistance": 40,
-                      "_rolloffFactor": 1.5,
-                      "_coneInnerAngle": 60,
-                      "_coneOuterAngle": 90,
-                      "_coneOuterGain": 0.3,
-                      "_refDistance": 1,
-                      "entity": {
-                        "$circular": "k970034"
-                      },
-                      "open": false
-                    }
-                  ],
-                  "scene": {
-                    "$circular": "kscene"
-                  },
-                  "static": false,
-                  "_transform": {
-                    "$circular": "k970035"
-                  },
-                  "parent": {
-                    "$circular": "k970007"
-                  }
-                }
-              ],
-              "components": [
-                {
-                  "$ref": "k970008",
-                  "$type": "Transform",
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "id": "7dd63ae1-a5d9-4e9c-ae48-3aad69af8791",
-                  "entity": {
-                    "$circular": "k970007"
-                  },
-                  "hasChangesForNormalMatrix": false,
-                  "_position": {
-                    "0": 0,
-                    "1": 0,
-                    "2": 0,
-                    "$ref": "k970009",
-                    "$type": "Vector3"
-                  },
-                  "_rotation": {
-                    "0": 0,
-                    "1": 0.0,
-                    "2": 0,
-                    "$ref": "k970010",
-                    "$type": "Vector3"
-                  },
-                  "_rotationQ": {
-                    "0": 0,
-                    "1": 0.0,
-                    "2": 0,
-                    "3": 1.0,
-                    "$ref": "k970011",
-                    "$type": "Quaternion"
-                  },
-                  "_scale": {
-                    "0": 1,
-                    "1": 1,
-                    "2": 1,
-                    "$ref": "k970012",
-                    "$type": "Vector3"
-                  }
-                }
-              ],
-              "scene": {
-                "$circular": "kscene"
-              },
-              "static": false,
-              "_transform": {
-                "$circular": "k970008"
-              },
-              "parent": {
-                "$circular": "k970001"
-              }
-            },
-            {
-              "$ref": "k970041",
-              "$type": "Entity",
-              "name": "Land",
-              "layer": 0,
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "materials": [],
-              "id": "d1fe1219-bc2d-4fec-ae7a-2f1ea580b246",
-              "children": [],
-              "components": [
-                {
-                  "$ref": "k970042",
-                  "$type": "Transform",
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "id": "63ddc972-161a-48ad-9255-f70d7adef0ab",
-                  "entity": {
-                    "$circular": "k970041"
-                  },
-                  "hasChangesForNormalMatrix": false,
-                  "_position": {
-                    "0": 0,
-                    "1": 0,
-                    "2": 0,
-                    "$ref": "k970043",
-                    "$type": "Vector3"
-                  },
-                  "_rotation": {
-                    "0": 0,
-                    "1": 0.0,
-                    "2": 0,
-                    "$ref": "k970044",
-                    "$type": "Vector3"
-                  },
-                  "_rotationQ": {
-                    "0": 0,
-                    "1": 0.0,
-                    "2": 0,
-                    "3": 1.0,
-                    "$ref": "k970045",
-                    "$type": "Quaternion"
-                  },
-                  "_scale": {
-                    "0": 1,
-                    "1": 1,
-                    "2": 1,
-                    "$ref": "k970046",
-                    "$type": "Vector3"
-                  }
-                },
-                {
-                  "$ref": "k970047_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
-                  "$type": "AudioSource",
-                  "_active": true,
-                  "_activeInHierarchy": true,
-                  "_awaked": false,
-                  "_started": false,
-                  "id": "ebdf1bbe-11b4-483d-a174-3673ad95165b",
-                  "hasTransformChanges": false,
-                  "_src": "e11778a3-c580-4f4c-ad11-007f0447cf40",
-                  "_gain": 1.0,
-                  "_loop": false,
-                  "_autoPlay": false,
-                  "_muted": false,
-                  "_speed": 1,
-                  "_bypassTimeScale": true,
-                  "_trackTime": 0,
-                  "_pooling": true,
-                  "_poolMinSize": 2,
-                  "_spatial": false,
-                  "_stereoPan": 0,
-                  "_rolloffMode": "inverse",
-                  "_minDistance": 2,
-                  "_maxDistance": 40,
-                  "_rolloffFactor": 1.5,
-                  "_coneInnerAngle": 60,
-                  "_coneOuterAngle": 90,
-                  "_coneOuterGain": 0.3,
-                  "_refDistance": 1,
-                  "entity": {
-                    "$circular": "k970041"
-                  },
-                  "open": false
-                }
-              ],
-              "scene": {
-                "$circular": "kscene"
-              },
-              "static": false,
-              "_transform": {
-                "$circular": "k970042"
-              },
-              "parent": {
-                "$circular": "k970001"
-              }
-            }
-          ],
-          "components": [
-            {
-              "$ref": "k970002",
-              "$type": "Transform",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "fea473db-f269-4a85-b5bd-96f68090bd9e",
-              "entity": {
-                "$circular": "k970001"
-              },
-              "hasChangesForNormalMatrix": false,
-              "_position": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
-                "$ref": "k970003",
-                "$type": "Vector3"
-              },
-              "_rotation": {
-                "0": 0,
-                "1": 0.0,
-                "2": 0,
-                "$ref": "k970004",
-                "$type": "Vector3"
-              },
-              "_rotationQ": {
-                "0": 0,
-                "1": 0.0,
-                "2": 0,
-                "3": 1.0,
-                "$ref": "k970005",
-                "$type": "Quaternion"
-              },
-              "_scale": {
-                "0": 1,
-                "1": 1,
-                "2": 1,
-                "$ref": "k970006",
-                "$type": "Vector3"
-              }
-            }
-          ],
-          "scene": {
-            "$circular": "kscene"
-          },
-          "static": false,
-          "_transform": {
-            "$circular": "k970002"
           },
           "parent": {
             "$circular": "p_ref_1618"
@@ -9702,9 +11178,39 @@
           },
           "eyes": {
             "$circular": "p_ref_2052"
+          }
+        },
+        {
+          "$ref": "k999001",
+          "$type": "cfcca3f6-13ce-46dc-863c-ee1f236c75cb",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "dd83cf1e-064a-41fb-b65f-cc4b39c17b1b",
+          "entity": {
+            "$circular": "p_ref_1618"
+          },
+          "eyes": {
+            "$circular": "p_ref_2052"
           },
           "hurtSound": {
             "$circular": "k65"
+          }
+        },
+        {
+          "$ref": "k996001",
+          "$type": "c7c489f2-1833-4077-9356-626fbf91efc1",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "0bb58f7e-d84c-47ab-8512-4ac0d1f2d8f3",
+          "entity": {
+            "$circular": "p_ref_1618"
+          },
+          "holder": {
+            "$circular": "k900042"
           }
         },
         {
@@ -9720,9 +11226,6 @@
           },
           "eyes": {
             "$circular": "p_ref_2052"
-          },
-          "holder": {
-            "$circular": "k900042"
           }
         },
         {

@@ -1,6 +1,6 @@
 import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String } from '@brave/core';
 import type { Interactor } from './interactor';
-import { playClip } from './play-clip';
+import { playClip } from '../shared/sound';
 
 /** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what E does when it is looked at). */
 export type InteractableMarker = 'line' | 'simple' | 'none';

@@ -1,6 +1,6 @@
 import { Animator, Collider, Entity, Float, JsonIgnore, NavAgent, PhysicsSystem, PlayerMovement, Ragdoll, Ref, Saved, Script, ScriptComponent, SpawnSystem, State, Time, Vector3 } from '@brave/core';
-import { Health, IDamageEvent } from '../combat/health';
-import { playSound } from '../combat/play-sound';
+import { Health, IDamageEvent } from '../health/health';
+import { playSound } from '../shared/sound';
 
 /**
  * A cube that hunts the player. It waits until the player is within `Aggro Range` (or is shot, or is told to `hunt()`), then walks to the player over the navigation grid and hits it in reach, every

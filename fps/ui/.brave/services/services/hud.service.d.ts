@@ -59,6 +59,7 @@ export declare class Hud {
     private messageTimer?;
     private markersKey;
     setPrompt(text: string): void;
+    /** The rounds of the weapon in hand (`magazine` 0 for a gear that has none). A `reserve` below zero shows the count alone: a grenade, a medkit. */
     setAmmo(ammo: number, magazine: number, reserve: number): void;
     setHealth(health: number, maxHealth: number): void;
     setStance(stance: string): void;

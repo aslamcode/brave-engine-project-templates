@@ -31,7 +31,7 @@ export class FirstPersonArms extends ScriptComponent {
   @Float({ label: 'Armed Lean', tooltip: 'The same while armed.' }) armedLean = 1;
   @String({ label: 'Lean Bone', tooltip: 'Which Look At leans: the one whose Bone is this (the chest). Empty: every Look At of the character, which is wrong for one that turns the head and must stay on.' }) leanBone = '';
   @Float({ header: 'Equip', label: 'Equip Time', suffix: 's', tooltip: 'How long the arms take to go to the weapon and to come back.' }) equipTime = 0.3;
-  @Bool({ label: 'Equip Key', tooltip: 'On: key 1 takes the weapon in hand and puts it away. Off when a Weapon handles the keys (1 to 9 choose a weapon): it calls equip() and unequip() itself.' }) equipKey = true;
+  @Bool({ label: 'Equip Key', tooltip: 'On: key 1 takes the weapon in hand and puts it away. Off when a Loadout handles the keys (1 to 9 choose a gear): it calls equip() and unequip() itself.' }) equipKey = true;
 
   /** Whether the character holds the weapon (or is raising it). */
   @JsonIgnore() equipped = false;

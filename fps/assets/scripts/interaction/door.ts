@@ -1,6 +1,7 @@
 import { AudioTrack, Bool, Callable, Entity, Float, IEntity, Inject, Invoke, JsonIgnore, Quaternion, Ref, Saved, Script, Select, Signal, State, String, Time, Vec3, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
+import { Journal } from '../../services/journal.service';
 import { Interactable } from './interactable';
 
 export type DoorMode = 'rotate' | 'slide';
@@ -58,6 +59,7 @@ export class Door extends Interactable {
   @Bool({ label: 'Close Sound When Shut', tooltip: 'On: the close sound plays when it has shut (a latch, a thud). Off: when it starts to close (a slide).' }) closeSoundWhenShut = true;
 
   @Inject(Inventory) inventory!: Inventory;
+  @Inject(Journal) journal!: Journal;
   @Inject(Hud) hud!: Hud;
 
   /** The movement to open is finished. */
@@ -157,6 +159,7 @@ export class Door extends Interactable {
     }
 
     if (this.canUnlock) {
+      this.journal.markUsed(this.keyItemId);
       this.unlock();
       this.unlockTimer = Invoke.setTimeout(() => this.open(), this.unlockDelay * 1000);
       return;

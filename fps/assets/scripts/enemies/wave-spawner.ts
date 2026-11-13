@@ -1,7 +1,7 @@
 import { Collider, Entity, Float, Inject, Int, ISpawnBatch, ISpawnPlacement, JsonIgnore, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, SpawnSystem, State, String, Time, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
-import { Health } from '../combat/health';
-import { playSound } from '../combat/play-sound';
+import { Health } from '../health/health';
+import { playSound } from '../shared/sound';
 import { EnemyCube } from './enemy-cube';
 
 /**

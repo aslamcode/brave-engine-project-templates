@@ -1,6 +1,8 @@
 import { IEntity, Signal } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
+import { Journal } from '../../services/journal.service';
+import { Objective } from '../journal/objective';
 import { Interactable } from './interactable';
 import type { Interactor } from './interactor';
 /**
@@ -23,12 +25,14 @@ export declare class Socket extends Interactable {
     placed?: IEntity;
     switchOn?: IEntity;
     target?: Interactable;
+    objective?: Objective;
     unlocksTarget: boolean;
     opensTarget: boolean;
     filledMessage: string;
     putSound: string;
     inventory: Inventory;
     hud: Hud;
+    journal: Journal;
     /** The item is in: the Interactor that put it. */
     onFilled: Signal<Interactor>;
     isFilled: boolean;
