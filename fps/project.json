@@ -21,7 +21,7 @@
     "maxSoftShadows": 8,
     "maxAreaShadows": 8,
     "transmissionSteps": 2,
-    "maxStains": 1024
+    "maxStains": 256
   },
   "general": {
     "version": "1.0.0",
