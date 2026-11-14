@@ -35,6 +35,9 @@ export class Firearm extends Gear {
   @Float({ label: 'In the Air', suffix: '°', tooltip: 'The same while jumping or falling.' }) spreadAir = 3;
   @Float({ label: 'Settle Time', suffix: 's', tooltip: 'How long the spread takes to follow what the player does.' }) spreadTime = 0.12;
 
+  @Float({ header: 'Ballistics', label: 'Muzzle Velocity', suffix: 'm/s', tooltip: 'How fast the bullet leaves the barrel. 0 is a straight line, with no drop. Above it the bullet falls as it flies, by gravity (about 900 for a rifle, 400 for a shotgun pellet): the drop only shows at a long range.' }) muzzleVelocity = 0;
+  @Float({ label: 'Penetration', tooltip: 'How well the bullet goes through things. It multiplies the thickness of a wall or a crate it can pass (the table is in bullet-surfaces.ts) and the share of its damage it keeps after a body. 1 is a rifle, about 0.3 a shotgun pellet, 0 never goes through anything.' }) penetration = 1;
+
   @Select({ header: 'Crosshair', label: 'Crosshair', optionsKey: 'crosshairOptions', sort: false, tooltip: 'Dot: a centre and four ticks that open with the spread. Arcs: a ring of four arcs round a dot. Twin Arcs: two arcs, one each side of a dot, with a thin arc outside each (the shotgun\'s). All open with the spread.' }) crosshair: CrosshairStyle = 'dot';
 
   @String({ header: 'Ammo', label: 'Ammo Type', tooltip: 'The item of the Inventory this weapon fires: the rounds it does not hold in its magazine are the Inventory\'s count of this item, so weapons of one type share them, and a pickup or an ammo box of this type fills them. Weapons of one type should agree on Reserve and Reserve Limit.' }) ammoType = 'ammo';

@@ -1,6 +1,6 @@
-import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Service, Signal, Store, UISystem } from '@brave/core';
+import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, UISystem } from '@brave/core';
 
-/** What the menu page shows: whether it is open, and the three settings the player can change. */
+/** What the menu page shows: whether it is open, the three settings the player can change, and whether the game can be closed from here. */
 export interface IPauseMenuState {
   open: boolean;
   /** How much the mouse turns the view, as a multiple of what the camera was made with (1: as it is). */
@@ -9,6 +9,8 @@ export interface IPauseMenuState {
   fieldOfView: number;
   /** The master volume, 0 to 1. */
   volume: number;
+  /** The game can be closed from the menu: in the editor's Play (it stops the Play) and in an installed build (the app quits), not in a browser tab, which a page cannot close. */
+  canQuit: boolean;
 }
 
 const SENSITIVITY = { min: 0.2, max: 3, start: 1 };
@@ -30,12 +32,15 @@ const ESCAPE_DEBOUNCE_MS = 200;
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
  * not written). `pausesGame` off keeps the game running behind the menu.
  *
+ * Quit ends the game by where it runs, and is offered only where it can (`state.canQuit`): in the editor's Play it stops the Play and leaves fullscreen, as the editor's own Stop does (the editor itself stays open), in an
+ * installed build under NW.js the app quits, and in a browser tab there is nothing a page may close, so the page does not show it. The page asks twice before it calls `quit()`, and before the `SaveGame` service's `restart()`.
+ *
  * The page takes the mouse and the keyboard only while a menu is open (`UISystem.interactive`): closing one hands the keyboard back to the game, which a button or a slider that was clicked would otherwise keep inside
  * the page (the mouse still reached the game through the page's pointer bridging, the keys did not: the player could aim and shoot but not walk).
  */
 @Service()
 export class PauseMenu {
-  state: IPauseMenuState = { open: false, sensitivity: SENSITIVITY.start, fieldOfView: 60, volume: 1 };
+  state: IPauseMenuState = { open: false, sensitivity: SENSITIVITY.start, fieldOfView: 60, volume: 1, canQuit: false };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IPauseMenuState>();
@@ -47,8 +52,9 @@ export class PauseMenu {
   @Store({ prefix: 'settings', customName: 'fieldOfView' }) savedFieldOfView?: number;
   @Store({ prefix: 'settings', customName: 'volume' }) savedVolume?: number;
 
-  // The player's camera as the scene made it (what a multiple of sensitivity is a multiple of), the pointer was held once, and the pause is the menu's.
-  private baseSensitivity = new WeakMap<FirstPersonCamera, number>();
+  // The player's camera as the scene made it (what a multiple of sensitivity is a multiple of), by the id of the component: a load or a restart builds the camera again with the same id and what the menu had made of its
+  // sensitivity, so the camera itself cannot say what it was made with. The pointer was held once, and the pause is the menu's.
+  private baseSensitivity = new Map<string, number>();
   private armed = false;
   private pausedByMenu = false;
   private releaseExpected = false;
@@ -60,6 +66,7 @@ export class PauseMenu {
   onStart() {
     this.state.sensitivity = this.savedSensitivity ?? SENSITIVITY.start;
     this.state.volume = this.savedVolume ?? 1;
+    this.state.canQuit = canQuitHere();
     const view = this.eyes()?.getComponent(Camera);
     this.state.fieldOfView = this.savedFieldOfView ?? view?.fieldOfView ?? this.state.fieldOfView;
     this.apply();
@@ -87,6 +94,7 @@ export class PauseMenu {
   open(): void {
     if (this.state.open) return;
     this.state.open = true;
+    this.state.canQuit = canQuitHere();
     UISystem.interactive = true;
     if (this.pausesGame && BraveEngine.mode === BraveEngineModeEnum.Running) {
       BraveEngine.pause();
@@ -112,7 +120,20 @@ export class PauseMenu {
     this.close();
   }
 
-  /** Puts the player's settings on the camera of the player that is on, again: a load builds a new player whose camera has what its scene gave it. */
+  /** Ends the game, by where it runs: the editor's Play is stopped (and fullscreen left), an installed build quits. Nothing happens in a browser tab (`state.canQuit` is false there). The page asks the player to confirm first. */
+  quit(): void {
+    if (!canQuitHere()) return;
+
+    if (!Project.compiled) {
+      // The editor's own Stop also leaves the fullscreen it entered for the Play: a game cannot reach the editor's code, but `Screen` does the same. Never `nw.App.quit()` here: it would close the editor.
+      BraveEngine.stop();
+      if (Screen.fullscreen) Screen.fullscreen = false;
+      return;
+    }
+    nwApp()?.quit();
+  }
+
+  /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */
   reapply(): void {
     this.apply();
   }
@@ -194,8 +215,8 @@ export class PauseMenu {
     const eyes = this.eyes();
     const look = eyes?.getComponent(FirstPersonCamera);
     if (look) {
-      if (!this.baseSensitivity.has(look)) this.baseSensitivity.set(look, look.sensitivity);
-      look.sensitivity = (this.baseSensitivity.get(look) as number) * this.state.sensitivity;
+      if (!this.baseSensitivity.has(look.id)) this.baseSensitivity.set(look.id, look.sensitivity);
+      look.sensitivity = (this.baseSensitivity.get(look.id) as number) * this.state.sensitivity;
     }
     const view = eyes?.getComponent(Camera);
     if (view) view.fieldOfView = this.state.fieldOfView;
@@ -218,4 +239,19 @@ export class PauseMenu {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(Number.isFinite(value) ? value : min, min), max);
+}
+
+/** The slice of NW.js's `nw.App` that quitting uses. */
+interface INwApp {
+  quit(): void;
+}
+
+// NW.js has a global `nw` (the runtime tells it the same way); a plain browser does not.
+function nwApp(): INwApp | undefined {
+  return (window as unknown as { nw?: { App?: INwApp } }).nw?.App;
+}
+
+// The editor's Play can be stopped from the game and an installed app can quit; a page in a browser tab cannot close itself.
+function canQuitHere(): boolean {
+  return !Project.compiled || nwApp() !== undefined;
 }

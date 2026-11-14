@@ -6,10 +6,11 @@ import { Loadout } from '../gear/loadout';
 import { Firearm } from './firearm';
 import { Health } from '../health/health';
 import { Hitbox } from '../health/hitbox';
+import { BODY_KEEPS, stopThickness } from './bullet-surfaces';
 import { MuzzleFlash } from './muzzle-flash';
 import { playSound } from '../shared/sound';
 
-/** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` is where a bullet that goes on after a hit would be handled. */
+/** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` says what a hit leaves of it: a bullet that goes on (through a thin wall, through a body) is a new one from where it came out. */
 export interface IBullet {
   origin: Vector3;
   direction: Vector3;
@@ -23,7 +24,8 @@ export interface IBullet {
  * their numbers, their parts and the rounds each one holds are theirs, and this fires whichever is in hand (with a grenade or a medkit in hand it does nothing).
  *
  * A hit finds the `Health` above the collider it hit (`Health.find()`), scales the damage by the `Hitbox` of that collider (`zone`, `multiplier`) and tells the HUD. What a hit on scenery does (a mark on the
- * wall) and what a bullet does after a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
+ * wall) and what a bullet does after a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit. A bullet flies a straight ray, or, when its weapon has a `Muzzle Velocity`, a curve that gravity
+ * bends; it goes through a body (keeping part of its damage) and through a wall or a crate of a material that allows it (`bullet-surfaces.ts`), by the thickness, weaker for it, if its weapon's `Penetration` allows it.
  *
  * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon is
  * put away or changed, or the player dies, and a shot cannot be fired while it lasts. With `Auto Reload` on it begins by itself when the magazine runs empty. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
@@ -39,6 +41,13 @@ export class Weapon extends ScriptComponent {
   private static readonly PROBE_RING = 0.8;
   // The layer of the body shell of a character whose hit zones are on its bones (a capsule that is only for walking): a shot passes it and meets the zones.
   private static readonly SHELL_LAYER = 'Enemy Shell';
+  // A bullet goes on after a hit this many times at most, a curve is cast in pieces of this many metres, a bullet is put this far past where it came out (so that it does not meet that wall again), and one with less damage than this is spent.
+  private static readonly MAX_PASSES = 4;
+  private static readonly PIECE = 10;
+  private static readonly MARGIN = 0.002;
+  private static readonly MIN_DAMAGE = 2;
+  // The most a bullet goes through of one body (a zone of a character is far thinner than this): a collider it cannot get out of stops it.
+  private static readonly BODY_REACH = 1;
 
   @Ref(Entity, { header: 'Parts', label: 'Eyes', tooltip: 'The camera: a shot starts here and goes where it looks.' }) eyes!: Entity;
 
@@ -73,6 +82,8 @@ export class Weapon extends ScriptComponent {
   @JsonIgnore() private eyesCamera?: Camera;
   @JsonIgnore() private clock = 0;
   @JsonIgnore() private nextShotAt = 0;
+  // What the bullet in the air has hurt: a body with more than one collider (a zone and the root's) is hurt once by it, however many it goes through.
+  @JsonIgnore() private readonly struck = new Set<Health>();
   @JsonIgnore() private triggerHeld = false;
   @JsonIgnore() private aimHeld = false;
   @JsonIgnore() private flashLeft = 0;
@@ -292,19 +303,87 @@ export class Weapon extends ScriptComponent {
     return new Vector3(forward.x + right.x * x + up.x * y, forward.y + right.y * x + up.y * y, forward.z + right.z * x + up.z * y).normalized;
   }
 
-  // The ray ignores the player's own body and every trigger (a zone is not a thing in the way). A bullet that goes on after a hit (through a thin wall, by the material and the thickness) is a loop here: cast
-  // again from the hit point with what `onBulletHit()` leaves of the bullet, until nothing is left. Today a bullet stops at the first thing.
+  // A bullet flies the ray of its weapon, or, with a `Muzzle Velocity`, a curve that gravity bends. The ray ignores the player's own body and every trigger (a zone is not a thing in the way). `onBulletHit()` says what
+  // a hit leaves of the bullet and where it goes on from, and the bullet is cast again from there, up to a few passes.
   private fireBullet(bullet: IBullet): void {
-    const hit = PhysicsSystem.raycast(bullet.origin, bullet.direction, bullet.range, { ignore: this.entity, mask: this.bulletMask });
-    if (hit) this.onBulletHit(hit, bullet);
+    this.struck.clear();
+    let flying: IBullet | undefined = bullet;
+    for (let pass = 0; flying && pass < Weapon.MAX_PASSES; pass++) {
+      const flight = this.fly(flying);
+      flying = flight ? this.onBulletHit(flight.hit, { ...flying, direction: flight.direction }) : undefined;
+    }
   }
 
-  /** What a bullet does to what it hit. Returns the damage it still has: 0, it stops. */
-  protected onBulletHit(hit: IRaycastHit, bullet: IBullet): number {
+  // The first thing the bullet meets, and the way it was going there: along a line, or along the curve, cast a piece at a time (each piece a ray from one point of the curve to the next).
+  private fly(bullet: IBullet): { hit: IRaycastHit; direction: Vector3 } | undefined {
+    const options = { ignore: this.entity, mask: this.bulletMask };
+    const velocity = this.current?.muzzleVelocity ?? 0;
+    if (velocity <= 0) {
+      const hit = PhysicsSystem.raycast(bullet.origin, bullet.direction, bullet.range, options);
+      return hit ? { hit, direction: bullet.direction } : undefined;
+    }
+
+    let from = bullet.origin;
+    for (let start = 0; start < bullet.range; start += Weapon.PIECE) {
+      const to = this.pointOnCurve(bullet, velocity, Math.min(start + Weapon.PIECE, bullet.range));
+      const length = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
+      const direction = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z).normalized;
+      const hit = length > 0 ? PhysicsSystem.raycast(from, direction, length, options) : undefined;
+      if (hit) return { hit: { ...hit, distance: start + hit.distance }, direction };
+      from = to;
+    }
+    return undefined;
+  }
+
+  // Where the bullet is after `distance` metres of its line: on the line, and under it by the fall of the time it took (gravity is the world's).
+  private pointOnCurve(bullet: IBullet, velocity: number, distance: number): Vector3 {
+    const time = distance / velocity, fall = 0.5 * time * time;
+    const { origin, direction } = bullet, gravity = PhysicsSystem.gravity;
+    return new Vector3(origin.x + direction.x * distance + gravity.x * fall, origin.y + direction.y * distance + gravity.y * fall, origin.z + direction.z * distance + gravity.z * fall);
+  }
+
+  /** What a bullet does to what it hit. Returns the bullet that goes on from there (where it comes out, its way, what is left of its damage and of its reach), or nothing when it stops. */
+  protected onBulletHit(hit: IRaycastHit, bullet: IBullet): IBullet | undefined {
+    const penetration = Math.max(this.current?.penetration ?? 1, 0);
     const health = Health.find(hit.entity);
-    if (health) this.hurt(health, hit, bullet);
-    else this.markScenery(hit);
-    return 0;
+    if (health) {
+      const hurts = !this.struck.has(health);
+      if (hurts) {
+        this.struck.add(health);
+        this.hurt(health, hit, bullet);
+      }
+      const out = this.exitOf(hit, bullet, Weapon.BODY_REACH);
+      // Another collider of a body it hurt already costs it nothing.
+      return out ? this.goOn(bullet, out.point, hit.distance + Weapon.MARGIN + out.distance, hurts ? bullet.damage * BODY_KEEPS * penetration : bullet.damage) : undefined;
+    }
+
+    this.markScenery(hit);
+    const reach = stopThickness(hit.collider) * penetration;
+    if (reach <= 0) return undefined;
+
+    const out = this.exitOf(hit, bullet, reach);
+    if (!out) return undefined;
+
+    if (out.collider === hit.collider) this.markScenery(out);
+    const thickness = Weapon.MARGIN + out.distance;
+    return this.goOn(bullet, out.point, hit.distance + thickness, bullet.damage * (1 - thickness / reach));
+  }
+
+  // The far side of what the bullet went into: a ray from just inside the collider it hit, which meets that collider's other face (`solid: false`, or a ray that starts inside would hit it again at once, and a
+  // bullet would never get out of a body). None within `reach`: too thick to go through.
+  private exitOf(hit: IRaycastHit, bullet: IBullet, reach: number): IRaycastHit | undefined {
+    const { point } = hit;
+    const inside = new Vector3(point.x + bullet.direction.x * Weapon.MARGIN, point.y + bullet.direction.y * Weapon.MARGIN, point.z + bullet.direction.z * Weapon.MARGIN);
+    return PhysicsSystem.raycast(inside, bullet.direction, reach, { ignore: this.entity, mask: this.bulletMask, solid: false });
+  }
+
+  // The bullet after a hit: from `point`, a hair further along its way, with what is left of its damage and of its reach. Nothing when there is too little of either.
+  private goOn(bullet: IBullet, point: Vector3, travelled: number, damage: number): IBullet | undefined {
+    const range = bullet.range - travelled;
+    if (damage < Weapon.MIN_DAMAGE || range <= 0) return undefined;
+
+    const { direction } = bullet;
+    return { origin: new Vector3(point.x + direction.x * Weapon.MARGIN, point.y + direction.y * Weapon.MARGIN, point.z + direction.z * Weapon.MARGIN), direction, damage, range };
   }
 
   private hurt(health: Health, hit: IRaycastHit, bullet: IBullet): void {

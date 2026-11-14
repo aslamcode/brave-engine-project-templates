@@ -27,6 +27,8 @@ export declare class Firearm extends Gear {
     spreadMoving: number;
     spreadAir: number;
     spreadTime: number;
+    muzzleVelocity: number;
+    penetration: number;
     crosshair: CrosshairStyle;
     ammoType: string;
     magazineSize: number;

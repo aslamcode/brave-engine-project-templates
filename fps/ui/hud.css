@@ -126,6 +126,12 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .menu__slider { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .menu__button { padding: 9px 0; border: 1.5px solid var(--accent); border-radius: 6px; background: transparent; color: var(--accent); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; }
 .menu__button:hover { background: rgba(255, 180, 84, 0.14); }
+.menu__button:disabled { opacity: 0.35; cursor: default; }
+/* Restart and Quit sit under Resume, quieter than it, side by side (Quit is not there in a browser tab: the row is Restart alone then). The first click turns one into a red "Click again to confirm" (`-confirm`). */
+.menu__actions { display: flex; gap: 10px; }
+.menu__button.-quiet { flex: 1; border-color: rgba(255, 255, 255, 0.28); color: inherit; font-weight: 500; }
+.menu__button.-quiet:hover:not(:disabled) { border-color: var(--accent); background: transparent; color: var(--accent); }
+.menu__button.-quiet.-confirm, .menu__button.-quiet.-confirm:hover:not(:disabled) { border-color: var(--danger); background: rgba(255, 90, 77, 0.12); color: var(--danger); }
 .menu__hint { text-align: center; font-size: 12px; color: rgba(244, 246, 248, 0.4); }
 .menu__note { min-height: 16px; text-align: center; font-size: 12px; color: var(--accent); }
 

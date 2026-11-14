@@ -1,5 +1,5 @@
 import { Signal } from '@brave/core';
-/** What the menu page shows: whether it is open, and the three settings the player can change. */
+/** What the menu page shows: whether it is open, the three settings the player can change, and whether the game can be closed from here. */
 export interface IPauseMenuState {
     open: boolean;
     /** How much the mouse turns the view, as a multiple of what the camera was made with (1: as it is). */
@@ -8,6 +8,8 @@ export interface IPauseMenuState {
     fieldOfView: number;
     /** The master volume, 0 to 1. */
     volume: number;
+    /** The game can be closed from the menu: in the editor's Play (it stops the Play) and in an installed build (the app quits), not in a browser tab, which a page cannot close. */
+    canQuit: boolean;
 }
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
@@ -18,6 +20,9 @@ export interface IPauseMenuState {
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
  * not written). `pausesGame` off keeps the game running behind the menu.
+ *
+ * Quit ends the game by where it runs, and is offered only where it can (`state.canQuit`): in the editor's Play it stops the Play and leaves fullscreen, as the editor's own Stop does (the editor itself stays open), in an
+ * installed build under NW.js the app quits, and in a browser tab there is nothing a page may close, so the page does not show it. The page asks twice before it calls `quit()`, and before the `SaveGame` service's `restart()`.
  *
  * The page takes the mouse and the keyboard only while a menu is open (`UISystem.interactive`): closing one hands the keyboard back to the game, which a button or a slider that was clicked would otherwise keep inside
  * the page (the mouse still reached the game through the page's pointer bridging, the keys did not: the player could aim and shoot but not walk).
@@ -54,7 +59,9 @@ export declare class PauseMenu {
     leave(): void;
     /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
     resume(): void;
-    /** Puts the player's settings on the camera of the player that is on, again: a load builds a new player whose camera has what its scene gave it. */
+    /** Ends the game, by where it runs: the editor's Play is stopped (and fullscreen left), an installed build quits. Nothing happens in a browser tab (`state.canQuit` is false there). The page asks the player to confirm first. */
+    quit(): void;
+    /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */
     reapply(): void;
     setSensitivity(value: number): void;
     setFieldOfView(degrees: number): void;

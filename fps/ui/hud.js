@@ -214,6 +214,54 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   saves.onChange.on(renderSaves, { sampleEvery: 0 });
 })();
 
+// Restart and Quit ask twice: the first click turns the button into "Click again to confirm" for three seconds and the second does it; the time running out, a click anywhere else, the other button and the menu
+// closing put it back. Restart is the `SaveGame` service's (the game as it was on its first frame), Quit the `PauseMenu`'s (what it does depends on where the game runs, and the service says whether it can: a browser
+// tab cannot close itself, so the button is not there).
+(function () {
+  var CONFIRM_MS = 3000, saves = BraveUiBridge.remote('SaveGame');
+  var restart = el('restart'), quit = el('quit'), armed = null;
+
+  function disarm() {
+    if (!armed) return;
+    clearTimeout(armed.timer);
+    armed.button.classList.remove('-confirm');
+    armed.button.textContent = armed.label;
+    armed = null;
+  }
+
+  function confirmable(button, action) {
+    var label = button.textContent;
+    button.addEventListener('click', function () {
+      if (armed && armed.button === button) {
+        disarm();
+        action();
+        return;
+      }
+      disarm();
+      button.classList.add('-confirm');
+      button.textContent = 'Click again to confirm';
+      armed = { button: button, label: label, timer: setTimeout(disarm, CONFIRM_MS) };
+    });
+  }
+
+  confirmable(restart, function () { saves.restart(); });
+  confirmable(quit, function () { pause.quit(); });
+
+  // A press on anything but the armed button (the page's other controls and the empty space, which the game gets) takes the question back.
+  document.addEventListener('mousedown', function (event) { if (armed && event.target !== armed.button) disarm(); }, true);
+
+  function renderQuit(state) {
+    quit.hidden = !state.canQuit;
+    if (!state.open) disarm();
+  }
+  pause.state().then(renderQuit);
+  pause.onChange.on(renderQuit, { sampleEvery: 0 });
+
+  function renderRestart(state) { restart.disabled = !state.canRestart || state.busy; }
+  saves.state().then(renderRestart);
+  saves.onChange.on(renderRestart, { sampleEvery: 0 });
+})();
+
 // The Journal (Datapad, Journal... its name comes from the game, never from this page): the `Journal` service says what is shown; the page draws it and sends the choices back. Tab opens and closes it;
 // while it is open the arrows move through the entries (up and down) and the categories (left and right). The lists are rebuilt only when their content changes, so a state sent again does not flicker.
 (function () {

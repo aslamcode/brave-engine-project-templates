@@ -2,7 +2,7 @@ import { Entity, IRaycastHit, ScriptComponent, Signal, Vector3 } from '@brave/co
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Firearm } from './firearm';
-/** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` is where a bullet that goes on after a hit would be handled. */
+/** One shot on its way: where it starts, which way it goes, what is left of its damage and of its reach. `Weapon.onBulletHit()` says what a hit leaves of it: a bullet that goes on (through a thin wall, through a body) is a new one from where it came out. */
 export interface IBullet {
     origin: Vector3;
     direction: Vector3;
@@ -15,7 +15,8 @@ export interface IBullet {
  * their numbers, their parts and the rounds each one holds are theirs, and this fires whichever is in hand (with a grenade or a medkit in hand it does nothing).
  *
  * A hit finds the `Health` above the collider it hit (`Health.find()`), scales the damage by the `Hitbox` of that collider (`zone`, `multiplier`) and tells the HUD. What a hit on scenery does (a mark on the
- * wall) and what a bullet does after a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit.
+ * wall) and what a bullet does after a hit are in `onBulletHit()`: the rest of the script never asks what a shot hit. A bullet flies a straight ray, or, when its weapon has a `Muzzle Velocity`, a curve that gravity
+ * bends; it goes through a body (keeping part of its damage) and through a wall or a crate of a material that allows it (`bullet-surfaces.ts`), by the thickness, weaker for it, if its weapon's `Penetration` allows it.
  *
  * Reloading is a timeline in game time (`reloadProgress`, 0 to 1) that the sounds are cued on and that `WeaponStance` poses the arms from; the rounds are added at the end. It is cancelled when the weapon is
  * put away or changed, or the player dies, and a shot cannot be fired while it lasts. With `Auto Reload` on it begins by itself when the magazine runs empty. Aiming (`aim`, 0 to 1) narrows the field of view, closes the spread and brings the weapon to the eye; it ends with a
@@ -26,6 +27,11 @@ export declare class Weapon extends ScriptComponent {
     private static readonly PROBES;
     private static readonly PROBE_RING;
     private static readonly SHELL_LAYER;
+    private static readonly MAX_PASSES;
+    private static readonly PIECE;
+    private static readonly MARGIN;
+    private static readonly MIN_DAMAGE;
+    private static readonly BODY_REACH;
     eyes: Entity;
     autoReload: boolean;
     hud: Hud;
@@ -53,6 +59,7 @@ export declare class Weapon extends ScriptComponent {
     private eyesCamera?;
     private clock;
     private nextShotAt;
+    private readonly struck;
     private triggerHeld;
     private aimHeld;
     private flashLeft;
@@ -96,8 +103,12 @@ export declare class Weapon extends ScriptComponent {
     private hurtsAlong;
     private scatter;
     private fireBullet;
-    /** What a bullet does to what it hit. Returns the damage it still has: 0, it stops. */
-    protected onBulletHit(hit: IRaycastHit, bullet: IBullet): number;
+    private fly;
+    private pointOnCurve;
+    /** What a bullet does to what it hit. Returns the bullet that goes on from there (where it comes out, its way, what is left of its damage and of its reach), or nothing when it stops. */
+    protected onBulletHit(hit: IRaycastHit, bullet: IBullet): IBullet | undefined;
+    private exitOf;
+    private goOn;
     private hurt;
     private markScenery;
     private pullTrigger;

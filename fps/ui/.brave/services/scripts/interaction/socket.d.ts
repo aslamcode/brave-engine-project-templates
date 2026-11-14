@@ -11,7 +11,13 @@ import type { Interactor } from './interactor';
  *
  * It can take several things, one console for a puzzle of five pieces: `Item Id` is then the ids separated by commas (`piece-1, piece-2, piece-3, piece-4, piece-5`), and `fuse x3` asks for three of one kind.
  * E puts in what the player carries of what is still missing, so a piece found later goes in later: the prompts say what is next and how far it is (`Needs Piece 3 (2 of 5)`, `Place Piece 3 (2 of 5)`), and
- * the socket is filled, with all of what follows, when the last one is in:
+ * the socket is filled, with all of what follows, when the last one is in.
+ *
+ * The pieces can be seen going in. `Placed Parts` is an entity (a plain one, off at the start) whose CHILDREN stand for the pieces, one for each, in the order of `Item Id` (`fuse x3` stands for three in a row):
+ * the container is switched on with the first piece, and each child as its piece goes in. A socket with no `Placed Parts` shows nothing until it is filled, as before. Which of them are on is worked out from what
+ * is in (`slotted`), so a game that is loaded shows the same ones.
+ *
+ * When the last one is in:
  *
  * - `Placed Object` (a child entity that starts switched off, the item as it looks in place) is switched on,
  * - the sound is played, `Filled Message` goes to the `Hud`, `onFilled` is emitted and `isFilled` is true from then on (a filled socket takes no more),
@@ -26,6 +32,7 @@ export declare class Socket extends Interactable {
     itemName: string;
     needsPrompt: string;
     needsMessage: string;
+    placedParts?: IEntity;
     placed?: IEntity;
     switchOn?: IEntity;
     target?: Interactable;
@@ -41,6 +48,7 @@ export declare class Socket extends Interactable {
     onFilled: Signal<Interactor>;
     isFilled: boolean;
     private slotted;
+    onRestore(): void;
     get currentPrompt(): string;
     get usable(): boolean;
     /** How many of the things it asks for are in. */
@@ -48,6 +56,7 @@ export declare class Socket extends Interactable {
     protected onUse(interactor: Interactor): void;
     private get parts();
     private get progress();
+    private showParts;
     private carriedNeeded;
     private namesOf;
 }

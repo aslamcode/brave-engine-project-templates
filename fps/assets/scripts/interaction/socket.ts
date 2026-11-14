@@ -13,7 +13,13 @@ import type { Interactor } from './interactor';
  *
  * It can take several things, one console for a puzzle of five pieces: `Item Id` is then the ids separated by commas (`piece-1, piece-2, piece-3, piece-4, piece-5`), and `fuse x3` asks for three of one kind.
  * E puts in what the player carries of what is still missing, so a piece found later goes in later: the prompts say what is next and how far it is (`Needs Piece 3 (2 of 5)`, `Place Piece 3 (2 of 5)`), and
- * the socket is filled, with all of what follows, when the last one is in:
+ * the socket is filled, with all of what follows, when the last one is in.
+ *
+ * The pieces can be seen going in. `Placed Parts` is an entity (a plain one, off at the start) whose CHILDREN stand for the pieces, one for each, in the order of `Item Id` (`fuse x3` stands for three in a row):
+ * the container is switched on with the first piece, and each child as its piece goes in. A socket with no `Placed Parts` shows nothing until it is filled, as before. Which of them are on is worked out from what
+ * is in (`slotted`), so a game that is loaded shows the same ones.
+ *
+ * When the last one is in:
  *
  * - `Placed Object` (a child entity that starts switched off, the item as it looks in place) is switched on,
  * - the sound is played, `Filled Message` goes to the `Hud`, `onFilled` is emitted and `isFilled` is true from then on (a filled socket takes no more),
@@ -32,6 +38,7 @@ export class Socket extends Interactable {
   @String({ label: 'Needs Prompt', tooltip: 'Shown while the player carries nothing it still needs. {item} is the name of the first thing missing. When it takes more than one thing, " (2 of 5)" follows by itself; {have} and {need} put the numbers where the text wants them.' }) needsPrompt = 'Needs {item}';
   @String({ label: 'Needs Message', tooltip: 'A line on the screen when the player tries it without the item. Empty: none.' }) needsMessage = '';
 
+  @Ref(Entity, { header: 'As Pieces Go In', label: 'Placed Parts', tooltip: 'For a socket that takes several things: an entity that starts switched off whose children, all switched off, stand for them one each in the order of Item Id ("fuse x3" is three). It is switched on with the first, and each child with its own. Empty: nothing shows until it is filled.' }) placedParts?: IEntity;
   @Ref(Entity, { header: 'When Filled', label: 'Placed Object', tooltip: 'A child entity that starts switched off: the item in place. It is switched on.' }) placed?: IEntity;
   @Ref(Entity, { label: 'Switch On', tooltip: 'An entity that starts switched off (a lamp): it is switched on.' }) switchOn?: IEntity;
   @Ref(Interactable, { label: 'Target', tooltip: 'What it acts on: a Door, or any Interactable that can be unlocked or opened.' }) target?: Interactable;
@@ -52,6 +59,11 @@ export class Socket extends Interactable {
 
   // How many of each thing it asks for are in already, in the order of the ids in `Item Id`.
   @JsonIgnore() @Saved() private slotted: number[] = [];
+
+  // The entities that were switched on are saved with the scene, but they are worked out from what is in all the same: a save made before the stand-ins were in the scene still shows them.
+  onRestore() {
+    this.showParts();
+  }
 
   get currentPrompt(): string {
     const put = this.carriedNeeded();
@@ -81,6 +93,7 @@ export class Socket extends Interactable {
       this.journal.markUsed(each.id);
       this.slotted[each.index] = (this.slotted[each.index] ?? 0) + each.count;
     });
+    this.showParts();
     this.play(this.putSound);
     if (this.filledMessage) this.hud.showMessage(fillRequirement(this.filledMessage, this.namesOf(put.map(each => each.id)), this.progress));
     if (!this.progress.complete) return;
@@ -102,6 +115,17 @@ export class Socket extends Interactable {
   private get progress(): IRequirementProgress {
     const parts = this.parts;
     return progressOf(parts, id => this.slotted[parts.findIndex(part => part.id === id)] ?? 0);
+  }
+
+  // One child of `Placed Parts` for each piece, in the order the ids are asked for: on while its piece is in. Children beyond the pieces are left as they are.
+  private showParts(): void {
+    const container = this.placedParts;
+    if (!container) return;
+
+    const parts = this.parts;
+    const lit = parts.flatMap((part, index) => Array.from({ length: part.count }, (_, piece) => piece < (this.slotted[index] ?? 0)));
+    if (lit.some(isIn => isIn)) container.active = true;
+    container.children.forEach((child, slot) => { if (slot < lit.length) child.active = lit[slot]; });
   }
 
   // What the player carries of what is still missing, and how many of each would go in.
