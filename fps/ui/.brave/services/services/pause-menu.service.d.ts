@@ -12,7 +12,7 @@ export interface IPauseMenuState {
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
- * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, so it may refuse the pointer: the menu closes and the game goes on all the same, and the next click holds it). The page only reads `state` and calls the methods.
+ * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
  *
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
@@ -45,9 +45,10 @@ export declare class PauseMenu {
     /** Opens the menu (and pauses the game, when `pausesGame`). */
     open(): void;
     /**
-     * Esc closes the menu and gives the game back. In a window the key is the browser's: it let the pointer go to open the menu, and a request for the pointer made at the next Esc is refused (the key is not a gesture) or
-     * granted and dropped again at the same Esc, so the menu would open once more at every Esc and never close: it is not asked for, and the next click on the game holds the pointer. In fullscreen the key is the game's
-     * (`Cursor.escapeIsOurs`: the browser has handed it over), the pointer was let go by the game itself, and is taken back now, with no click.
+     * Esc closes the menu, gives the game back and takes the pointer again (the player pressed it to come back to the game). Not inside the key: the browser is still handling that Esc as the one that lets go of the
+     * pointer, and gives it and drops it at once, so `Cursor.lockAfterEscape()` asks after the key, watches, asks again, and when the browser will not give a pointer that no click made, the next key that is not Esc
+     * or the next click holds it. A pointer let go within a blink of being taken (`BLINK_MS`) is not taken for the player pausing, so the drops do not open the menu again. The keyboard goes back to the game with
+     * `UISystem.interactive` off.
      */
     leave(): void;
     /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */

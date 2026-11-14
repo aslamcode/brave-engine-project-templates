@@ -128,8 +128,12 @@ export class Journal {
       event.preventDefault();
       this.toggle();
     });
-    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page).
-    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(Cursor.escapeIsOurs); });
+    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page). The pointer is asked for after that key, not inside it (`Cursor.lockAfterEscape()`).
+    this.escapeListener = Input.keyboard.escape.down(() => {
+      if (!this.isOpen) return;
+      this.close(false);
+      void Cursor.lockAfterEscape();
+    });
   }
 
   onDestroy() {
@@ -225,13 +229,13 @@ export class Journal {
     }
     // The pointer is let go on purpose: the pause menu must not take it for the player's Esc (and must not, whatever the browser sends about the pointer while this is open).
     this.pauseMenu.expectRelease();
-    if (Cursor.isLocked) Cursor.unlock();
+    // Also with the pointer free already: it cancels the wait of `lockAfterEscape()` for a key that would hold the pointer under this menu.
+    Cursor.unlock();
     this.markSeen();
     this.changed();
   }
 
-  /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). Esc passes `false`: a browser that grants the pointer at an Esc
-   * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. In fullscreen Esc is the game's (`Cursor.escapeIsOurs`) and the pointer is taken back at once. */
+  /** Closes it, gives the game back and asks for the pointer again at once (the key of the toggle is a gesture, so the browser gives it). The Esc path closes with `false` and asks after the key (`Cursor.lockAfterEscape()`). `false` leaves the pointer to the player's next click. */
   close(lockPointer = true): void {
     if (!this.isOpen) return;
 
