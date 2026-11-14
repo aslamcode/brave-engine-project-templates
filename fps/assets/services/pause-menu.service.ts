@@ -24,6 +24,7 @@ const ESCAPE_DEBOUNCE_MS = 200;
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
  * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
+ * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
@@ -148,7 +149,7 @@ export class PauseMenu {
 
   // Esc. With the browser keeping it the menu opens by the pointer being let go (`onLockChange`), and this only closes it. With the game keeping it (fullscreen) the pointer is still held when the key arrives, and
   // opening the menu is the game's to do: it lets go of the pointer itself. And a game that runs with the pointer free (the browser would not give it back after a menu) opens the menu on Esc as well: there is no
-  // lock for the browser to let go of, so the key reaches the page.
+  // lock for the browser to let go of, so the key reaches the page. Not while the editor has the mouse (a Shift+Esc in the editor's Play: an Esc typed into a field of the editor is not the player pausing).
   private onEscape(): void {
     const now = performance.now();
     if (now - this.lastEscape < ESCAPE_DEBOUNCE_MS) return;
@@ -164,14 +165,15 @@ export class PauseMenu {
       this.open();
       return;
     }
-    if (this.armed && !Cursor.isLocked && !this.releaseExpected && !BraveEngine.priorityCamera && BraveEngine.mode === BraveEngineModeEnum.Running) {
+    if (this.armed && !Cursor.isLocked && !this.releaseExpected && !Cursor.releasedForEditor && !BraveEngine.priorityCamera && BraveEngine.mode === BraveEngineModeEnum.Running) {
       Cursor.unlock();
       this.open();
     }
   }
 
   // The pointer taken away by the player, after it was held, opens the menu; held again, it closes it. Not while the editor's own camera shows the view (a Play looked at through it): the pointer is the editor's then (it
-  // takes it to fly the camera), and a lock that is not the game's is not the player coming back to it (it closed the menu and set the paused game going).
+  // takes it to fly the camera), and a lock that is not the game's is not the player coming back to it (it closed the menu and set the paused game going). Nor when the developer let go of it to use the editor
+  // (`Cursor.releasedForEditor`, a Shift+Esc in the editor's Play): the game goes on, with no menu in front, until a click on it holds the pointer again.
   private onLockChange(): void {
     if (BraveEngine.priorityCamera) return;
 
@@ -183,7 +185,7 @@ export class PauseMenu {
       this.close();
       return;
     }
-    if (this.releaseExpected || now - this.lockedAt < BLINK_MS) return;
+    if (this.releaseExpected || Cursor.releasedForEditor || now - this.lockedAt < BLINK_MS) return;
     if (this.armed) this.open();
   }
 

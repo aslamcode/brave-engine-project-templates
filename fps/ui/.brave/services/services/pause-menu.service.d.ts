@@ -13,6 +13,7 @@ export interface IPauseMenuState {
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
  * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
+ * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
