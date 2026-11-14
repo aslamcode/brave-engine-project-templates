@@ -17,6 +17,8 @@ const VOLUME_SILENCE_DECIBELS = -80;
 // A pointer let go within this many milliseconds of being taken is not the player pausing: it is the browser dropping a lock it had only just given (the same Esc that closed a menu, taken as the key that lets
 // go of the pointer), and the menu must not open for it.
 const BLINK_MS = 150;
+// An Esc that comes twice at once (the page of the menu forwards it and the window hears it) is one.
+const ESCAPE_DEBOUNCE_MS = 200;
 
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
@@ -50,6 +52,7 @@ export class PauseMenu {
   private pausedByMenu = false;
   private releaseExpected = false;
   private lockedAt = -Infinity;
+  private lastEscape = -Infinity;
   private listener = () => this.onLockChange();
   private escapeListener?: Parameters<typeof Input.removeListner>[0];
 
@@ -61,7 +64,7 @@ export class PauseMenu {
     this.apply();
     document.addEventListener('pointerlockchange', this.listener);
     // Esc while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
-    this.escapeListener = Input.keyboard.escape.down(() => { if (this.state.open) this.leave(); });
+    this.escapeListener = Input.keyboard.escape.down(() => this.onEscape());
     UISystem.interactive = false;
     this.changed();
   }
@@ -91,10 +94,14 @@ export class PauseMenu {
     this.changed();
   }
 
-  /** Esc: closes the menu and gives the game back, and does NOT ask for the pointer. A browser that grants it takes the same Esc as the key that lets the pointer go, drops it a moment later, and the menu would open again for
-   * that (and again at the next Esc: it never closed). The next click on the game holds the pointer. */
+  /**
+   * Esc closes the menu and gives the game back. In a window the key is the browser's: it let the pointer go to open the menu, and a request for the pointer made at the next Esc is refused (the key is not a gesture) or
+   * granted and dropped again at the same Esc, so the menu would open once more at every Esc and never close: it is not asked for, and the next click on the game holds the pointer. In fullscreen the key is the game's
+   * (`Cursor.escapeIsOurs`: the browser has handed it over), the pointer was let go by the game itself, and is taken back now, with no click.
+   */
   leave(): void {
     this.close();
+    if (Cursor.escapeIsOurs) void Cursor.lock();
   }
 
   /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
@@ -136,6 +143,24 @@ export class PauseMenu {
     if (this.pausedByMenu && BraveEngine.mode === BraveEngineModeEnum.Paused) BraveEngine.play();
     this.pausedByMenu = false;
     this.changed();
+  }
+
+  // Esc. With the browser keeping it the menu opens by the pointer being let go (`onLockChange`), and this only closes it. With the game keeping it (fullscreen) the pointer is still held when the key arrives, and
+  // opening the menu is the game's to do: it lets go of the pointer itself.
+  private onEscape(): void {
+    const now = performance.now();
+    if (now - this.lastEscape < ESCAPE_DEBOUNCE_MS) return;
+    this.lastEscape = now;
+
+    if (this.state.open) {
+      this.leave();
+      return;
+    }
+    if (Cursor.escapeIsOurs && Cursor.isLocked) {
+      this.armed = true;
+      Cursor.unlock();
+      this.open();
+    }
   }
 
   // The pointer taken away by the player, after it was held, opens the menu; held again, it closes it. Not while the editor's own camera shows the view (a Play looked at through it): the pointer is the editor's then (it

@@ -117,7 +117,7 @@ export declare class Journal {
     /** Opens the menu, on an entry when one is given. Not while the pause menu is open or when the game is not running. */
     open(entryId?: string): void;
     /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). Esc passes `false`: a browser that grants the pointer at an Esc
-     * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. */
+     * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. In fullscreen Esc is the game's (`Cursor.escapeIsOurs`) and the pointer is taken back at once. */
     close(lockPointer?: boolean): void;
     toggle(): void;
     /** The page chose a category. */

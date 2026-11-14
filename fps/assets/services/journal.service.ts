@@ -129,7 +129,7 @@ export class Journal {
       this.toggle();
     });
     // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page).
-    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(false); });
+    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(Cursor.escapeIsOurs); });
   }
 
   onDestroy() {
@@ -231,7 +231,7 @@ export class Journal {
   }
 
   /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). Esc passes `false`: a browser that grants the pointer at an Esc
-   * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. */
+   * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. In fullscreen Esc is the game's (`Cursor.escapeIsOurs`) and the pointer is taken back at once. */
   close(lockPointer = true): void {
     if (!this.isOpen) return;
 

@@ -35,6 +35,7 @@ export declare class PauseMenu {
     private pausedByMenu;
     private releaseExpected;
     private lockedAt;
+    private lastEscape;
     private listener;
     private escapeListener?;
     onStart(): void;
@@ -43,8 +44,11 @@ export declare class PauseMenu {
     expectRelease(): void;
     /** Opens the menu (and pauses the game, when `pausesGame`). */
     open(): void;
-    /** Esc: closes the menu and gives the game back, and does NOT ask for the pointer. A browser that grants it takes the same Esc as the key that lets the pointer go, drops it a moment later, and the menu would open again for
-     * that (and again at the next Esc: it never closed). The next click on the game holds the pointer. */
+    /**
+     * Esc closes the menu and gives the game back. In a window the key is the browser's: it let the pointer go to open the menu, and a request for the pointer made at the next Esc is refused (the key is not a gesture) or
+     * granted and dropped again at the same Esc, so the menu would open once more at every Esc and never close: it is not asked for, and the next click on the game holds the pointer. In fullscreen the key is the game's
+     * (`Cursor.escapeIsOurs`: the browser has handed it over), the pointer was let go by the game itself, and is taken back now, with no click.
+     */
     leave(): void;
     /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
     resume(): void;
@@ -54,6 +58,7 @@ export declare class PauseMenu {
     setFieldOfView(degrees: number): void;
     setVolume(value: number): void;
     private close;
+    private onEscape;
     private onLockChange;
     private apply;
     private eyes;
