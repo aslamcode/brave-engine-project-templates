@@ -1344,7 +1344,8 @@
           "id": "e2d6aa85-e796-4ba5-8cd1-20d481195d9e",
           "entity": {
             "$circular": "k1"
-          }
+          },
+          "blastSound": "f5a6ef3e-d30d-45ed-a628-86e60fdacdb0"
         }
       ],
       "scene": {

@@ -1,10 +1,14 @@
-import { Explosion, explosion, ExplosionKindEnum, Float, JsonIgnore, PhysicsSystem, RigidBody, RigidBodyTypeEnum, Saved, Script, ScriptComponent, SpawnSystem, Time, Vector3 } from '@brave/core';
+import { AudioSource, AudioTrack, Entity, Explosion, explosion, ExplosionKindEnum, Float, Invoke, JsonIgnore, PhysicsSystem, Ref, RigidBody, RigidBodyTypeEnum, Saved, Script, ScriptComponent, SpawnSystem, Time, Vector3 } from '@brave/core';
 import { Health } from '../health/health';
+import { playClip } from '../shared/sound';
 
 /**
  * A grenade in the air: on the root of its own prefab (a dynamic Rigid Body with a small Collider, and the model), thrown by a `Throwable`. It bounces where it lands, and when the fuse runs out it
  * goes off: the engine's Small explosion at its place, and every `Health` inside the radius takes damage that falls off with the distance. A wall between the blast and a body protects it (a ray
  * from the blast, and what has no `Health` in the way stops it); a rigid body in the radius is pushed away.
+ *
+ * The blast is heard from where it happens (`Blast Sound`): the grenade is gone in the same frame, so the sound is played by an entity of its own at the blast (an Audio Source that is started by hand), which is
+ * taken away when the sound has ended.
  *
  * Nothing about the thrower is kept: the damage is dealt in the name of the grenade, so a player in the radius is hurt like anyone else (the hit indicator points at the blast).
  */
@@ -17,6 +21,8 @@ export class Grenade extends ScriptComponent {
   @Float({ label: 'Damage', suffix: 'HP', tooltip: 'What a body touching the blast takes. It falls to nothing at the radius.' }) damage = 120;
   @Float({ label: 'Push', suffix: 'N·s', tooltip: 'The impulse a rigid body at the blast gets, away from it. It falls off like the damage.' }) push = 14;
   @Float({ label: 'Blast Size', tooltip: 'How big the explosion on the screen is, as a multiple of the Small one.' }) size = 1;
+
+  @Ref(AudioTrack, { header: 'Sound', label: 'Blast Sound', tooltip: 'Played at the blast, from where it happens. Empty: the blast is silent.' }) blastSound = '';
 
   /** Seconds left on the fuse: it is set when the grenade starts, and kept in a save. */
   @JsonIgnore() @Saved() remaining = -1;
@@ -38,6 +44,7 @@ export class Grenade extends ScriptComponent {
     this.exploded = true;
     const center = this.entity.transform.globalPosition.clone();
     this.show(center);
+    this.bang(center);
     this.hurtAround(center);
     if (!SpawnSystem.despawn(this.entity)) this.entity.destroy();
   }
@@ -48,6 +55,22 @@ export class Grenade extends ScriptComponent {
     const body = effect.getComponent(Explosion);
     if (body) body.destroyOnFinish = true;
     this.entity.scene?.add(effect);
+  }
+
+  // An Audio Source that starts with its entity, at the blast. It is taken away once the sound has had the time to end (an engine timer: it stops with Pause, so the sound is not cut by one).
+  private bang(center: Vector3) {
+    const scene = this.entity.scene;
+    if (!this.blastSound || !scene) return;
+
+    const holder = new Entity();
+    holder.name = 'Blast Sound';
+    holder.transform.position = center;
+    // A source that is made plays what it has when it is made (nothing yet): the sound is started once it is in the scene, by hand.
+    const source = holder.addComponent(AudioSource);
+    source.autoPlay = false;
+    scene.add(holder);
+    playClip(source, this.blastSound);
+    Invoke.setTimeout(() => holder.destroy(), BLAST_SOUND_SECONDS * 1000);
   }
 
   private hurtAround(center: Vector3) {
@@ -93,3 +116,6 @@ export class Grenade extends ScriptComponent {
     return !!hit && hit.distance < reach - 0.15 && !Health.find(hit.entity);
   }
 }
+
+// How long the entity that plays the blast stays: longer than the sound, which is about two and a half seconds.
+const BLAST_SOUND_SECONDS = 6;

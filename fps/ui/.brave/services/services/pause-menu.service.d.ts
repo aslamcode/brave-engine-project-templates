@@ -34,6 +34,7 @@ export declare class PauseMenu {
     private armed;
     private pausedByMenu;
     private releaseExpected;
+    private lockedAt;
     private listener;
     private escapeListener?;
     onStart(): void;
@@ -42,8 +43,13 @@ export declare class PauseMenu {
     expectRelease(): void;
     /** Opens the menu (and pauses the game, when `pausesGame`). */
     open(): void;
+    /** Esc: closes the menu and gives the game back, and does NOT ask for the pointer. A browser that grants it takes the same Esc as the key that lets the pointer go, drops it a moment later, and the menu would open again for
+     * that (and again at the next Esc: it never closed). The next click on the game holds the pointer. */
+    leave(): void;
     /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
     resume(): void;
+    /** Puts the player's settings on the camera of the player that is on, again: a load builds a new player whose camera has what its scene gave it. */
+    reapply(): void;
     setSensitivity(value: number): void;
     setFieldOfView(degrees: number): void;
     setVolume(value: number): void;

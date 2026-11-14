@@ -14,6 +14,7 @@ export declare class MuzzleFlash extends ScriptComponent {
     private sparkEmitter?;
     private glowEmitter?;
     onStart(): void;
+    onRestore(): void;
     onAfterClone(): void;
     /** One shot's flash: the sparks and the glow, now. */
     fire(): void;

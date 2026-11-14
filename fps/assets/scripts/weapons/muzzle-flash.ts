@@ -22,6 +22,18 @@ export class MuzzleFlash extends ScriptComponent {
     this.build();
   }
 
+  // A load builds the component as it was, started, with the emitters it made as children of the weapon: it finds them again, and makes them only if they are not there.
+  onRestore() {
+    if (!this.started) return;
+    const found = (name: string) => this.entity.children.find(child => child.name === name)?.getComponent(ParticleEmitter);
+    this.sparkEmitter = found('Muzzle Sparks');
+    this.glowEmitter = found('Muzzle Glow');
+    if (!this.sparkEmitter || !this.glowEmitter) {
+      this.sparkEmitter = this.glowEmitter = undefined;
+      this.build();
+    }
+  }
+
   // The copy holds the original's emitters (entities of the original's tree): it makes its own when it starts.
   onAfterClone() {
     this.sparkEmitter = undefined;

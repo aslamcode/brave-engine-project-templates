@@ -51845,7 +51845,8 @@
           "itemName": "power cell",
           "prompt": "Take {item}",
           "message": "Picked up {item}",
-          "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
+          "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4",
+          "description": "A sealed power cell, still warm. The socket at the back of the house takes it."
         }
       ],
       "scene": {
@@ -67586,7 +67587,10 @@
                                                       "eyes": {
                                                         "$circular": "pl_p_ref_1570"
                                                       },
-                                                      "projectile": "285abaf3-888b-4900-ae9a-15bb765698d5"
+                                                      "projectile": "285abaf3-888b-4900-ae9a-15bb765698d5",
+                                                      "throwSound": {
+                                                        "$circular": "k994001"
+                                                      }
                                                     }
                                                   ],
                                                   "scene": {
@@ -68321,6 +68325,9 @@
                                                       },
                                                       "gripLeft": {
                                                         "$circular": "k997025"
+                                                      },
+                                                      "useSound": {
+                                                        "$circular": "k994008"
                                                       }
                                                     }
                                                   ],
@@ -72466,6 +72473,208 @@
               "static": false,
               "_transform": {
                 "$circular": "k970002"
+              },
+              "parent": {
+                "$circular": "pl_k4"
+              }
+            },
+            {
+              "$ref": "k994001",
+              "$type": "Entity",
+              "name": "Grenade Throw",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "50fe25d3-e869-4065-a070-ab4611de0b48",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k994002",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "af556780-8673-4394-9d83-ccc2af1a2955",
+                  "entity": {
+                    "$circular": "k994001"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k994003",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k994004",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k994005",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k994006",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k994007_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                  "$type": "AudioSource",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "a3548a13-2c08-4808-b95e-bd26d70f4826",
+                  "hasTransformChanges": false,
+                  "_src": "c3e2d129-3226-40f9-b1e9-8bd141afea91",
+                  "_gain": 1.0,
+                  "_loop": false,
+                  "_autoPlay": false,
+                  "_muted": false,
+                  "_speed": 1,
+                  "_bypassTimeScale": true,
+                  "_trackTime": 0,
+                  "_pooling": true,
+                  "_poolMinSize": 2,
+                  "_spatial": false,
+                  "_stereoPan": 0,
+                  "_rolloffMode": "inverse",
+                  "_minDistance": 2,
+                  "_maxDistance": 40,
+                  "_rolloffFactor": 1.5,
+                  "_coneInnerAngle": 60,
+                  "_coneOuterAngle": 90,
+                  "_coneOuterGain": 0.3,
+                  "_refDistance": 1,
+                  "entity": {
+                    "$circular": "k994001"
+                  },
+                  "open": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k994002"
+              },
+              "parent": {
+                "$circular": "pl_k4"
+              }
+            },
+            {
+              "$ref": "k994008",
+              "$type": "Entity",
+              "name": "Medkit Use",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": true,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "a0527a53-b6d6-4d75-be66-9b1c144072b8",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k994009",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "348d4edb-f06b-4cb0-aac2-7264e423d8e6",
+                  "entity": {
+                    "$circular": "k994008"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k994010",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k994011",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k994012",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k994013",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k994014_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                  "$type": "AudioSource",
+                  "_active": true,
+                  "_activeInHierarchy": true,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "d02bad19-9310-4fc8-9e6d-de22f7ecfb46",
+                  "hasTransformChanges": false,
+                  "_src": "69a430d8-5237-4b3c-971d-4522a8c7ecfd",
+                  "_gain": 1.0,
+                  "_loop": false,
+                  "_autoPlay": false,
+                  "_muted": false,
+                  "_speed": 1,
+                  "_bypassTimeScale": true,
+                  "_trackTime": 0,
+                  "_pooling": true,
+                  "_poolMinSize": 2,
+                  "_spatial": false,
+                  "_stereoPan": 0,
+                  "_rolloffMode": "inverse",
+                  "_minDistance": 2,
+                  "_maxDistance": 40,
+                  "_rolloffFactor": 1.5,
+                  "_coneInnerAngle": 60,
+                  "_coneOuterAngle": 90,
+                  "_coneOuterGain": 0.3,
+                  "_refDistance": 1,
+                  "entity": {
+                    "$circular": "k994008"
+                  },
+                  "open": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k994009"
               },
               "parent": {
                 "$circular": "pl_k4"
@@ -78902,7 +79111,10 @@
                                                       "eyes": {
                                                         "$circular": "pb_p_ref_2052"
                                                       },
-                                                      "projectile": "285abaf3-888b-4900-ae9a-15bb765698d5"
+                                                      "projectile": "285abaf3-888b-4900-ae9a-15bb765698d5",
+                                                      "throwSound": {
+                                                        "$circular": "k994015"
+                                                      }
                                                     }
                                                   ],
                                                   "scene": {
@@ -79637,6 +79849,9 @@
                                                       },
                                                       "gripLeft": {
                                                         "$circular": "k997057"
+                                                      },
+                                                      "useSound": {
+                                                        "$circular": "k994022"
                                                       }
                                                     }
                                                   ],
@@ -83745,6 +83960,208 @@
               "static": false,
               "_transform": {
                 "$circular": "k971002"
+              },
+              "parent": {
+                "$circular": "pb_k4"
+              }
+            },
+            {
+              "$ref": "k994015",
+              "$type": "Entity",
+              "name": "Grenade Throw",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": false,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "956a9860-296e-4312-8873-1d864bf6ff68",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k994016",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "f680b369-83fb-41d3-8db1-f37fe126f56a",
+                  "entity": {
+                    "$circular": "k994015"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k994017",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k994018",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k994019",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k994020",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k994021_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                  "$type": "AudioSource",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "806ba370-4d38-49e8-a5c8-761be0949929",
+                  "hasTransformChanges": false,
+                  "_src": "c3e2d129-3226-40f9-b1e9-8bd141afea91",
+                  "_gain": 1.0,
+                  "_loop": false,
+                  "_autoPlay": false,
+                  "_muted": false,
+                  "_speed": 1,
+                  "_bypassTimeScale": true,
+                  "_trackTime": 0,
+                  "_pooling": true,
+                  "_poolMinSize": 2,
+                  "_spatial": false,
+                  "_stereoPan": 0,
+                  "_rolloffMode": "inverse",
+                  "_minDistance": 2,
+                  "_maxDistance": 40,
+                  "_rolloffFactor": 1.5,
+                  "_coneInnerAngle": 60,
+                  "_coneOuterAngle": 90,
+                  "_coneOuterGain": 0.3,
+                  "_refDistance": 1,
+                  "entity": {
+                    "$circular": "k994015"
+                  },
+                  "open": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k994016"
+              },
+              "parent": {
+                "$circular": "pb_k4"
+              }
+            },
+            {
+              "$ref": "k994022",
+              "$type": "Entity",
+              "name": "Medkit Use",
+              "layer": 0,
+              "_active": true,
+              "_activeInHierarchy": false,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "2259a8a1-73a7-4e6e-a76f-bca3cc639928",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k994023",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "b6b77ab6-d2d3-4989-8436-6bf0547ab26a",
+                  "entity": {
+                    "$circular": "k994022"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": 0,
+                    "1": 0,
+                    "2": 0,
+                    "$ref": "k994024",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k994025",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k994026",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k994027",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k994028_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_k55_ref_58",
+                  "$type": "AudioSource",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "0dff483f-7793-4a0a-a81b-75f4ac9284eb",
+                  "hasTransformChanges": false,
+                  "_src": "69a430d8-5237-4b3c-971d-4522a8c7ecfd",
+                  "_gain": 1.0,
+                  "_loop": false,
+                  "_autoPlay": false,
+                  "_muted": false,
+                  "_speed": 1,
+                  "_bypassTimeScale": true,
+                  "_trackTime": 0,
+                  "_pooling": true,
+                  "_poolMinSize": 2,
+                  "_spatial": false,
+                  "_stereoPan": 0,
+                  "_rolloffMode": "inverse",
+                  "_minDistance": 2,
+                  "_maxDistance": 40,
+                  "_rolloffFactor": 1.5,
+                  "_coneInnerAngle": 60,
+                  "_coneOuterAngle": 90,
+                  "_coneOuterGain": 0.3,
+                  "_refDistance": 1,
+                  "entity": {
+                    "$circular": "k994022"
+                  },
+                  "open": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k994023"
               },
               "parent": {
                 "$circular": "pb_k4"

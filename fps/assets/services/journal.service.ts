@@ -65,6 +65,9 @@ const CATEGORIES = [
   { id: 'audio', name: 'Audio Logs' },
 ];
 
+// The categories listed newest first: the goals pile up, and the latest one is the one on top. The others are listed in the order they were found.
+const NEWEST_FIRST = ['objectives'];
+
 /**
  * What the player has found out, to look at again whenever it likes: the notes it read, the audio logs it heard, the passwords it found, the access (keys, cards) it carries and whether it used them yet,
  * the objectives it was given. The things it carries are the `Inventory`'s (a key card is an item there, and here an entry that says whether it was used), and the menu shows them too, in its Items category: the
@@ -126,7 +129,7 @@ export class Journal {
       this.toggle();
     });
     // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page).
-    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(); });
+    this.escapeListener = Input.keyboard.escape.down(() => { if (this.isOpen) this.close(false); });
   }
 
   onDestroy() {
@@ -227,8 +230,9 @@ export class Journal {
     this.changed();
   }
 
-  /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). */
-  close(): void {
+  /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). Esc passes `false`: a browser that grants the pointer at an Esc
+   * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. */
+  close(lockPointer = true): void {
     if (!this.isOpen) return;
 
     this.isOpen = false;
@@ -237,7 +241,7 @@ export class Journal {
     this.stop();
     if (this.pausedByJournal && BraveEngine.mode === BraveEngineModeEnum.Paused) BraveEngine.play();
     this.pausedByJournal = false;
-    void Cursor.lock();
+    if (lockPointer) void Cursor.lock();
     this.changed();
   }
 
@@ -351,7 +355,8 @@ export class Journal {
       return { id, name: CATEGORIES.find(category => category.id === id)?.name ?? id.charAt(0).toUpperCase() + id.slice(1), count: own.length, news: own.filter(entry => entry.isNew).length };
     });
     const category = categories.some(candidate => candidate.id === this.category) ? this.category : categories[0]?.id ?? '';
-    const entries = everything.filter(entry => entry.category === category).map(entry => ({ ...entry }));
+    const own = everything.filter(entry => entry.category === category);
+    const entries = (NEWEST_FIRST.includes(category) ? own.reverse() : own).map(entry => ({ ...entry }));
     const selected = entries.some(entry => entry.id === this.selected) ? this.selected : entries[0]?.id ?? '';
     return { open: this.isOpen, title: this.title, categories, category, entries, selected, playing: this.playing, news: this.entries.filter(entry => entry.isNew).length, hintSeconds: this.hintSeconds };
   }

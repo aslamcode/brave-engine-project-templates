@@ -116,8 +116,9 @@ export declare class Journal {
     list(): IJournalEntry[];
     /** Opens the menu, on an entry when one is given. Not while the pause menu is open or when the game is not running. */
     open(entryId?: string): void;
-    /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). */
-    close(): void;
+    /** Closes it, gives the game back and asks for the pointer again (the key or the click that made this call counts as the player's, so the browser lets it). Esc passes `false`: a browser that grants the pointer at an Esc
+     * takes the same Esc as the key that lets it go, and the pause menu would open for that; the next click holds it. */
+    close(lockPointer?: boolean): void;
     toggle(): void;
     /** The page chose a category. */
     select(category: string): void;

@@ -37,6 +37,7 @@ export declare class FirstPersonArms extends ScriptComponent {
     private leans;
     private key?;
     onStart(): void;
+    onRestore(): void;
     onUpdate(): void;
     onDestroy(): void;
     onAfterClone(): void;

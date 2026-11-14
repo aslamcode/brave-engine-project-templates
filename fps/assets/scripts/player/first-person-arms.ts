@@ -55,6 +55,16 @@ export class FirstPersonArms extends ScriptComponent {
     this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
+  // A load builds the component as it was, started: the constraints it moves and the key are not there. What the arms hold is not touched (the `Loadout` brings it back and says it with `equip()`).
+  onRestore() {
+    if (!this.started) return;
+    if (this.key) Input.removeListner(this.key);
+    this.constraints = [];
+    this.leans = [];
+    this.collect(this.entity);
+    this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
+  }
+
   onUpdate() {
     const goal = this.equipped ? 1 : 0;
     if (this.reach === goal) return;

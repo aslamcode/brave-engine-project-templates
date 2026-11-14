@@ -14,6 +14,9 @@ export interface IPauseMenuState {
 const SENSITIVITY = { min: 0.2, max: 3, start: 1 };
 const FIELD_OF_VIEW = { min: 50, max: 110 };
 const VOLUME_SILENCE_DECIBELS = -80;
+// A pointer let go within this many milliseconds of being taken is not the player pausing: it is the browser dropping a lock it had only just given (the same Esc that closed a menu, taken as the key that lets
+// go of the pointer), and the menu must not open for it.
+const BLINK_MS = 150;
 
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
@@ -46,6 +49,7 @@ export class PauseMenu {
   private armed = false;
   private pausedByMenu = false;
   private releaseExpected = false;
+  private lockedAt = -Infinity;
   private listener = () => this.onLockChange();
   private escapeListener?: Parameters<typeof Input.removeListner>[0];
 
@@ -57,7 +61,7 @@ export class PauseMenu {
     this.apply();
     document.addEventListener('pointerlockchange', this.listener);
     // Esc while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
-    this.escapeListener = Input.keyboard.escape.down(() => { if (this.state.open) this.resume(); });
+    this.escapeListener = Input.keyboard.escape.down(() => { if (this.state.open) this.leave(); });
     UISystem.interactive = false;
     this.changed();
   }
@@ -87,10 +91,21 @@ export class PauseMenu {
     this.changed();
   }
 
+  /** Esc: closes the menu and gives the game back, and does NOT ask for the pointer. A browser that grants it takes the same Esc as the key that lets the pointer go, drops it a moment later, and the menu would open again for
+   * that (and again at the next Esc: it never closed). The next click on the game holds the pointer. */
+  leave(): void {
+    this.close();
+  }
+
   /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
   resume(): void {
     void Cursor.lock();
     this.close();
+  }
+
+  /** Puts the player's settings on the camera of the player that is on, again: a load builds a new player whose camera has what its scene gave it. */
+  reapply(): void {
+    this.apply();
   }
 
   setSensitivity(value: number): void {
@@ -123,15 +138,20 @@ export class PauseMenu {
     this.changed();
   }
 
-  // The pointer taken away by the player, after it was held, opens the menu; held again, it closes it.
+  // The pointer taken away by the player, after it was held, opens the menu; held again, it closes it. Not while the editor's own camera shows the view (a Play looked at through it): the pointer is the editor's then (it
+  // takes it to fly the camera), and a lock that is not the game's is not the player coming back to it (it closed the menu and set the paused game going).
   private onLockChange(): void {
+    if (BraveEngine.priorityCamera) return;
+
+    const now = performance.now();
     if (Cursor.isLocked) {
+      this.lockedAt = now;
       this.armed = true;
       this.releaseExpected = false;
       this.close();
       return;
     }
-    if (this.releaseExpected) return;
+    if (this.releaseExpected || now - this.lockedAt < BLINK_MS) return;
     if (this.armed) this.open();
   }
 

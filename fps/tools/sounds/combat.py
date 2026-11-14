@@ -233,6 +233,34 @@ def enemy_attack():
     return finish(bell(lowpass(highpass(noise(0.4, rng), 400), sweep(500, 3500, n)), 0.55))
 
 
+def grenade_throw():
+    """The pin pulled (a short ring and a click), then the arm going through the air: a breath of filtered noise that rises and falls."""
+    rng = random.Random(31)
+    pin = mix((decay(sine(0.08, 3100, 2300), 0.012), 0.5, 0), (decay(highpass(noise(0.03, rng), 2000), 0.004), 0.8, 0))
+    arm = bell(bandpass(noise(0.45, rng), 300, 2400), peak_at=0.4)
+    return finish(mix((pin, 0.9, 0), (arm, 0.55, 0.14)))
+
+
+def explosion():
+    """A blast: a crack, a low thump that falls in pitch, a wide roar whose brightness drops away and a long rumble under it. About two seconds."""
+    rng = random.Random(47)
+    n = int(0.3 * RATE)
+    crack = decay(highpass(noise(0.05, rng), 1800), 0.012)
+    thump = decay(sine(1.2, 95, 28), 0.28)
+    roar = decay(lowpass(noise(2.2, rng), sweep(7000, 300, n * 4)), 0.34)
+    rumble = decay(lowpass(noise(2.4, rng), 220), 0.7)
+    return finish(mix((crack, 0.7, 0), (thump, 1.0, 0), (roar, 0.85, 0.005), (rumble, 0.6, 0.05)))
+
+
+def medkit_use():
+    """A pneumatic hiss, a soft click and a rising two note chime: the kit has done its work."""
+    rng = random.Random(53)
+    hiss = bell(bandpass(noise(0.5, rng), 2500, 7500), peak_at=0.35)
+    click = mix((decay(highpass(noise(0.02, rng), 1800), 0.004), 0.6, 0))
+    chime = mix((decay(sine(0.5, 660), 0.16), 0.55, 0), (decay(sine(0.6, 880), 0.2), 0.55, 0.12))
+    return finish(mix((hiss, 0.5, 0), (click, 0.6, 0.5), (chime, 0.7, 0.55)))
+
+
 def wave_start():
     """A low tone that rises: a sine from 65 to 190 Hz with a soft octave over it and a slow swell."""
     count = int(1.2 * RATE)
@@ -263,6 +291,9 @@ SOUNDS = {
     'player-hurt': player_hurt,
     'enemy-attack': enemy_attack,
     'wave-start': wave_start,
+    'grenade-throw': grenade_throw,
+    'explosion': explosion,
+    'medkit-use': medkit_use,
 }
 
 

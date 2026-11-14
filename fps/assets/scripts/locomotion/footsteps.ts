@@ -52,6 +52,13 @@ export class Footsteps extends ScriptComponent {
     this.landListener = this.body?.onLand.on(speed => this.land(speed), this);
   }
 
+  // A load builds the component as it was, started: the body and the listener of its landings are not there.
+  onRestore() {
+    if (!this.started) return;
+    this.landListener?.off();
+    this.onStart();
+  }
+
   onUpdate() {
     if (!this.leftFoot || !this.rightFoot) return;
     const direction = this.travelDirection();

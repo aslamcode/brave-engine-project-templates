@@ -39,6 +39,7 @@ export declare class Footsteps extends ScriptComponent {
     private leftStride;
     private rightStride;
     onStart(): void;
+    onRestore(): void;
     onUpdate(): void;
     onDestroy(): void;
     onAfterClone(): void;

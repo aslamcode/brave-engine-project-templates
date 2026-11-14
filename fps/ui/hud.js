@@ -172,6 +172,48 @@ el('resume').addEventListener('click', function () { pause.resume(); });
 pause.state().then(renderMenu);
 pause.onChange.on(renderMenu, { sampleEvery: 0 });
 
+// The saves of the pause menu: the `SaveGame` service says what each slot holds and what the last save or load said; the buttons send the player's choice back. The rows are rebuilt only when what they show
+// changes, so that a state sent again does not take a button from under the pointer.
+(function () {
+  var saves = BraveUiBridge.remote('SaveGame');
+  var list = el('saves'), note = el('savesNote'), drawn = '';
+
+  function addButton(row, label, disabled, action) {
+    var button = document.createElement('button');
+    button.className = 'save__button';
+    button.type = 'button';
+    button.textContent = label;
+    button.disabled = disabled;
+    button.addEventListener('click', action);
+    row.appendChild(button);
+  }
+
+  function renderSaves(state) {
+    var signature = JSON.stringify(state.slots) + '|' + state.busy;
+    note.textContent = state.message || '';
+    if (signature === drawn) return;
+    drawn = signature;
+    list.textContent = '';
+    state.slots.forEach(function (slot) {
+      var row = document.createElement('div');
+      row.className = 'save';
+      var name = document.createElement('span');
+      name.textContent = slot.name;
+      var info = document.createElement('span');
+      info.className = 'save__info';
+      info.textContent = slot.info;
+      row.appendChild(name);
+      row.appendChild(info);
+      addButton(row, 'Save', state.busy, function () { saves.save(slot.id); });
+      addButton(row, 'Load', state.busy || slot.empty, function () { saves.load(slot.id); });
+      list.appendChild(row);
+    });
+  }
+
+  saves.state().then(renderSaves);
+  saves.onChange.on(renderSaves, { sampleEvery: 0 });
+})();
+
 // The Journal (Datapad, Journal... its name comes from the game, never from this page): the `Journal` service says what is shown; the page draws it and sends the choices back. Tab opens and closes it;
 // while it is open the arrows move through the entries (up and down) and the categories (left and right). The lists are rebuilt only when their content changes, so a state sent again does not flicker.
 (function () {
