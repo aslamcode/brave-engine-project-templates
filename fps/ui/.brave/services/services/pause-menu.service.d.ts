@@ -15,6 +15,7 @@ export interface IPauseMenuState {
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
  * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
+ * That hand-back is for a build (`holdPointer()`). In the editor's Play closing the menu leaves the pointer free (a screenshot, a look at the editor, with the game running and no menu): the next click on the game holds it.
  * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
  * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
@@ -59,6 +60,12 @@ export declare class PauseMenu {
     leave(): void;
     /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
     resume(): void;
+    /**
+     * A menu (this one, the journal) has closed: the pointer goes back to the game, in a build only. In the editor's Play the pointer stays free, so that the developer can take a screenshot, use the editor or look at
+     * something with the game running and no menu in front: the next click on the game holds it (`Cursor.autoLockOnClick`) and Esc with it free opens the menu again. `afterEscape` is for a close made by the Esc key,
+     * which the browser does not count as a gesture and is still handling: the pointer is asked for after it (`Cursor.lockAfterEscape()`).
+     */
+    holdPointer(afterEscape?: boolean): void;
     /** Ends the game, by where it runs: the editor's Play is stopped (and fullscreen left), an installed build quits. Nothing happens in a browser tab (`state.canQuit` is false there). The page asks the player to confirm first. */
     quit(): void;
     /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */

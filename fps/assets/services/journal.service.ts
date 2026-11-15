@@ -128,11 +128,11 @@ export class Journal {
       event.preventDefault();
       this.toggle();
     });
-    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page). The pointer is asked for after that key, not inside it (`Cursor.lockAfterEscape()`).
+    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page). The pointer is asked for after that key, not inside it (`PauseMenu.holdPointer(true)`).
     this.escapeListener = Input.keyboard.escape.down(() => {
       if (!this.isOpen) return;
       this.close(false);
-      void Cursor.lockAfterEscape();
+      this.pauseMenu.holdPointer(true);
     });
   }
 
@@ -235,7 +235,7 @@ export class Journal {
     this.changed();
   }
 
-  /** Closes it, gives the game back and asks for the pointer again at once (the key of the toggle is a gesture, so the browser gives it). The Esc path closes with `false` and asks after the key (`Cursor.lockAfterEscape()`). `false` leaves the pointer to the player's next click. */
+  /** Closes it, gives the game back and asks for the pointer again at once (the key of the toggle is a gesture, so the browser gives it), in a build: the editor's Play leaves the pointer free (`PauseMenu.holdPointer()`). The Esc path closes with `false` and asks after the key. `false` leaves the pointer to the player's next click. */
   close(lockPointer = true): void {
     if (!this.isOpen) return;
 
@@ -245,7 +245,7 @@ export class Journal {
     this.stop();
     if (this.pausedByJournal && BraveEngine.mode === BraveEngineModeEnum.Paused) BraveEngine.play();
     this.pausedByJournal = false;
-    if (lockPointer) void Cursor.lock();
+    if (lockPointer) this.pauseMenu.holdPointer();
     this.changed();
   }
 
