@@ -14,7 +14,9 @@ ul, ol { padding: 0; list-style: none; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { margin: 0; font: inherit; color: inherit; letter-spacing: inherit; }
 button { padding: 0; border: 0; background: none; text-align: center; cursor: pointer; -webkit-appearance: none; appearance: none; }
-img, svg, video, canvas { display: block; max-width: 100%; }
+img, svg, video, canvas { display: block; }
+/* Only a picture or a video shrinks to what holds it. An svg or a canvas is sized by the page itself, and 100% of a box with no width is nothing: the crosshair's arcs sit in a box 0 px wide and a max-width here made them vanish. */
+img, video { max-width: 100%; }
 
 /* No ring, no flash on touch: whatever takes the focus (a button, a row with a tabindex, a slider) looks the same as before it. */
 :focus, :focus-visible { outline: none; }
