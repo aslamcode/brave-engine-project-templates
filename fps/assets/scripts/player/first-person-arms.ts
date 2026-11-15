@@ -1,4 +1,4 @@
-import { Bool, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK } from '@brave/core';
+import { Bool, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK, findEntityByPath } from '@brave/core';
 
 /**
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
@@ -17,9 +17,25 @@ import { Bool, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentCon
  *
  * With ONE camera (no `Arms Camera`, and no `Mesh`) nothing changes layer and no camera is switched: the arms are drawn by the camera of the eyes with the rest of the body, the weapon too, and the
  * weapon is on the same layer as the body. What keeps the weapon out of a wall then is `Weapon Retreat`.
+ *
+ * The arms camera hangs from the eyes, but the arms and the weapon ride the chest, and the chest leans back with the look: looking up, the head comes down towards the hands, and a camera that goes
+ * with the head ends up under the forearms and inside them. With `Camera On Chest` (on) the POSITION of the arms camera rides the chest instead (the `Lean Bone`): this script gives it a `Parent Constraint`
+ * (Position only) when the game starts, which keeps the place it has relative to the chest as it is at rest (the body still and the look level, about a second and a half in; until then it hangs from the eyes
+ * as it always did, so nothing jumps), so the arms and the weapon look the same at every pitch. Its rotation stays the eyes': it looks
+ * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
+ * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
+ * place than the barrel, which it already was a little at rest.
  */
 @Script()
 export class FirstPersonArms extends ScriptComponent {
+
+  // Where the arms camera's constraint is in the line of constraints, given before it is registered (the order is only read then): after the lean (50), the head (60) and the eyes (100), so it follows the chest as it is in the frame.
+  private static readonly CAMERA_ORDER = 200;
+  // The moment to take the arms camera's place relative to the chest: at rest. Frames after the start (the lean, the idle and the eyes' own damping of 0.2 s have settled by then: sooner, what is left of it is kept as part of the place), how level the look must be (the sine of 5 degrees), how slow the body, and the frames after which a player who never stops is taken moving.
+  private static readonly REST_FRAMES = 90;
+  private static readonly REST_LEVEL = 0.09;
+  private static readonly REST_SPEED = 0.2;
+  private static readonly REST_PATIENCE = 300;
 
   @Ref(Entity, { header: 'Arms', label: 'Mesh' }) mesh?: IEntity;
   @Int({ label: 'Arms Slot', tooltip: 'The material slot of the mesh that has the arms: the second, when the model was made with its arms in a slot of their own.' }) armsSlot = 1;
@@ -32,6 +48,7 @@ export class FirstPersonArms extends ScriptComponent {
   @String({ label: 'Lean Bone', tooltip: 'Which Look At leans: the one whose Bone is this (the chest). Empty: every Look At of the character, which is wrong for one that turns the head and must stay on.' }) leanBone = '';
   @Float({ header: 'Equip', label: 'Equip Time', suffix: 's', tooltip: 'How long the arms take to go to the weapon and to come back.' }) equipTime = 0.3;
   @Bool({ label: 'Equip Key', tooltip: 'On: key 1 takes the weapon in hand and puts it away. Off when a Loadout handles the keys (1 to 9 choose a gear): it calls equip() and unequip() itself.' }) equipKey = true;
+  @Bool({ header: 'Arms Camera', label: 'Camera On Chest', tooltip: 'On: the position of the arms camera rides the chest (the Lean Bone) instead of the head, so the arms and the weapon look the same whatever the pitch: looking up, the camera is never inside the arms. The camera still looks where the player looks. Needs Arms Camera and Lean Bone. Off: it hangs from the eyes. Read when the game starts.' }) armsCameraOnChest = true;
 
   /** Whether the character holds the weapon (or is raising it). */
   @JsonIgnore() equipped = false;
@@ -41,11 +58,14 @@ export class FirstPersonArms extends ScriptComponent {
   @JsonIgnore() private constraints: (ParentConstraint | TwoBoneIK)[] = [];
   @JsonIgnore() private leans: LookAt[] = [];
   @JsonIgnore() private key?: Parameters<typeof Input.removeListner>[0];
+  @JsonIgnore() private offsetPending?: ParentConstraint;
+  @JsonIgnore() private updatesSinceStart = 0;
 
   onStart() {
     this.constraints = [];
     this.leans = [];
     this.collect(this.entity);
+    this.followChest();
     this.equipped = false;
     this.reach = 0;
     this.constraints.forEach(constraint => { constraint.weight = 0; });
@@ -62,10 +82,12 @@ export class FirstPersonArms extends ScriptComponent {
     this.constraints = [];
     this.leans = [];
     this.collect(this.entity);
+    this.followChest();
     this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
   onUpdate() {
+    if (this.offsetPending && this.isAtRest()) this.takeChest(this.offsetPending);
     const goal = this.equipped ? 1 : 0;
     if (this.reach === goal) return;
 
@@ -89,6 +111,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.key = undefined;
     this.constraints = [];
     this.leans = [];
+    this.offsetPending = undefined;
   }
 
   equip() {
@@ -113,6 +136,48 @@ export class FirstPersonArms extends ScriptComponent {
     if (this.armsCamera) this.armsCamera.active = on;
     if (this.viewModel) this.viewModel.active = on;
     if (this.weapon) this.weapon.active = on;
+  }
+
+  // The arms camera's position rides the chest (the Lean Bone), kept where it is relative to it now, with the look level. One constraint is enough: a load brings it back with its offset, and one made by hand in the scene is respected.
+  private followChest() {
+    const camera = this.armsCamera;
+    const chest = this.leanBone ? findEntityByPath(this.entity, this.leanBone) : undefined;
+    if (!this.armsCameraOnChest || !camera || !chest) return;
+    const existing = camera.components.find((component): component is ParentConstraint => component instanceof ParentConstraint);
+    if (existing) {
+      // One made by hand is left as it is. The one this made and a save kept before it had its chest is finished.
+      if (!existing.source && existing.order === FirstPersonArms.CAMERA_ORDER) this.offsetPending = existing;
+      return;
+    }
+
+    const follow = camera.addComponent(ParentConstraint);
+    follow.rotation = false;
+    // The line of constraints is sorted when one is registered, so the order is given with it off and it is registered again.
+    follow.active = false;
+    follow.order = FirstPersonArms.CAMERA_ORDER;
+    follow.active = true;
+    // With no source it does nothing, and the camera hangs from the eyes as it always did: the chest is given when the body is at rest (`takeChest()`), so that what is kept is the idle place and the weapon never jumps.
+    this.offsetPending = follow;
+    this.updatesSinceStart = 0;
+  }
+
+  // Whether the body is at rest: the idle pose has settled, the look is level and it is standing. A player who never stops is taken moving, but never looking up or down.
+  private isAtRest(): boolean {
+    this.updatesSinceStart++;
+    if (this.updatesSinceStart < FirstPersonArms.REST_FRAMES) return false;
+    if (Math.abs(this.armsCamera?.transform.forward.y ?? 0) > FirstPersonArms.REST_LEVEL) return false;
+    if (this.updatesSinceStart > FirstPersonArms.REST_PATIENCE) return true;
+    const velocity = this.entity.getComponent(CharacterController)?.actualVelocity;
+    return !velocity || Math.hypot(velocity.x, velocity.z) < FirstPersonArms.REST_SPEED;
+  }
+
+  // The camera's place relative to the chest is taken now, from where it is, with the constraint's source: from here on it follows the chest.
+  private takeChest(follow: ParentConstraint) {
+    this.offsetPending = undefined;
+    const chest = this.leanBone ? findEntityByPath(this.entity, this.leanBone) : undefined;
+    if (!chest) return;
+    follow.source = chest;
+    follow.rebind();
   }
 
   // The Two Bone IKs of this character and the Parent Constraints that take a bone to a point of the view model (the Eyes' own, that takes the camera to the head, is not one of them).

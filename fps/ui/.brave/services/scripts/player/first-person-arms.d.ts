@@ -16,8 +16,21 @@ import { IEntity, ScriptComponent } from '@brave/core';
  *
  * With ONE camera (no `Arms Camera`, and no `Mesh`) nothing changes layer and no camera is switched: the arms are drawn by the camera of the eyes with the rest of the body, the weapon too, and the
  * weapon is on the same layer as the body. What keeps the weapon out of a wall then is `Weapon Retreat`.
+ *
+ * The arms camera hangs from the eyes, but the arms and the weapon ride the chest, and the chest leans back with the look: looking up, the head comes down towards the hands, and a camera that goes
+ * with the head ends up under the forearms and inside them. With `Camera On Chest` (on) the POSITION of the arms camera rides the chest instead (the `Lean Bone`): this script gives it a `Parent Constraint`
+ * (Position only) when the game starts, which keeps the place it has relative to the chest as it is at rest (the body still and the look level, about a second and a half in; until then it hangs from the eyes
+ * as it always did, so nothing jumps), so the arms and the weapon look the same at every pitch. Its rotation stays the eyes': it looks
+ * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
+ * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
+ * place than the barrel, which it already was a little at rest.
  */
 export declare class FirstPersonArms extends ScriptComponent {
+    private static readonly CAMERA_ORDER;
+    private static readonly REST_FRAMES;
+    private static readonly REST_LEVEL;
+    private static readonly REST_SPEED;
+    private static readonly REST_PATIENCE;
     mesh?: IEntity;
     armsSlot: number;
     armsLayer: number;
@@ -29,6 +42,7 @@ export declare class FirstPersonArms extends ScriptComponent {
     leanBone: string;
     equipTime: number;
     equipKey: boolean;
+    armsCameraOnChest: boolean;
     /** Whether the character holds the weapon (or is raising it). */
     equipped: boolean;
     /** 0: the arms are the body's. 1: they are at the view model. */
@@ -36,6 +50,8 @@ export declare class FirstPersonArms extends ScriptComponent {
     private constraints;
     private leans;
     private key?;
+    private offsetPending?;
+    private updatesSinceStart;
     onStart(): void;
     onRestore(): void;
     onUpdate(): void;
@@ -45,6 +61,9 @@ export declare class FirstPersonArms extends ScriptComponent {
     unequip(): void;
     toggle(): void;
     private show;
+    private followChest;
+    private isAtRest;
+    private takeChest;
     private collect;
     private isInViewModel;
 }
