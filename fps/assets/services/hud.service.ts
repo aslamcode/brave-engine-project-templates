@@ -39,6 +39,8 @@ export interface IHudMarker {
   y: number;
   /** What E does, shown in the box of the marker the player looks at. */
   prompt: string;
+  /** The name of the thing, shown beside the small mark that is nearest to where the player looks (empty for every other one, and for the one looked at, which has its box). */
+  peek: string;
   /** The one the player looks at and can use now: the others are small marks. */
   focused: boolean;
   /** A focused marker with a line down to the thing, or without (a box on it). */

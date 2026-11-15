@@ -10,6 +10,7 @@ import type { Interactor } from '../interaction/interactor';
  */
 export declare class Collectible extends Interactable {
     prompt: string;
+    aimRadius: number;
     category: string;
     title: string;
     body: string;
@@ -25,5 +26,6 @@ export declare class Collectible extends Interactable {
     /** It was taken: the Interactor that took it. */
     onTaken: Signal<Interactor>;
     get currentPrompt(): string;
+    get peekName(): string;
     protected onUse(interactor: Interactor): void;
 }

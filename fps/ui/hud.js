@@ -116,13 +116,14 @@ hud.onDamaged.on(function (event) {
 }, { sampleEvery: 0 });
 
 // The things that can be used, over them on the screen. Every frame they move there is a list: one element for each id is kept (made when it first comes, taken out when it goes), moved by a transform. The one
-// looked at (`focused`) shows a glass box with what E does, tied to the thing by a line when its marker is `line`; the others are a small mark. While a box says what E does, the line under the crosshair is hidden.
+// looked at (`focused`) shows a glass box with what E does, tied to the thing by a line when its marker is `line`; the others are a small mark, and the one of them nearest to where the player looks says the name of its
+// thing next to it (`peek`). While a box says what E does, the line under the crosshair is hidden.
 function makeMarker() {
   var root = document.createElement('div');
   root.className = 'marker';
-  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><span class="marker__key">E</span><span class="marker__text"></span></div><div class="marker__dot"></div>';
+  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><span class="marker__key">E</span><span class="marker__text"></span></div><div class="marker__dot"></div><div class="marker__peek"></div>';
   markersEl.appendChild(root);
-  return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text') };
+  return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text'), peek: root.querySelector('.marker__peek') };
 }
 
 function renderMarkers(list) {
@@ -135,7 +136,10 @@ function renderMarkers(list) {
     node.root.classList.toggle('-focused', m.focused);
     node.root.classList.toggle('-line', m.focused && m.line);
     node.root.classList.toggle('-below', y < 150);
+    node.root.classList.toggle('-peek', !m.focused && m.peek !== '');
+    node.root.classList.toggle('-left', x > width - 220);
     if (m.focused && node.text.textContent !== m.prompt) node.text.textContent = m.prompt;
+    if (!m.focused && node.peek.textContent !== m.peek) node.peek.textContent = m.peek;
     // The box stays on the screen sideways: it is the box that is moved, never the point it is tied to.
     node.box.style.setProperty('--shift', (Math.max(0, 110 - x) - Math.max(0, x - (width - 110))).toFixed(1) + 'px');
     if (m.focused && m.prompt !== '') boxShown = true;

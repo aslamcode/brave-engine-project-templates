@@ -13,6 +13,7 @@ import type { Interactor } from './interactor';
  */
 export declare class Pickup extends Interactable {
     prompt: string;
+    aimRadius: number;
     itemId: string;
     itemName: string;
     count: number;
@@ -28,6 +29,7 @@ export declare class Pickup extends Interactable {
     onPickedUp: Signal<Interactor>;
     onStart(): void;
     get currentPrompt(): string;
+    get peekName(): string;
     protected onUse(interactor: Interactor): void;
     private get label();
 }

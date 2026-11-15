@@ -31,6 +31,8 @@ export class Interactable extends ScriptComponent {
   @Select({ header: 'Marker', label: 'Marker', optionsKey: 'markerOptions', sort: false, tooltip: 'How the player sees it can be used: Line is a glass box with the prompt, over it and tied to it by a line (for things on the floor, small things); Simple puts the box on it with no line; None draws nothing. Near ones that are not looked at are a small mark either way.' }) marker: InteractableMarker = 'line';
   @Float({ label: 'Marker Height', suffix: 'm', tooltip: 'Where the marker is tied: the centre of the biggest thing this entity is drawn with, and this much above it (negative: below), to put it on the handle of a drawer or the top of a pickup. An entity with nothing drawn takes its origin.' }) markerHeight = 0;
 
+  @Float({ header: 'Aim', label: 'Aim Radius', suffix: 'm', tooltip: 'How far from its centre the aim may be and still count as looking at it, so that a small thing does not have to be hit exactly: a sphere of this radius around its centre. It only counts when nothing else is under the crosshair (what the crosshair is on always wins), and not through a wall. 0: only a look that lands on its collider counts.' }) aimRadius = 0;
+
   @Ref(AudioSource, { header: 'Sound', label: 'Audio Source', tooltip: 'Where its sounds come from: an Audio Source with Auto Play off. Empty: the one on this entity, if it has one.' }) audio?: AudioSource;
   @Float({ label: 'Pitch Variation', tooltip: 'How much the pitch of its sounds changes from one time to the next, as a fraction: 0.05 is five percent either way.' }) pitchVariation = 0.05;
 
@@ -47,6 +49,11 @@ export class Interactable extends ScriptComponent {
   /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
   promptFor(_interactor: Interactor): string {
     return this.currentPrompt;
+  }
+
+  /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
+  get peekName(): string {
+    return '';
   }
 
   /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */

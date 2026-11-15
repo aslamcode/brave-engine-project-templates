@@ -24,6 +24,7 @@ export declare class Interactable extends ScriptComponent {
     prompt: string;
     marker: InteractableMarker;
     markerHeight: number;
+    aimRadius: number;
     audio?: AudioSource;
     pitchVariation: number;
     protected markerOptions: {
@@ -36,6 +37,8 @@ export declare class Interactable extends ScriptComponent {
     get currentPrompt(): string;
     /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
     promptFor(_interactor: Interactor): string;
+    /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
+    get peekName(): string;
     /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */
     get usable(): boolean;
     /** What E does. Returns whether it did anything. */

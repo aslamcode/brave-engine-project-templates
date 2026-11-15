@@ -114,6 +114,10 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .marker.-focused.-line.-below .marker__line { bottom: auto; top: 7px; background: linear-gradient(to bottom, var(--accent), rgba(255, 255, 255, 0.35)); }
 .marker__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; background: rgba(0, 0, 0, 0.18); }
 .marker__text { font-size: 15px; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); }
+.marker__peek { display: none; }
+.marker.-peek .marker__dot { left: -6px; top: -6px; width: 12px; height: 12px; background: rgba(255, 255, 255, 0.3); }
+.marker.-peek .marker__peek { display: block; position: absolute; left: 16px; top: -12px; padding: 3px 10px; border-radius: 9px; white-space: nowrap; font-size: 14px; letter-spacing: 0.01em; background: rgba(255, 255, 255, 0.1); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid rgba(255, 255, 255, 0.28); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); animation: marker-in 0.12s ease-out; }
+.marker.-peek.-left .marker__peek { left: auto; right: 16px; }
 @keyframes marker-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* The pause menu: a dimmed screen and a panel in the middle, hidden (and so unclickable) until the service says it is open. Only the controls take the mouse; a click anywhere else reaches the game, which holds the pointer again. */

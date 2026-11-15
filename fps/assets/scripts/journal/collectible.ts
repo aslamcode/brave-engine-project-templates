@@ -13,6 +13,7 @@ import type { Interactor } from '../interaction/interactor';
 export class Collectible extends Interactable {
 
   prompt = 'Take {item}';
+  aimRadius = 0.15;
 
   @Select({ header: 'Journal', label: 'Category', optionsKey: 'categoryOptions', sort: false, tooltip: 'Where the Journal lists it.' }) category = 'notes';
   @String({ label: 'Title', tooltip: 'What the player reads in the list, in the prompt and in the message.' }) title = 'A note';
@@ -32,6 +33,10 @@ export class Collectible extends Interactable {
 
   get currentPrompt(): string {
     return this.fill(this.prompt, this.title);
+  }
+
+  get peekName(): string {
+    return this.title;
   }
 
   protected onUse(interactor: Interactor): void {
