@@ -4,8 +4,10 @@ import { Hud } from '../../services/hud.service';
  * How the character carries the weapon, as poses of the point the right hand reaches (`Hold Right`) and of the one the left hand reaches (the `Grip Left` of the weapon in hand): the locomotion animations are
  * the character's own and are not touched, the weapon and the arms go where the IK targets go.
  *
- * Two stances. **Alert** is the pose `Hold Right` was authored in: the weapon at the shoulder (it is how the character stands). **Relaxed** is that pose moved down and back and the
- * barrel tilted down: the weapon at the hip. **Aiming** (the right mouse button, `Weapon.aim`) moves the weapon from the alert pose to the eye by the `Aim` numbers of its `Firearm`. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once); then it goes back to relaxed, slowly. Running
+ * Two stances, each the pose `Hold Right` was authored in moved by its own numbers. **Alert** is the weapon at the shoulder, carried a little low and to the right with the barrel turned in and raised, so that it is seen from the side
+ * and its line goes to the middle of the view, the vanishing point, as a weapon does in the games it is looked at in (`Alert Side`, `Alert Lower`, `Alert Turn`, `Alert Tilt`): with all four at 0 it is the authored pose, straight ahead of the camera and pointing a little
+ * down, which is seen from behind and looks flat. **Relaxed** is the weapon at the hip, lower, further back and with the barrel tilted down (the `Relaxed Pose` numbers, from the authored pose too). **Aiming** (the right mouse button, `Weapon.aim`) takes the alert numbers back to nothing
+ * and moves the weapon to the eye by the `Aim` numbers of its `Firearm`, which are measured from the authored pose. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once); then it goes back to relaxed, slowly. Running
  * lowers the rifle like a sprint does (`Lower When Running`), except in the moment after a shot.
  *
  * On top of the stance come the kick of every shot (`Weapon.recoil`: the rifle back, up and tilted up) and the reload (`Weapon.reloadProgress`: the rifle dips and rolls, the left hand goes down and back
@@ -23,6 +25,10 @@ export declare class WeaponStance extends ScriptComponent {
     lowerWhenRunning: boolean;
     raiseTime: number;
     lowerTime: number;
+    alertSide: number;
+    alertLower: number;
+    alertTurn: number;
+    alertTilt: number;
     relaxedLower: number;
     relaxedBack: number;
     relaxedSide: number;

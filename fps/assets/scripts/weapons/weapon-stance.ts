@@ -8,8 +8,10 @@ import { Weapon } from './weapon';
  * How the character carries the weapon, as poses of the point the right hand reaches (`Hold Right`) and of the one the left hand reaches (the `Grip Left` of the weapon in hand): the locomotion animations are
  * the character's own and are not touched, the weapon and the arms go where the IK targets go.
  *
- * Two stances. **Alert** is the pose `Hold Right` was authored in: the weapon at the shoulder (it is how the character stands). **Relaxed** is that pose moved down and back and the
- * barrel tilted down: the weapon at the hip. **Aiming** (the right mouse button, `Weapon.aim`) moves the weapon from the alert pose to the eye by the `Aim` numbers of its `Firearm`. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once); then it goes back to relaxed, slowly. Running
+ * Two stances, each the pose `Hold Right` was authored in moved by its own numbers. **Alert** is the weapon at the shoulder, carried a little low and to the right with the barrel turned in and raised, so that it is seen from the side
+ * and its line goes to the middle of the view, the vanishing point, as a weapon does in the games it is looked at in (`Alert Side`, `Alert Lower`, `Alert Turn`, `Alert Tilt`): with all four at 0 it is the authored pose, straight ahead of the camera and pointing a little
+ * down, which is seen from behind and looks flat. **Relaxed** is the weapon at the hip, lower, further back and with the barrel tilted down (the `Relaxed Pose` numbers, from the authored pose too). **Aiming** (the right mouse button, `Weapon.aim`) takes the alert numbers back to nothing
+ * and moves the weapon to the eye by the `Aim` numbers of its `Firearm`, which are measured from the authored pose. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once); then it goes back to relaxed, slowly. Running
  * lowers the rifle like a sprint does (`Lower When Running`), except in the moment after a shot.
  *
  * On top of the stance come the kick of every shot (`Weapon.recoil`: the rifle back, up and tilted up) and the reload (`Weapon.reloadProgress`: the rifle dips and rolls, the left hand goes down and back
@@ -36,7 +38,7 @@ export class WeaponStance extends ScriptComponent {
   ];
   private static readonly scratch = new Quaternion();
 
-  @Ref(Entity, { header: 'Parts', label: 'Hold Right', tooltip: 'The point the right hand reaches: a child of the chest. Its authored pose is the alert stance.' }) hold!: Entity;
+  @Ref(Entity, { header: 'Parts', label: 'Hold Right', tooltip: 'The point the right hand reaches: a child of the chest. Its authored pose is where both stances start from, and the one the weapon is aimed from.' }) hold!: Entity;
   @Ref(Entity, { label: 'Eyes', tooltip: 'The camera: its heading says which way is forward.' }) eyes!: Entity;
 
   @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot or reload.' }) alertSeconds = 30;
@@ -44,11 +46,16 @@ export class WeaponStance extends ScriptComponent {
   @Float({ label: 'Raise Time', suffix: 's', tooltip: 'How long the rifle takes to come up to the shoulder.' }) raiseTime = 0.2;
   @Float({ label: 'Lower Time', suffix: 's', tooltip: 'How long it takes to go down to the hip.' }) lowerTime = 0.5;
 
-  @Float({ header: 'Relaxed Pose', label: 'Lower', suffix: 'm', tooltip: 'How far down the right hand is from the alert pose.' }) relaxedLower = 0.05;
-  @Float({ label: 'Back', suffix: 'm', tooltip: 'How far back, towards the body.' }) relaxedBack = 0.1;
-  @Float({ label: 'Side', suffix: 'm', tooltip: 'How far to the right (negative: left).' }) relaxedSide = 0.14;
+  @Float({ header: 'Alert Pose', label: 'Alert Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose the rifle is carried while alert and not aimed. Aiming brings it back to the middle.' }) alertSide = 0.11;
+  @Float({ label: 'Alert Lower', suffix: 'm', tooltip: 'How far down the rifle is carried while alert and not aimed. Aiming brings it back up.' }) alertLower = 0.02;
+  @Float({ label: 'Alert Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right) while alert and not aimed, towards the middle of the view, so the rifle is seen from the side and not from behind. Aiming turns it back to the sights.' }) alertTurn = 3;
+  @Float({ label: 'Alert Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand while alert and not aimed: positive raises it, negative points it down. With Alert Turn it decides where the line of the barrel goes on the screen: to the middle of the view, as in the games that look like this. Aiming takes it back to the sights.' }) alertTilt = 9;
+
+  @Float({ header: 'Relaxed Pose', label: 'Lower', suffix: 'm', tooltip: 'How far down the right hand is from the authored pose.' }) relaxedLower = 0.05;
+  @Float({ label: 'Back', suffix: 'm', tooltip: 'How far back from the authored pose, towards the body.' }) relaxedBack = 0.1;
+  @Float({ label: 'Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose.' }) relaxedSide = 0.14;
   @Float({ label: 'Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand: negative points it down.' }) relaxedTilt = -6;
-  @Float({ label: 'Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right), towards the middle of the view when the rifle is at the side.' }) relaxedTurn = 18;
+  @Float({ label: 'Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right), towards the middle of the view when the rifle is at the side.' }) relaxedTurn = 8;
 
   @Float({ header: 'Recoil', label: 'Kick Back', suffix: 'm', tooltip: 'How far a shot throws the rifle back, at the strongest.' }) kickBack = 0.045;
   @Float({ label: 'Kick Up', suffix: 'm' }) kickUp = 0.012;
@@ -166,11 +173,14 @@ export class WeaponStance extends ScriptComponent {
     const gun = weapon?.current;
     const aim = weapon?.aim ?? 0;
 
-    const down = this.relaxedLower * this.relaxed + this.reloadDip * reload - this.kickUp * recoil + (gun?.aimLower ?? 0) * aim;
+    // The alert numbers are for a rifle that is carried, alert and not aimed: aiming takes them back to nothing, so the `Aim` numbers of each Firearm, which were made from the authored pose, still bring the sights to the eye.
+    const carried = (1 - this.relaxed) * (1 - aim);
+
+    const down = this.relaxedLower * this.relaxed + this.alertLower * carried + this.reloadDip * reload - this.kickUp * recoil + (gun?.aimLower ?? 0) * aim;
     const back = this.relaxedBack * this.relaxed + this.kickBack * recoil + (gun?.aimBack ?? 0) * aim;
-    const side = this.relaxedSide * this.relaxed + (gun?.aimSide ?? 0) * aim;
-    const tilt = this.relaxedTilt * this.relaxed + this.reloadTilt * reload + this.kickTilt * recoil + (gun?.aimTilt ?? 0) * aim;
-    const turn = this.relaxedTurn * this.relaxed;
+    const side = this.relaxedSide * this.relaxed + this.alertSide * carried + (gun?.aimSide ?? 0) * aim;
+    const tilt = this.relaxedTilt * this.relaxed + this.alertTilt * carried + this.reloadTilt * reload + this.kickTilt * recoil + (gun?.aimTilt ?? 0) * aim;
+    const turn = this.relaxedTurn * this.relaxed + this.alertTurn * carried;
     const roll = this.reloadRoll * reload;
 
     const [px, py, pz] = this.authoredHold;
