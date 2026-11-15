@@ -3,7 +3,8 @@ import { IEntity, ScriptComponent } from '@brave/core';
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
  * (key `1`), the slot of the mesh that has the arms goes to the layer of the arms camera, with the view model (the weapon and the points the arms reach for), and the arms stop being the body's: each
  * shoulder goes to a point of the view model and each hand to a grip of the weapon, so the weapon can be where it looks right on the screen whatever the length of the body's own arms. Unarmed
- * again, the arms go back to the body and only then does the slot return to the world camera, which is why neither swap shows: the arms camera has the world's own position and field of view.
+ * again, the arms go back to the body and only then does the slot return to the world camera, which is why neither swap shows: while the arms are the body's the arms camera has the world's own position, rotation and
+ * field of view, and it moves to its own place as the arms reach the weapon (see below).
  *
  * What does the reaching is on the character and not here: a `Parent Constraint` on each upper arm bone (Source: a shoulder point of the view model, Position only), and a `Two Bone IK` on this entity for
  * each hand (Target: a grip of the weapon, Pole: where the elbow points). This script only moves their weights from 0 to 1 and back, and turns the layer and the cameras on and off. Put the Eyes' constraint
@@ -24,13 +25,20 @@ import { IEntity, ScriptComponent } from '@brave/core';
  * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
  * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
  * place than the barrel, which it already was a little at rest.
+ *
+ * The arms camera is not where the world camera is (it hangs 0.2 to 0.3 m behind it, and with `Camera On Chest` it rides the chest), so the frame the arms change from one camera to the other would show them jump, most of all
+ * with the look down, where the body's own arms are in the picture. So a second `Parent Constraint` on the arms camera (Source: the world camera, the one it hangs from, Position only, after the chest's) takes it to the
+ * world camera's place with the weight the arms have not yet reached the weapon: 1 when they are the body's (the layer and the camera change there, and nothing moves), 0 at the weapon, and the camera glides
+ * between the two over `Equip Time` with the arms, both ways. Only with `Camera On Chest` (the chest's constraint is what puts the camera back where it belongs every frame): without it the camera hangs from the eyes as it did.
  */
 export declare class FirstPersonArms extends ScriptComponent {
     private static readonly CAMERA_ORDER;
+    private static readonly EYES_ORDER;
     private static readonly REST_FRAMES;
     private static readonly REST_LEVEL;
     private static readonly REST_SPEED;
     private static readonly REST_PATIENCE;
+    private static ease;
     mesh?: IEntity;
     armsSlot: number;
     armsLayer: number;
@@ -51,6 +59,7 @@ export declare class FirstPersonArms extends ScriptComponent {
     private leans;
     private key?;
     private offsetPending?;
+    private eyesFollow?;
     private updatesSinceStart;
     onStart(): void;
     onRestore(): void;
@@ -64,6 +73,7 @@ export declare class FirstPersonArms extends ScriptComponent {
     private followChest;
     private isAtRest;
     private takeChest;
+    private followEyes;
     private collect;
     private isInViewModel;
 }

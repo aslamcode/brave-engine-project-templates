@@ -1,10 +1,11 @@
-import { Bool, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK, findEntityByPath } from '@brave/core';
+import { Bool, Camera, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK, findEntityByPath } from '@brave/core';
 
 /**
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
  * (key `1`), the slot of the mesh that has the arms goes to the layer of the arms camera, with the view model (the weapon and the points the arms reach for), and the arms stop being the body's: each
  * shoulder goes to a point of the view model and each hand to a grip of the weapon, so the weapon can be where it looks right on the screen whatever the length of the body's own arms. Unarmed
- * again, the arms go back to the body and only then does the slot return to the world camera, which is why neither swap shows: the arms camera has the world's own position and field of view.
+ * again, the arms go back to the body and only then does the slot return to the world camera, which is why neither swap shows: while the arms are the body's the arms camera has the world's own position, rotation and
+ * field of view, and it moves to its own place as the arms reach the weapon (see below).
  *
  * What does the reaching is on the character and not here: a `Parent Constraint` on each upper arm bone (Source: a shoulder point of the view model, Position only), and a `Two Bone IK` on this entity for
  * each hand (Target: a grip of the weapon, Pole: where the elbow points). This script only moves their weights from 0 to 1 and back, and turns the layer and the cameras on and off. Put the Eyes' constraint
@@ -25,17 +26,29 @@ import { Bool, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgno
  * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
  * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
  * place than the barrel, which it already was a little at rest.
+ *
+ * The arms camera is not where the world camera is (it hangs 0.2 to 0.3 m behind it, and with `Camera On Chest` it rides the chest), so the frame the arms change from one camera to the other would show them jump, most of all
+ * with the look down, where the body's own arms are in the picture. So a second `Parent Constraint` on the arms camera (Source: the world camera, the one it hangs from, Position only, after the chest's) takes it to the
+ * world camera's place with the weight the arms have not yet reached the weapon: 1 when they are the body's (the layer and the camera change there, and nothing moves), 0 at the weapon, and the camera glides
+ * between the two over `Equip Time` with the arms, both ways. Only with `Camera On Chest` (the chest's constraint is what puts the camera back where it belongs every frame): without it the camera hangs from the eyes as it did.
  */
 @Script()
 export class FirstPersonArms extends ScriptComponent {
 
   // Where the arms camera's constraint is in the line of constraints, given before it is registered (the order is only read then): after the lean (50), the head (60) and the eyes (100), so it follows the chest as it is in the frame.
   private static readonly CAMERA_ORDER = 200;
+  // The second one, after it: it takes the camera to the world camera's place while the arms are the body's (see the class).
+  private static readonly EYES_ORDER = 210;
   // The moment to take the arms camera's place relative to the chest: at rest. Frames after the start (the lean, the idle and the eyes' own damping of 0.2 s have settled by then: sooner, what is left of it is kept as part of the place), how level the look must be (the sine of 5 degrees), how slow the body, and the frames after which a player who never stops is taken moving.
   private static readonly REST_FRAMES = 90;
   private static readonly REST_LEVEL = 0.09;
   private static readonly REST_SPEED = 0.2;
   private static readonly REST_PATIENCE = 300;
+
+  // How far the arms are along the way, eased: what every weight is made of.
+  private static ease(reach: number): number {
+    return reach * reach * (3 - 2 * reach);
+  }
 
   @Ref(Entity, { header: 'Arms', label: 'Mesh' }) mesh?: IEntity;
   @Int({ label: 'Arms Slot', tooltip: 'The material slot of the mesh that has the arms: the second, when the model was made with its arms in a slot of their own.' }) armsSlot = 1;
@@ -59,6 +72,7 @@ export class FirstPersonArms extends ScriptComponent {
   @JsonIgnore() private leans: LookAt[] = [];
   @JsonIgnore() private key?: Parameters<typeof Input.removeListner>[0];
   @JsonIgnore() private offsetPending?: ParentConstraint;
+  @JsonIgnore() private eyesFollow?: ParentConstraint;
   @JsonIgnore() private updatesSinceStart = 0;
 
   onStart() {
@@ -70,6 +84,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.reach = 0;
     this.constraints.forEach(constraint => { constraint.weight = 0; });
     this.leans.forEach(lean => { lean.weight = this.unarmedLean; });
+    if (this.eyesFollow) this.eyesFollow.weight = 1;
     this.show(false);
     // A character that is off (the other one of two, say) does not hold anything: its key would equip a weapon nobody sees and leave it armed when it comes back.
     this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
@@ -83,6 +98,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.leans = [];
     this.collect(this.entity);
     this.followChest();
+    if (this.eyesFollow) this.eyesFollow.weight = 1 - FirstPersonArms.ease(this.reach);
     this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
@@ -93,9 +109,10 @@ export class FirstPersonArms extends ScriptComponent {
 
     const step = this.equipTime > 0 ? Time.deltaTime / this.equipTime : 1;
     this.reach = this.reach < goal ? Math.min(goal, this.reach + step) : Math.max(goal, this.reach - step);
-    const eased = this.reach * this.reach * (3 - 2 * this.reach);
+    const eased = FirstPersonArms.ease(this.reach);
     this.constraints.forEach(constraint => { constraint.weight = eased; });
     this.leans.forEach(lean => { lean.weight = this.unarmedLean + (this.armedLean - this.unarmedLean) * eased; });
+    if (this.eyesFollow) this.eyesFollow.weight = 1 - eased;
 
     if (!this.equipped && this.reach === 0) this.show(false);
   }
@@ -112,6 +129,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.constraints = [];
     this.leans = [];
     this.offsetPending = undefined;
+    this.eyesFollow = undefined;
   }
 
   equip() {
@@ -143,10 +161,14 @@ export class FirstPersonArms extends ScriptComponent {
     const camera = this.armsCamera;
     const chest = this.leanBone ? findEntityByPath(this.entity, this.leanBone) : undefined;
     if (!this.armsCameraOnChest || !camera || !chest) return;
-    const existing = camera.components.find((component): component is ParentConstraint => component instanceof ParentConstraint);
+    const constraints = camera.components.filter((component): component is ParentConstraint => component instanceof ParentConstraint);
+    const ours = (constraint: ParentConstraint) => constraint.order === FirstPersonArms.EYES_ORDER && constraint.source === camera.parent;
+    this.eyesFollow = constraints.find(ours);
+    const existing = constraints.find(constraint => !ours(constraint));
     if (existing) {
-      // One made by hand is left as it is. The one this made and a save kept before it had its chest is finished.
+      // One made by hand is left as it is. The one this made and a save kept before it had its chest is finished, and a save that has the chest and not the second constraint gets it.
       if (!existing.source && existing.order === FirstPersonArms.CAMERA_ORDER) this.offsetPending = existing;
+      else if (existing.source && existing.order === FirstPersonArms.CAMERA_ORDER && !this.eyesFollow) this.followEyes(camera);
       return;
     }
 
@@ -178,6 +200,25 @@ export class FirstPersonArms extends ScriptComponent {
     if (!chest) return;
     follow.source = chest;
     follow.rebind();
+    if (this.armsCamera) this.followEyes(this.armsCamera);
+  }
+
+  // The second constraint of the arms camera: it takes it to the world camera's place (the camera it hangs from) by how little the arms have reached the weapon. Only once the first one has the chest: before that the camera is not
+  // put back where it belongs every frame, and this one would pull it to the eyes and leave it there.
+  private followEyes(camera: IEntity) {
+    const eyes = camera.parent;
+    if (!eyes?.getComponent(Camera)) return;
+
+    const follow = camera.addComponent(ParentConstraint);
+    follow.source = eyes;
+    follow.position = true;
+    follow.rotation = false;
+    follow.maintainOffset = false;
+    follow.weight = 1 - FirstPersonArms.ease(this.reach);
+    follow.active = false;
+    follow.order = FirstPersonArms.EYES_ORDER;
+    follow.active = true;
+    this.eyesFollow = follow;
   }
 
   // The Two Bone IKs of this character and the Parent Constraints that take a bone to a point of the view model (the Eyes' own, that takes the camera to the head, is not one of them).
