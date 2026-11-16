@@ -93265,6 +93265,22 @@
           }
         },
         {
+          "$ref": "k998501",
+          "$type": "a2a00df1-57ce-4c83-89fc-af90fd353576",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "8aa3001c-7bc1-46e6-923f-36339ef2bb6c",
+          "runSeconds": 10,
+          "recoverSeconds": 7,
+          "resumeAt": 30,
+          "showBar": true,
+          "entity": {
+            "$circular": "pl_p_ref_1132"
+          }
+        },
+        {
           "$ref": "k996001",
           "$type": "c7c489f2-1833-4077-9356-626fbf91efc1",
           "_active": true,
@@ -106297,6 +106313,22 @@
           },
           "hurtSound": {
             "$circular": "pb_k65"
+          }
+        },
+        {
+          "$ref": "k998502",
+          "$type": "a2a00df1-57ce-4c83-89fc-af90fd353576",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "bc43a688-e098-4cb0-ad90-25a0833432ee",
+          "runSeconds": 10,
+          "recoverSeconds": 7,
+          "resumeAt": 30,
+          "showBar": true,
+          "entity": {
+            "$circular": "pb_p_ref_1618"
           }
         },
         {
