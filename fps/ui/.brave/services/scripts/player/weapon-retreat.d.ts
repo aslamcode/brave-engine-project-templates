@@ -24,6 +24,7 @@ export declare class WeaponRetreat extends AnimationConstraint {
     outTime: number;
     /** 0: the weapon is where the hands put it. 1: all the way back. */
     retreat: number;
+    private stance?;
     private readonly place;
     private readonly axis;
     private readonly held;

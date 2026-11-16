@@ -47,6 +47,10 @@ export declare class WeaponStance extends ScriptComponent {
     alertLeft: number;
     /** How far the rifle is from the alert pose (0) to the relaxed one (1). */
     relaxed: number;
+    /** How far the alert pose has raised the barrel from the authored pose now, in degrees (`Alert Tilt` at its share of the pose): what `WeaponRetreat` needs to know to work out where the end of the barrel is. */
+    carriedTilt: number;
+    /** How far a weapon that gives way to a wall has gone back, 0 to 1 (`WeaponRetreat` says it): the alert numbers go to nothing with it, so the retreat works from the pose it was made for and the weapon is not carried into the wall at its slant. */
+    retreated: number;
     private authoredHold;
     private axes;
     private weapon?;

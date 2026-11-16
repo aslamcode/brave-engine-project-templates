@@ -1,4 +1,5 @@
 import { AnimationConstraint, Entity, Float, IEntity, JsonIgnore, PhysicsSystem, PoseGuard, Quaternion, Ref, Script, Vector3, setWorldPosition, setWorldRotation, worldRotation } from '@brave/core';
+import { WeaponStance } from '../weapons/weapon-stance';
 
 /**
  * Keeps the weapon out of a wall. A ball goes from the eyes along the look, as far as the weapon reaches; when the level is nearer than that, the point the right hand reaches for (`Hold`) is pulled
@@ -31,6 +32,7 @@ export class WeaponRetreat extends AnimationConstraint {
   /** 0: the weapon is where the hands put it. 1: all the way back. */
   @JsonIgnore() retreat = 0;
 
+  @JsonIgnore() private stance?: WeaponStance;
   @JsonIgnore() private readonly place = new Float32Array(3);
   @JsonIgnore() private readonly axis = new Vector3();
   @JsonIgnore() private readonly held = new Quaternion();
@@ -49,6 +51,7 @@ export class WeaponRetreat extends AnimationConstraint {
   }
 
   protected apply(deltaTime: number, weight: number): void {
+    this.stance ??= this.entity.getComponent(WeaponStance) ?? undefined;
     const transform = (this.hold as IEntity).transform;
     const eyes = (this.eyes as IEntity).transform.worldMatrix;
     const matrix = transform.worldMatrix;
@@ -82,6 +85,7 @@ export class WeaponRetreat extends AnimationConstraint {
 
   // The weapon gives its place back when the constraint is switched off: the guard puts the point where the animation had it.
   onDisable() {
+    if (this.stance) this.stance.retreated = 0;
     this.guard?.release();
     super.onDisable();
   }
@@ -99,7 +103,9 @@ export class WeaponRetreat extends AnimationConstraint {
     // The weapon turns about the hand, which comes back as it turns: the end of the barrel is at (hand - pull back * u) + (the weapon in front of the hand) * cos(tilt * u), which only gets shorter as u goes to 1.
     const inFront = Math.max(this.weaponLength - handAhead, 0.05);
     const tilt = this.limit() * Math.PI / 180;
-    const reach = (u: number) => handAhead - this.pullBack * u + inFront * Math.cos(tilt * u);
+    // The alert pose raises the barrel before this turns it: the two add up about the same axis, so the barrel has to come further down to clear the wall. It goes to nothing as the weapon goes back (`retreated`), so this settles on the share it can hold.
+    const lean = (this.stance?.carriedTilt ?? 0) * Math.PI / 180;
+    const reach = (u: number) => handAhead - this.pullBack * u + inFront * Math.cos(tilt * u + lean);
     if (reach(1) >= room) return 1;
 
     let low = 0, high = 1;
@@ -120,5 +126,6 @@ export class WeaponRetreat extends AnimationConstraint {
   private follow(wanted: number, deltaTime: number) {
     const time = wanted > this.retreat ? this.inTime : this.outTime;
     this.retreat += (wanted - this.retreat) * (time > 0 ? 1 - Math.exp(-deltaTime / time) : 1);
+    if (this.stance) this.stance.retreated = this.retreat;
   }
 }

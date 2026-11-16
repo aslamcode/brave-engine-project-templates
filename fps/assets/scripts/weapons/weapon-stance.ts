@@ -1,4 +1,4 @@
-import { Bool, CharacterController, Entity, Float, Inject, JsonIgnore, PlayerMovement, Quaternion, Ref, Saved, Script, ScriptComponent, State, Time, Vector3 } from '@brave/core';
+import { Bool, CharacterController, Entity, Float, Inject, JsonIgnore, PlayerMovement, Quaternion, Ref, Saved, SaveIgnore, Script, ScriptComponent, State, Time, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Loadout } from '../gear/loadout';
 import { Firearm } from './firearm';
@@ -41,29 +41,29 @@ export class WeaponStance extends ScriptComponent {
   @Ref(Entity, { header: 'Parts', label: 'Hold Right', tooltip: 'The point the right hand reaches: a child of the chest. Its authored pose is where both stances start from, and the one the weapon is aimed from.' }) hold!: Entity;
   @Ref(Entity, { label: 'Eyes', tooltip: 'The camera: its heading says which way is forward.' }) eyes!: Entity;
 
-  @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot or reload.' }) alertSeconds = 30;
-  @Bool({ label: 'Lower When Running', tooltip: 'The rifle goes down while Shift is held and the body moves, like a sprint.' }) lowerWhenRunning = true;
-  @Float({ label: 'Raise Time', suffix: 's', tooltip: 'How long the rifle takes to come up to the shoulder.' }) raiseTime = 0.2;
-  @Float({ label: 'Lower Time', suffix: 's', tooltip: 'How long it takes to go down to the hip.' }) lowerTime = 0.5;
+  @SaveIgnore() @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot or reload.' }) alertSeconds = 30;
+  @SaveIgnore() @Bool({ label: 'Lower When Running', tooltip: 'The rifle goes down while Shift is held and the body moves, like a sprint.' }) lowerWhenRunning = true;
+  @SaveIgnore() @Float({ label: 'Raise Time', suffix: 's', tooltip: 'How long the rifle takes to come up to the shoulder.' }) raiseTime = 0.2;
+  @SaveIgnore() @Float({ label: 'Lower Time', suffix: 's', tooltip: 'How long it takes to go down to the hip.' }) lowerTime = 0.5;
 
-  @Float({ header: 'Alert Pose', label: 'Alert Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose the rifle is carried while alert and not aimed. Aiming brings it back to the middle.' }) alertSide = 0.11;
-  @Float({ label: 'Alert Lower', suffix: 'm', tooltip: 'How far down the rifle is carried while alert and not aimed. Aiming brings it back up.' }) alertLower = 0.02;
-  @Float({ label: 'Alert Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right) while alert and not aimed, towards the middle of the view, so the rifle is seen from the side and not from behind. Aiming turns it back to the sights.' }) alertTurn = 3;
-  @Float({ label: 'Alert Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand while alert and not aimed: positive raises it, negative points it down. With Alert Turn it decides where the line of the barrel goes on the screen: to the middle of the view, as in the games that look like this. Aiming takes it back to the sights.' }) alertTilt = 9;
+  @SaveIgnore() @Float({ header: 'Alert Pose', label: 'Alert Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose the rifle is carried while alert and not aimed. Aiming brings it back to the middle.' }) alertSide = 0.11;
+  @SaveIgnore() @Float({ label: 'Alert Lower', suffix: 'm', tooltip: 'How far down the rifle is carried while alert and not aimed. Aiming brings it back up.' }) alertLower = 0.02;
+  @SaveIgnore() @Float({ label: 'Alert Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right) while alert and not aimed, towards the middle of the view, so the rifle is seen from the side and not from behind. Aiming turns it back to the sights.' }) alertTurn = 3;
+  @SaveIgnore() @Float({ label: 'Alert Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand while alert and not aimed: positive raises it, negative points it down. With Alert Turn it decides where the line of the barrel goes on the screen: to the middle of the view, as in the games that look like this. Aiming takes it back to the sights.' }) alertTilt = 9;
 
-  @Float({ header: 'Relaxed Pose', label: 'Lower', suffix: 'm', tooltip: 'How far down the right hand is from the authored pose.' }) relaxedLower = 0.05;
-  @Float({ label: 'Back', suffix: 'm', tooltip: 'How far back from the authored pose, towards the body.' }) relaxedBack = 0.1;
-  @Float({ label: 'Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose.' }) relaxedSide = 0.14;
-  @Float({ label: 'Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand: negative points it down.' }) relaxedTilt = -6;
-  @Float({ label: 'Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right), towards the middle of the view when the rifle is at the side.' }) relaxedTurn = 8;
+  @SaveIgnore() @Float({ header: 'Relaxed Pose', label: 'Lower', suffix: 'm', tooltip: 'How far down the right hand is from the authored pose.' }) relaxedLower = 0.05;
+  @SaveIgnore() @Float({ label: 'Back', suffix: 'm', tooltip: 'How far back from the authored pose, towards the body.' }) relaxedBack = 0.1;
+  @SaveIgnore() @Float({ label: 'Side', suffix: 'm', tooltip: 'How far to the right (negative: left) of the authored pose.' }) relaxedSide = 0.14;
+  @SaveIgnore() @Float({ label: 'Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand: negative points it down.' }) relaxedTilt = -6;
+  @SaveIgnore() @Float({ label: 'Turn', suffix: '°', tooltip: 'How far the barrel is turned to the left (negative: right), towards the middle of the view when the rifle is at the side.' }) relaxedTurn = 8;
 
-  @Float({ header: 'Recoil', label: 'Kick Back', suffix: 'm', tooltip: 'How far a shot throws the rifle back, at the strongest.' }) kickBack = 0.045;
-  @Float({ label: 'Kick Up', suffix: 'm' }) kickUp = 0.012;
-  @Float({ label: 'Kick Tilt', suffix: '°', tooltip: 'How far a shot raises the barrel.' }) kickTilt = 3;
+  @SaveIgnore() @Float({ header: 'Recoil', label: 'Kick Back', suffix: 'm', tooltip: 'How far a shot throws the rifle back, at the strongest.' }) kickBack = 0.045;
+  @SaveIgnore() @Float({ label: 'Kick Up', suffix: 'm' }) kickUp = 0.012;
+  @SaveIgnore() @Float({ label: 'Kick Tilt', suffix: '°', tooltip: 'How far a shot raises the barrel.' }) kickTilt = 3;
 
-  @Float({ header: 'Reload', label: 'Dip', suffix: 'm', tooltip: 'How far the rifle goes down while the magazine is changed.' }) reloadDip = 0.02;
-  @Float({ label: 'Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand (negative: down).' }) reloadTilt = 10;
-  @Float({ label: 'Roll', suffix: '°', tooltip: 'How far the rifle leans over on its side, so that the magazine well faces the player.' }) reloadRoll = 35;
+  @SaveIgnore() @Float({ header: 'Reload', label: 'Dip', suffix: 'm', tooltip: 'How far the rifle goes down while the magazine is changed.' }) reloadDip = 0.02;
+  @SaveIgnore() @Float({ label: 'Tilt', suffix: '°', tooltip: 'How far the barrel is turned about the hand (negative: down).' }) reloadTilt = 10;
+  @SaveIgnore() @Float({ label: 'Roll', suffix: '°', tooltip: 'How far the rifle leans over on its side, so that the magazine well faces the player.' }) reloadRoll = 35;
 
   @Inject(Hud) hud!: Hud;
 
@@ -73,6 +73,10 @@ export class WeaponStance extends ScriptComponent {
   @JsonIgnore() @Saved() alertLeft = 0;
   /** How far the rifle is from the alert pose (0) to the relaxed one (1). */
   @JsonIgnore() @Saved() relaxed = 1;
+  /** How far the alert pose has raised the barrel from the authored pose now, in degrees (`Alert Tilt` at its share of the pose): what `WeaponRetreat` needs to know to work out where the end of the barrel is. */
+  @JsonIgnore() carriedTilt = 0;
+  /** How far a weapon that gives way to a wall has gone back, 0 to 1 (`WeaponRetreat` says it): the alert numbers go to nothing with it, so the retreat works from the pose it was made for and the weapon is not carried into the wall at its slant. */
+  @JsonIgnore() retreated = 0;
 
   // What is read once, when the game starts, and kept in a save: the authored local pose of the hold point (the grip of each weapon keeps its own, in its `Firearm`), and the look's own axes (forward, up, right: nine numbers) in the frame
   // the hold point hangs from, taken level whatever the camera's pitch.
@@ -173,8 +177,9 @@ export class WeaponStance extends ScriptComponent {
     const gun = weapon?.current;
     const aim = weapon?.aim ?? 0;
 
-    // The alert numbers are for a rifle that is carried, alert and not aimed: aiming takes them back to nothing, so the `Aim` numbers of each Firearm, which were made from the authored pose, still bring the sights to the eye.
-    const carried = (1 - this.relaxed) * (1 - aim);
+    // The alert numbers are for a rifle that is carried, alert and not aimed, and not pressed against a wall: aiming and the retreat take them back to nothing, so the `Aim` numbers of each Firearm, which were made from the authored pose, still bring the sights to the eye.
+    const carried = (1 - this.relaxed) * (1 - aim) * (1 - this.retreated);
+    this.carriedTilt = this.alertTilt * carried;
 
     const down = this.relaxedLower * this.relaxed + this.alertLower * carried + this.reloadDip * reload - this.kickUp * recoil + (gun?.aimLower ?? 0) * aim;
     const back = this.relaxedBack * this.relaxed + this.kickBack * recoil + (gun?.aimBack ?? 0) * aim;
