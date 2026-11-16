@@ -136,6 +136,11 @@ export class Loadout extends ScriptComponent {
     return this.arms?.equipped === true || (!this.tookInHand && this.startEquipped);
   }
 
+  /** Whether the arms are down to bring out another gear: the gear in hand is still the old one until they are at the body. A put-away is not a change (no gear is waiting). */
+  get isChanging(): boolean {
+    return this.pending !== undefined;
+  }
+
   /** Whether the gear may be used: its owner on (a character that is switched off still hears the mouse, and must not act from where it stands), in hand, alive, the game running. A game that stuns the player does it here. */
   isReady(): boolean {
     return this.canChange() && this.arms?.equipped === true && !this.pending;

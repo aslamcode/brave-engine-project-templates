@@ -11,7 +11,7 @@ import { Weapon } from './weapon';
  * Two stances, each the pose `Hold Right` was authored in moved by its own numbers. **Alert** is the weapon at the shoulder, carried a little low and to the right with the barrel turned in and raised, so that it is seen from the side
  * and its line goes to the middle of the view, the vanishing point, as a weapon does in the games it is looked at in (`Alert Side`, `Alert Lower`, `Alert Turn`, `Alert Tilt`): with all four at 0 it is the authored pose, straight ahead of the camera and pointing a little
  * down, which is seen from behind and looks flat. **Relaxed** is the weapon at the hip, lower, further back and with the barrel tilted down (the `Relaxed Pose` numbers, from the authored pose too). **Aiming** (the right mouse button, `Weapon.aim`) takes the alert numbers back to nothing
- * and moves the weapon to the eye by the `Aim` numbers of its `Firearm`, which are measured from the authored pose. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once); then it goes back to relaxed, slowly. Running
+ * and moves the weapon to the eye by the `Aim` numbers of its `Firearm`, which are measured from the authored pose. A shot (or a reload) makes the character alert and keeps it so for `Alert Seconds` of game time after the last one, as long as the weapon is in the hands (put away, or with another kind of gear in them, it is relaxed at once; changing one firearm for another keeps it alert, with the clock starting again); then it goes back to relaxed, slowly. Running
  * lowers the rifle like a sprint does (`Lower When Running`), except in the moment after a shot.
  *
  * On top of the stance come the kick of every shot (`Weapon.recoil`: the rifle back, up and tilted up) and the reload (`Weapon.reloadProgress`: the rifle dips and rolls, the left hand goes down and back
@@ -41,7 +41,7 @@ export class WeaponStance extends ScriptComponent {
   @Ref(Entity, { header: 'Parts', label: 'Hold Right', tooltip: 'The point the right hand reaches: a child of the chest. Its authored pose is where both stances start from, and the one the weapon is aimed from.' }) hold!: Entity;
   @Ref(Entity, { label: 'Eyes', tooltip: 'The camera: its heading says which way is forward.' }) eyes!: Entity;
 
-  @SaveIgnore() @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot or reload.' }) alertSeconds = 30;
+  @SaveIgnore() @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot, reload or change of weapon.' }) alertSeconds = 15;
   @SaveIgnore() @Bool({ label: 'Lower When Running', tooltip: 'The rifle goes down while Shift is held and the body moves, like a sprint.' }) lowerWhenRunning = true;
   @SaveIgnore() @Float({ label: 'Raise Time', suffix: 's', tooltip: 'How long the rifle takes to come up to the shoulder.' }) raiseTime = 0.2;
   @SaveIgnore() @Float({ label: 'Lower Time', suffix: 's', tooltip: 'How long it takes to go down to the hip.' }) lowerTime = 0.5;
@@ -134,6 +134,11 @@ export class WeaponStance extends ScriptComponent {
   //#region Stance
   private updateAlert(deltaTime: number) {
     if (!this.isAlert) return;
+    // A change of gear is not a put-away: the arms go down and come out with the next one, and a character that was alert is still alert with it. The clock starts again when the new gear is out; only what is brought out decides (a firearm keeps the alert, anything else ends it below).
+    if (this.loadout?.isChanging) {
+      this.alertLeft = this.alertSeconds;
+      return;
+    }
     // Alert is how a weapon in the hands is kept: with the hands free, or another kind of gear in them, there is nothing to keep up, and the character is relaxed at once, not after `Alert Seconds`.
     if (!this.loadout?.isHolding || !this.weapon?.current) {
       this.endAlert();

@@ -52,6 +52,8 @@ export declare class Loadout extends ScriptComponent {
     cycle(step: number): boolean;
     /** Whether the arms hold the gear, or are raising it: false with the hands free, and while the arms go down to change it. Until the first frame (and the first after a load) has taken the gear in hand it is true when it is going to be. */
     get isHolding(): boolean;
+    /** Whether the arms are down to bring out another gear: the gear in hand is still the old one until they are at the body. A put-away is not a change (no gear is waiting). */
+    get isChanging(): boolean;
     /** Whether the gear may be used: its owner on (a character that is switched off still hears the mouse, and must not act from where it stands), in hand, alive, the game running. A game that stuns the player does it here. */
     isReady(): boolean;
     /** The list of what is carried is written again: a gear's caption changed (a grenade was used or found). */
