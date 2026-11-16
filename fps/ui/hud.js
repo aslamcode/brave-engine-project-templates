@@ -6,6 +6,7 @@ var hud = BraveUiBridge.remote('Hud');
 var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
 var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items'), weapons = el('weapons');
+var staminaBox = el('stamina'), staminaFill = el('staminaFill'), staminaMark = el('staminaMark');
 var markersEl = el('markers'), markerNodes = {};
 var hitTimer, damageTimer, indicatorTimer, indicator = el('indicator');
 
@@ -20,6 +21,12 @@ function render(state) {
   healthFill.style.width = (share * 100) + '%';
   healthFill.classList.toggle('-low', share < 0.3);
   healthText.textContent = Math.max(0, Math.round(state.health));
+
+  // The stamina of the run: the bar only while it matters, red and with the mark of where the run comes back while the player is out of breath.
+  staminaFill.style.width = (Math.max(0, Math.min(1, state.stamina)) * 100) + '%';
+  staminaMark.style.left = (Math.max(0, Math.min(1, state.staminaResume)) * 100) + '%';
+  staminaBox.classList.toggle('-show', !!state.staminaShown);
+  staminaBox.classList.toggle('-exhausted', !!state.staminaExhausted);
 
   ammo.textContent = state.ammo;
   ammo.classList.toggle('-empty', state.magazine > 0 && state.ammo === 0);

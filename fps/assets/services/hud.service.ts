@@ -29,6 +29,12 @@ export interface IHudState {
   weapon: number;
   /** The player is aiming (the right mouse button): the page lets the crosshair's ticks go. */
   aiming: boolean;
+  /** The stamina of the run, 0 to 1, and whether the page shows its bar now (from the first step of a run until it is full again). */
+  stamina: number;
+  staminaShown: boolean;
+  /** It ran out: the player cannot run until `staminaResume` (0 to 1, where the bar's mark is). */
+  staminaExhausted: boolean;
+  staminaResume: number;
 }
 
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
@@ -49,7 +55,7 @@ export interface IHudMarker {
 
 @Service()
 export class Hud {
-  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false };
+  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false, stamina: 1, staminaShown: false, staminaExhausted: false, staminaResume: 0.3 };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IHudState>();
@@ -110,6 +116,15 @@ export class Hud {
   setAiming(aiming: boolean): void {
     if (this.state.aiming === aiming) return;
     this.state.aiming = aiming;
+    this.changed();
+  }
+
+  /** The stamina bar. The value is rounded to half a percent (a pixel of the bar): a change smaller than that is not sent. */
+  setStamina(shown: boolean, stamina: number, exhausted: boolean, resume: number): void {
+    const rounded = Math.round(stamina * 200) / 200;
+    const state = this.state;
+    if (state.staminaShown === shown && state.stamina === rounded && state.staminaExhausted === exhausted && state.staminaResume === resume) return;
+    Object.assign(state, { staminaShown: shown, stamina: rounded, staminaExhausted: exhausted, staminaResume: resume });
     this.changed();
   }
 

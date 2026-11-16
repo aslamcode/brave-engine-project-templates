@@ -28,6 +28,12 @@ export interface IHudState {
     weapon: number;
     /** The player is aiming (the right mouse button): the page lets the crosshair's ticks go. */
     aiming: boolean;
+    /** The stamina of the run, 0 to 1, and whether the page shows its bar now (from the first step of a run until it is full again). */
+    stamina: number;
+    staminaShown: boolean;
+    /** It ran out: the player cannot run until `staminaResume` (0 to 1, where the bar's mark is). */
+    staminaExhausted: boolean;
+    staminaResume: number;
 }
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
 export interface IHudMarker {
@@ -72,6 +78,8 @@ export declare class Hud {
     setSpread(spread: number): void;
     setWeapons(weapons: string[], weapon: number): void;
     setAiming(aiming: boolean): void;
+    /** The stamina bar. The value is rounded to half a percent (a pixel of the bar): a change smaller than that is not sent. */
+    setStamina(shown: boolean, stamina: number, exhausted: boolean, resume: number): void;
     setTarget(target: boolean): void;
     /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
     setMarkers(markers: IHudMarker[]): void;

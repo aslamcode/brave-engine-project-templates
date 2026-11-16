@@ -81,6 +81,15 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .bar__fill { height: 100%; width: 100%; border-radius: 4px; background: var(--ok); transition: width 0.2s ease-out, background 0.2s; }
 .bar__fill.-low { background: var(--danger); }
 
+/* The stamina of the run: a small panel at the bottom centre of the screen (where the eye is), above the ammo panel's top edge (its 122 px) so that a narrow window does not cover the end of the bar, only there while it matters (`-show`); the bar goes red, with a mark where the run comes back, while the player is out of breath (`-exhausted`). */
+.stamina { position: fixed; left: calc(50% - 105px); bottom: 140px; box-sizing: border-box; width: 210px; padding: 8px 16px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); opacity: 0; transition: opacity 0.4s ease-out; pointer-events: none; }
+.stamina.-show { opacity: 1; }
+.stamina__bar { position: relative; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.stamina__fill { height: 100%; width: 100%; border-radius: 3px; background: rgba(255, 255, 255, 0.9); transition: width 0.08s linear, background 0.2s; }
+.stamina__mark { display: none; position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, 0.8); }
+.stamina.-exhausted .stamina__fill { background: var(--danger); }
+.stamina.-exhausted .stamina__mark { display: block; }
+
 .ammo { margin-top: 2px; font-variant-numeric: tabular-nums; }
 .ammo__loaded { font-size: 40px; font-weight: 700; line-height: 1; }
 .ammo__loaded.-empty { color: var(--danger); }
