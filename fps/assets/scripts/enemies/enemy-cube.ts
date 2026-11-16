@@ -102,11 +102,12 @@ export class EnemyCube extends ScriptComponent {
     Health.find(target)?.damage(this.attackDamage, { zone: 'body', point: target.transform.globalPosition.clone(), source: this.entity });
   }
 
-  // A hit that is shot wakes it, whatever the distance, and squashes it.
+  // A hit wakes it, whatever the distance, and squashes it. It wakes towards its own target, never towards what dealt the blow: a grenade is gone in the same frame, and a cube that hunted it walked to the world's
+  // origin (where a destroyed entity reads) and stood there for ever.
   private onHurt(event: IDamageEvent) {
     this.squashVelocity -= Math.min(6, 2 + event.amount / 10);
     playSound(this.hitSound);
-    if (!this.isChasing && !this.isDead) this.hunt(event.source ?? this.target);
+    if (!this.isChasing && !this.isDead) this.hunt(this.target);
   }
 
   private die(event?: IDamageEvent) {
