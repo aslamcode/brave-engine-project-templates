@@ -26,8 +26,5 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
-# Animation clips downloaded from Mixamo for the developer's own use: kept on the developer's machine, never committed (Adobe's terms do not allow redistributing them).
-mixamo/
-
 # Scratch of the kit's own tools
 tmp/
