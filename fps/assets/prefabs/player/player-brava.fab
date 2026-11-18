@@ -9767,7 +9767,7 @@
                   "hasChangesForNormalMatrix": true,
                   "_position": {
                     "0": 0,
-                    "1": 0,
+                    "1": 0.016,
                     "2": 0.2032909393310547,
                     "$ref": "p_ref_2055",
                     "$type": "Vector3"
