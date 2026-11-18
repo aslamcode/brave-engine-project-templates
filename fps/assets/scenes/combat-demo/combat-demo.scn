@@ -42914,11 +42914,48 @@
                 "$circular": "pb_p_ref_2039"
               },
               "$open": true
+            },
+            {
+              "$ref": "pb_p_ref_2048_arms",
+              "$type": "Material",
+              "_active": true,
+              "_activeInHierarchy": false,
+              "_awaked": false,
+              "_started": false,
+              "id": "7a32740f-5392-4790-b317-0a75c7788c80",
+              "materialId": "9d69012e-362f-4eb0-9243-3f28df05af69",
+              "_cullingFace": true,
+              "_cullingMode": 2,
+              "_layer": -1,
+              "cullingModeOptions": [
+                {
+                  "$ref": "pb_p_ref_2049_arms",
+                  "value": 0,
+                  "description": "None"
+                },
+                {
+                  "$ref": "pb_p_ref_2050_arms",
+                  "value": 1,
+                  "description": "Front"
+                },
+                {
+                  "$ref": "pb_p_ref_2051_arms",
+                  "value": 2,
+                  "description": "Back"
+                }
+              ],
+              "entity": {
+                "$circular": "pb_p_ref_2039"
+              },
+              "$open": false
             }
           ],
           "materials": [
             {
               "$circular": "pb_p_ref_2048"
+            },
+            {
+              "$circular": "pb_p_ref_2048_arms"
             }
           ],
           "id": "c5cc28b8-1ec0-4b1a-acda-6e4878b28a19",
