@@ -39,7 +39,7 @@ A character is a few small components that read each other's state: a body (phys
 
 ## Key settings
 - **Character Controller**: Slope Limit 45 deg, Step Height 0.45 m, Snap To Ground 0.45 m, Gravity Scale 1, Max Fall Speed 50 m/s, Push Bodies on. **Plane** (Free, XY, ZY) holds a side view: the body never moves along the depth and Player Movement walks along the plane with A/D.
-- **Player Movement** (speeds shown in km/h, stored in m/s): Speed 9, Run Speed 21, Jump Height 1.5 m, Max Air Jumps 0 (1 is a double jump), Coyote Time 0.1 s, Crouch Height 1 m, Crouch Time 0.2 s, Crouch Speed 4.5. The keys are fixed: W A S D, Shift (run), Space, Ctrl (hold to crouch).
+- **Player Movement** (speeds shown in km/h, stored in m/s): Speed 8, Run Speed 16, Jump Height 1.5 m, Max Air Jumps 0 (1 is a double jump), Coyote Time 0.1 s, Crouch Height 1 m, Crouch Time 0.2 s, Crouch Speed 4.5. The keys are fixed: W A S D, Shift (run), Space, Ctrl (hold to crouch).
 - **Third Person Camera**: Distance 4 m, Height 1.6 m, Shoulder Offset 0, Min / Max Distance 1.5 / 8, Lowest / Highest Angle -20 / 70 deg, Look Sensitivity 0.15 deg/px, Follow Smoothing 0.05 s, Avoid Obstacles on (it never looks through a wall), Look Without Lock off.
 - **First Person Camera**: Look Sensitivity 0.15 deg/px, Look Up Limit and Look Down Limit 85 deg, Invert Y off.
 - **Animator**: Root Motion Off (default), Apply, or **Script** (the clips travel, the body decides how far: use it with a Character Controller). Play On Awake on, Speed 1, Culling Mode Always.
