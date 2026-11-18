@@ -74,6 +74,8 @@ export class Weapon extends ScriptComponent {
 
   @JsonIgnore() private loadout?: Loadout;
   @JsonIgnore() private cache?: Firearm[];
+  // The hands are free: the gear was put away and no other is on its way. The HUD then holds the plain dot, and the weapon's own crosshair comes back when one is in hand again.
+  @JsonIgnore() private bare = false;
   // What a ray of this weapon can hit: everything but the body shells.
   @JsonIgnore() private bulletMask?: number;
   @JsonIgnore() private body?: CharacterController;
@@ -117,7 +119,10 @@ export class Weapon extends ScriptComponent {
   // Switched off and on again (a body that is put away and brought back: the lab's V key): the HUD is a service every player shares and holds what the last one told it, so this one tells it its own again.
   onEnable() {
     const gun = this.current;
-    if (this.started && gun) this.showHud(gun);
+    if (!this.started || !gun) return;
+    // Told again below if the hands are still free.
+    this.bare = false;
+    this.showHud(gun);
   }
 
   onUpdate() {
@@ -127,6 +132,7 @@ export class Weapon extends ScriptComponent {
     this.reloadWhenEmpty();
     this.updateReload(deltaTime);
     this.updateAim(deltaTime);
+    this.updateCrosshair();
     this.updateSpread(deltaTime);
     this.updateRecoil(deltaTime);
     this.updateFlash(deltaTime);
@@ -493,8 +499,25 @@ export class Weapon extends ScriptComponent {
     this.showSpread();
   }
 
+  // With the hands free (the weapon put away, no other gear on its way: what `WeaponStance` reads to relax) there is no weapon whose cone to show: the crosshair is the plain dot, and the weapon's own is told
+  // again when one is in hand. A change of gear is not a put-away: the old crosshair stays until the new gear is out, as it did.
+  private updateCrosshair() {
+    const loadout = this.loadout;
+    const bare = !!loadout && !loadout.isHolding && !loadout.isChanging;
+    if (bare === this.bare) return;
+    this.bare = bare;
+    if (bare) {
+      this.hud.setCrosshair('dot');
+      this.hud.setSpread(0);
+      return;
+    }
+    const gun = this.current;
+    if (gun) this.showHud(gun);
+  }
+
   // The cone on the screen: its tangent over the tangent of half the field of view is the share of half the screen's height it covers, whatever the window is.
   private showSpread() {
+    if (this.bare) return;
     const fieldOfView = this.eyesCamera?.fieldOfView ?? 60;
     this.hud.setSpread(Math.tan(this.spread * Math.PI / 180) / Math.tan(fieldOfView * Math.PI / 360));
   }
