@@ -1,928 +1,926 @@
 {
   "$ref": "ref_0",
-  "children": [
-    {
-      "$ref": "k1",
-      "$type": "Entity",
-      "name": "Grenade",
-      "layer": 0,
-      "_active": true,
-      "_activeInHierarchy": true,
-      "_awaked": false,
-      "_started": false,
-      "materials": [],
-      "id": "2d522fcd-9309-4450-a30d-94434f54b885",
-      "children": [
-        {
-          "$ref": "k991001_p_ref_1359",
-          "$type": "Entity",
-          "name": "Grenade Body",
-          "layer": 0,
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "children": [],
-          "components": [
-            {
-              "$ref": "k991001_p_ref_1360",
-              "$type": "Transform",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "4b727c2d-cf2c-44d1-9fef-1a71afb8f57e",
-              "hasChangesForNormalMatrix": false,
-              "_position": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
-                "$ref": "k991001_p_ref_1361",
-                "$type": "Vector3"
+  "root": {
+    "$ref": "k1",
+    "$type": "Entity",
+    "name": "Grenade",
+    "layer": 0,
+    "_active": true,
+    "_activeInHierarchy": true,
+    "_awaked": false,
+    "_started": false,
+    "materials": [],
+    "id": "2d522fcd-9309-4450-a30d-94434f54b885",
+    "children": [
+      {
+        "$ref": "k991001_p_ref_1359",
+        "$type": "Entity",
+        "name": "Grenade Body",
+        "layer": 0,
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "children": [],
+        "components": [
+          {
+            "$ref": "k991001_p_ref_1360",
+            "$type": "Transform",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "4b727c2d-cf2c-44d1-9fef-1a71afb8f57e",
+            "hasChangesForNormalMatrix": false,
+            "_position": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "$ref": "k991001_p_ref_1361",
+              "$type": "Vector3"
+            },
+            "_rotation": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "$ref": "k991001_p_ref_1362",
+              "$type": "Vector3"
+            },
+            "_rotationQ": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "$ref": "k991001_p_ref_1363",
+              "$type": "Quaternion"
+            },
+            "_scale": {
+              "0": 0.065,
+              "1": 0.085,
+              "2": 0.065,
+              "$ref": "k991001_p_ref_1364",
+              "$type": "Vector3"
+            },
+            "entity": {
+              "$circular": "k991001_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991001_p_ref_1365",
+            "$type": "MeshRenderer",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "57ad930e-0a52-4cb0-a1cf-a1d600e24dcb",
+            "modelId": null,
+            "meshIndex": 0,
+            "primitiveMeshId": "0a3cfe3c-776f-4ac5-a3d0-a5081b3f3ccc",
+            "generatedMesh": false,
+            "entity": {
+              "$circular": "k991001_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991001_p_ref_1367",
+            "$type": "Material",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "9ceb0665-596a-4e0e-a19c-89966ef3331e",
+            "materialId": null,
+            "_cullingFace": true,
+            "_cullingMode": 2,
+            "_layer": -1,
+            "cullingModeOptions": [
+              {
+                "$ref": "k991001_p_ref_1368",
+                "value": 0,
+                "description": "None"
               },
-              "_rotation": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
-                "$ref": "k991001_p_ref_1362",
-                "$type": "Vector3"
+              {
+                "$ref": "k991001_p_ref_1369",
+                "value": 1,
+                "description": "Front"
               },
-              "_rotationQ": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
+              {
+                "$ref": "k991001_p_ref_1370",
+                "value": 2,
+                "description": "Back"
+              }
+            ],
+            "entity": {
+              "$circular": "k991001_p_ref_1359"
+            },
+            "shaderType": "Pbr",
+            "shaderOverrides": {
+              "$ref": "k991001_p_ref_1371",
+              "surfaceType": 0,
+              "transparent": false,
+              "alphaCutoff": 0,
+              "baseColor": {
+                "0": 0.22,
+                "1": 0.3,
+                "2": 0.12,
                 "3": 1,
-                "$ref": "k991001_p_ref_1363",
-                "$type": "Quaternion"
+                "$ref": "k991001_p_ref_1372",
+                "$type": "RgbaColor"
               },
-              "_scale": {
-                "0": 0.065,
-                "1": 0.085,
-                "2": 0.065,
-                "$ref": "k991001_p_ref_1364",
-                "$type": "Vector3"
+              "baseColorTextureId": "",
+              "metallic": 0.1,
+              "metallicTextureId": "",
+              "roughness": 0.5,
+              "roughnessTextureId": "",
+              "normalScale": 1,
+              "normalTextureId": "",
+              "reflectance": 0.5,
+              "reflectanceTextureId": "",
+              "tiling": {
+                "0": 1,
+                "1": 1,
+                "$ref": "k991001_p_ref_1373",
+                "$type": "Vector2"
               },
-              "entity": {
-                "$circular": "k991001_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991001_p_ref_1365",
-              "$type": "MeshRenderer",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "57ad930e-0a52-4cb0-a1cf-a1d600e24dcb",
-              "modelId": null,
-              "meshIndex": 0,
-              "primitiveMeshId": "0a3cfe3c-776f-4ac5-a3d0-a5081b3f3ccc",
-              "generatedMesh": false,
-              "entity": {
-                "$circular": "k991001_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991001_p_ref_1367",
-              "$type": "Material",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "9ceb0665-596a-4e0e-a19c-89966ef3331e",
-              "materialId": null,
-              "_cullingFace": true,
-              "_cullingMode": 2,
-              "_layer": -1,
-              "cullingModeOptions": [
-                {
-                  "$ref": "k991001_p_ref_1368",
-                  "value": 0,
-                  "description": "None"
-                },
-                {
-                  "$ref": "k991001_p_ref_1369",
-                  "value": 1,
-                  "description": "Front"
-                },
-                {
-                  "$ref": "k991001_p_ref_1370",
-                  "value": 2,
-                  "description": "Back"
-                }
-              ],
-              "entity": {
-                "$circular": "k991001_p_ref_1359"
-              },
-              "shaderType": "Pbr",
-              "shaderOverrides": {
-                "$ref": "k991001_p_ref_1371",
-                "surfaceType": 0,
-                "transparent": false,
-                "alphaCutoff": 0,
-                "baseColor": {
-                  "0": 0.22,
-                  "1": 0.3,
-                  "2": 0.12,
-                  "3": 1,
-                  "$ref": "k991001_p_ref_1372",
-                  "$type": "RgbaColor"
-                },
-                "baseColorTextureId": "",
-                "metallic": 0.1,
-                "metallicTextureId": "",
-                "roughness": 0.5,
-                "roughnessTextureId": "",
-                "normalScale": 1,
-                "normalTextureId": "",
-                "reflectance": 0.5,
-                "reflectanceTextureId": "",
-                "tiling": {
-                  "0": 1,
-                  "1": 1,
-                  "$ref": "k991001_p_ref_1373",
-                  "$type": "Vector2"
-                },
-                "offset": {
-                  "0": 0,
-                  "1": 0,
-                  "$ref": "k991001_p_ref_1374",
-                  "$type": "Vector2"
-                },
-                "ior": 1.5,
-                "thickness": 1,
-                "attenuationColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991001_p_ref_1375",
-                  "$type": "RgbaColor"
-                },
-                "attenuationDistance": 1,
-                "frost": 0,
-                "frostTextureId": "",
-                "emissiveColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991001_p_ref_1376",
-                  "$type": "RgbaColor"
-                },
-                "emissiveTextureId": "",
-                "emissiveIntensity": 0,
-                "gpuInstancing": false,
-                "adaptiveNormal": false,
-                "adaptiveNormalMode": "automatic",
-                "adaptiveNormalCompensation": 0.4,
-                "adaptiveNormalMaxStrength": 8,
-                "adaptiveNormalFarStrength": 0,
-                "adaptiveNormalStartMip": 1,
-                "adaptiveNormalEndMip": 4,
-                "metallicChannel": 0,
-                "roughnessChannel": 0,
-                "normalFormat": 0
-              },
-              "cullingFace": true,
-              "cullingMode": 2
-            }
-          ],
-          "materials": [
-            {
-              "$circular": "k991001_p_ref_1367"
-            }
-          ],
-          "id": "8b16a6e4-0a90-4837-8dac-0358ab2562bc",
-          "_transform": {
-            "$circular": "k991001_p_ref_1360"
-          },
-          "parent": {
-            "$circular": "k1"
-          },
-          "scene": {
-            "$circular": "kscene"
-          },
-          "meshRenderer": {
-            "$circular": "k991001_p_ref_1365"
-          },
-          "static": false
-        },
-        {
-          "$ref": "k991002_p_ref_1359",
-          "$type": "Entity",
-          "name": "Grenade Top",
-          "layer": 0,
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "children": [],
-          "components": [
-            {
-              "$ref": "k991002_p_ref_1360",
-              "$type": "Transform",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "d910c426-f249-4a97-b90b-1c6b395f029a",
-              "hasChangesForNormalMatrix": false,
-              "_position": {
-                "0": 0,
-                "1": 0.05,
-                "2": 0,
-                "$ref": "k991002_p_ref_1361",
-                "$type": "Vector3"
-              },
-              "_rotation": {
+              "offset": {
                 "0": 0,
                 "1": 0,
-                "2": 0,
-                "$ref": "k991002_p_ref_1362",
-                "$type": "Vector3"
+                "$ref": "k991001_p_ref_1374",
+                "$type": "Vector2"
               },
-              "_rotationQ": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
+              "ior": 1.5,
+              "thickness": 1,
+              "attenuationColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
                 "3": 1,
-                "$ref": "k991002_p_ref_1363",
-                "$type": "Quaternion"
+                "$ref": "k991001_p_ref_1375",
+                "$type": "RgbaColor"
               },
-              "_scale": {
-                "0": 0.028,
-                "1": 0.022,
-                "2": 0.028,
-                "$ref": "k991002_p_ref_1364",
-                "$type": "Vector3"
-              },
-              "entity": {
-                "$circular": "k991002_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991002_p_ref_1365",
-              "$type": "MeshRenderer",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "19a7777f-bc17-442b-a3df-96e65c690227",
-              "modelId": null,
-              "meshIndex": 0,
-              "primitiveMeshId": "b7c34e12-9a5f-4d8b-b1e2-7f3a2c9d0e5f",
-              "generatedMesh": false,
-              "entity": {
-                "$circular": "k991002_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991002_p_ref_1367",
-              "$type": "Material",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "cd67cfad-cce7-46e0-8632-2c90624a56a2",
-              "materialId": null,
-              "_cullingFace": true,
-              "_cullingMode": 2,
-              "_layer": -1,
-              "cullingModeOptions": [
-                {
-                  "$ref": "k991002_p_ref_1368",
-                  "value": 0,
-                  "description": "None"
-                },
-                {
-                  "$ref": "k991002_p_ref_1369",
-                  "value": 1,
-                  "description": "Front"
-                },
-                {
-                  "$ref": "k991002_p_ref_1370",
-                  "value": 2,
-                  "description": "Back"
-                }
-              ],
-              "entity": {
-                "$circular": "k991002_p_ref_1359"
-              },
-              "shaderType": "Pbr",
-              "shaderOverrides": {
-                "$ref": "k991002_p_ref_1371",
-                "surfaceType": 0,
-                "transparent": false,
-                "alphaCutoff": 0,
-                "baseColor": {
-                  "0": 0.42,
-                  "1": 0.42,
-                  "2": 0.44,
-                  "3": 1,
-                  "$ref": "k991002_p_ref_1372",
-                  "$type": "RgbaColor"
-                },
-                "baseColorTextureId": "",
-                "metallic": 0.8,
-                "metallicTextureId": "",
-                "roughness": 0.3,
-                "roughnessTextureId": "",
-                "normalScale": 1,
-                "normalTextureId": "",
-                "reflectance": 0.5,
-                "reflectanceTextureId": "",
-                "tiling": {
-                  "0": 1,
-                  "1": 1,
-                  "$ref": "k991002_p_ref_1373",
-                  "$type": "Vector2"
-                },
-                "offset": {
-                  "0": 0,
-                  "1": 0,
-                  "$ref": "k991002_p_ref_1374",
-                  "$type": "Vector2"
-                },
-                "ior": 1.5,
-                "thickness": 1,
-                "attenuationColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991002_p_ref_1375",
-                  "$type": "RgbaColor"
-                },
-                "attenuationDistance": 1,
-                "frost": 0,
-                "frostTextureId": "",
-                "emissiveColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991002_p_ref_1376",
-                  "$type": "RgbaColor"
-                },
-                "emissiveTextureId": "",
-                "emissiveIntensity": 0,
-                "gpuInstancing": false,
-                "adaptiveNormal": false,
-                "adaptiveNormalMode": "automatic",
-                "adaptiveNormalCompensation": 0.4,
-                "adaptiveNormalMaxStrength": 8,
-                "adaptiveNormalFarStrength": 0,
-                "adaptiveNormalStartMip": 1,
-                "adaptiveNormalEndMip": 4,
-                "metallicChannel": 0,
-                "roughnessChannel": 0,
-                "normalFormat": 0
-              },
-              "cullingFace": true,
-              "cullingMode": 2
-            }
-          ],
-          "materials": [
-            {
-              "$circular": "k991002_p_ref_1367"
-            }
-          ],
-          "id": "570c50ef-b17b-48df-b6e8-4b6ebd0a6b9d",
-          "_transform": {
-            "$circular": "k991002_p_ref_1360"
-          },
-          "parent": {
-            "$circular": "k1"
-          },
-          "scene": {
-            "$circular": "kscene"
-          },
-          "meshRenderer": {
-            "$circular": "k991002_p_ref_1365"
-          },
-          "static": false
-        },
-        {
-          "$ref": "k991003_p_ref_1359",
-          "$type": "Entity",
-          "name": "Grenade Lever",
-          "layer": 0,
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "children": [],
-          "components": [
-            {
-              "$ref": "k991003_p_ref_1360",
-              "$type": "Transform",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "ac1f3826-d6b4-45a5-b152-4972c5303370",
-              "hasChangesForNormalMatrix": false,
-              "_position": {
-                "0": 0.034,
-                "1": 0.0125,
-                "2": 0,
-                "$ref": "k991003_p_ref_1361",
-                "$type": "Vector3"
-              },
-              "_rotation": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
-                "$ref": "k991003_p_ref_1362",
-                "$type": "Vector3"
-              },
-              "_rotationQ": {
-                "0": 0,
-                "1": 0,
-                "2": 0,
+              "attenuationDistance": 1,
+              "frost": 0,
+              "frostTextureId": "",
+              "emissiveColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
                 "3": 1,
-                "$ref": "k991003_p_ref_1363",
-                "$type": "Quaternion"
+                "$ref": "k991001_p_ref_1376",
+                "$type": "RgbaColor"
               },
-              "_scale": {
-                "0": 0.007,
-                "1": 0.075,
-                "2": 0.025,
-                "$ref": "k991003_p_ref_1364",
-                "$type": "Vector3"
-              },
-              "entity": {
-                "$circular": "k991003_p_ref_1359"
-              }
+              "emissiveTextureId": "",
+              "emissiveIntensity": 0,
+              "gpuInstancing": false,
+              "adaptiveNormal": false,
+              "adaptiveNormalMode": "automatic",
+              "adaptiveNormalCompensation": 0.4,
+              "adaptiveNormalMaxStrength": 8,
+              "adaptiveNormalFarStrength": 0,
+              "adaptiveNormalStartMip": 1,
+              "adaptiveNormalEndMip": 4,
+              "metallicChannel": 0,
+              "roughnessChannel": 0,
+              "normalFormat": 0
             },
-            {
-              "$ref": "k991003_p_ref_1365",
-              "$type": "MeshRenderer",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "b49a37bf-a58d-4c58-9ca6-ebc5b0d0119d",
-              "modelId": null,
-              "meshIndex": 0,
-              "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
-              "generatedMesh": false,
-              "entity": {
-                "$circular": "k991003_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991003_p_ref_1367",
-              "$type": "Material",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "f47aa54b-4c90-41bc-ad0f-4cd1b4a55b0b",
-              "materialId": null,
-              "_cullingFace": true,
-              "_cullingMode": 2,
-              "_layer": -1,
-              "cullingModeOptions": [
-                {
-                  "$ref": "k991003_p_ref_1368",
-                  "value": 0,
-                  "description": "None"
-                },
-                {
-                  "$ref": "k991003_p_ref_1369",
-                  "value": 1,
-                  "description": "Front"
-                },
-                {
-                  "$ref": "k991003_p_ref_1370",
-                  "value": 2,
-                  "description": "Back"
-                }
-              ],
-              "entity": {
-                "$circular": "k991003_p_ref_1359"
-              },
-              "shaderType": "Pbr",
-              "shaderOverrides": {
-                "$ref": "k991003_p_ref_1371",
-                "surfaceType": 0,
-                "transparent": false,
-                "alphaCutoff": 0,
-                "baseColor": {
-                  "0": 0.42,
-                  "1": 0.42,
-                  "2": 0.44,
-                  "3": 1,
-                  "$ref": "k991003_p_ref_1372",
-                  "$type": "RgbaColor"
-                },
-                "baseColorTextureId": "",
-                "metallic": 0.8,
-                "metallicTextureId": "",
-                "roughness": 0.3,
-                "roughnessTextureId": "",
-                "normalScale": 1,
-                "normalTextureId": "",
-                "reflectance": 0.5,
-                "reflectanceTextureId": "",
-                "tiling": {
-                  "0": 1,
-                  "1": 1,
-                  "$ref": "k991003_p_ref_1373",
-                  "$type": "Vector2"
-                },
-                "offset": {
-                  "0": 0,
-                  "1": 0,
-                  "$ref": "k991003_p_ref_1374",
-                  "$type": "Vector2"
-                },
-                "ior": 1.5,
-                "thickness": 1,
-                "attenuationColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991003_p_ref_1375",
-                  "$type": "RgbaColor"
-                },
-                "attenuationDistance": 1,
-                "frost": 0,
-                "frostTextureId": "",
-                "emissiveColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991003_p_ref_1376",
-                  "$type": "RgbaColor"
-                },
-                "emissiveTextureId": "",
-                "emissiveIntensity": 0,
-                "gpuInstancing": false,
-                "adaptiveNormal": false,
-                "adaptiveNormalMode": "automatic",
-                "adaptiveNormalCompensation": 0.4,
-                "adaptiveNormalMaxStrength": 8,
-                "adaptiveNormalFarStrength": 0,
-                "adaptiveNormalStartMip": 1,
-                "adaptiveNormalEndMip": 4,
-                "metallicChannel": 0,
-                "roughnessChannel": 0,
-                "normalFormat": 0
-              },
-              "cullingFace": true,
-              "cullingMode": 2
-            }
-          ],
-          "materials": [
-            {
-              "$circular": "k991003_p_ref_1367"
-            }
-          ],
-          "id": "dcd8505d-8238-43b8-8e11-2c0d0ceec783",
-          "_transform": {
-            "$circular": "k991003_p_ref_1360"
-          },
-          "parent": {
-            "$circular": "k1"
-          },
-          "scene": {
-            "$circular": "kscene"
-          },
-          "meshRenderer": {
-            "$circular": "k991003_p_ref_1365"
-          },
-          "static": false
-        },
-        {
-          "$ref": "k991004_p_ref_1359",
-          "$type": "Entity",
-          "name": "Grenade Pin",
-          "layer": 0,
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "children": [],
-          "components": [
-            {
-              "$ref": "k991004_p_ref_1360",
-              "$type": "Transform",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "69605027-1306-434c-8c76-cc96cc6f6f49",
-              "hasChangesForNormalMatrix": false,
-              "_position": {
-                "0": 0,
-                "1": 0.066,
-                "2": 0,
-                "$ref": "k991004_p_ref_1361",
-                "$type": "Vector3"
-              },
-              "_rotation": {
-                "0": 0,
-                "1": 0,
-                "2": 90,
-                "$ref": "k991004_p_ref_1362",
-                "$type": "Vector3"
-              },
-              "_rotationQ": {
-                "0": 0,
-                "1": 0,
-                "2": 0.7071067811865475,
-                "3": 0.7071067811865476,
-                "$ref": "k991004_p_ref_1363",
-                "$type": "Quaternion"
-              },
-              "_scale": {
-                "0": 0.005,
-                "1": 0.04,
-                "2": 0.005,
-                "$ref": "k991004_p_ref_1364",
-                "$type": "Vector3"
-              },
-              "entity": {
-                "$circular": "k991004_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991004_p_ref_1365",
-              "$type": "MeshRenderer",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "4c7df66d-fca8-4edc-a338-d4384484f572",
-              "modelId": null,
-              "meshIndex": 0,
-              "primitiveMeshId": "b7c34e12-9a5f-4d8b-b1e2-7f3a2c9d0e5f",
-              "generatedMesh": false,
-              "entity": {
-                "$circular": "k991004_p_ref_1359"
-              }
-            },
-            {
-              "$ref": "k991004_p_ref_1367",
-              "$type": "Material",
-              "_active": true,
-              "_activeInHierarchy": true,
-              "_awaked": false,
-              "_started": false,
-              "id": "b7a479bb-fb4a-44ec-9dfe-b399f9aa7380",
-              "materialId": null,
-              "_cullingFace": true,
-              "_cullingMode": 2,
-              "_layer": -1,
-              "cullingModeOptions": [
-                {
-                  "$ref": "k991004_p_ref_1368",
-                  "value": 0,
-                  "description": "None"
-                },
-                {
-                  "$ref": "k991004_p_ref_1369",
-                  "value": 1,
-                  "description": "Front"
-                },
-                {
-                  "$ref": "k991004_p_ref_1370",
-                  "value": 2,
-                  "description": "Back"
-                }
-              ],
-              "entity": {
-                "$circular": "k991004_p_ref_1359"
-              },
-              "shaderType": "Pbr",
-              "shaderOverrides": {
-                "$ref": "k991004_p_ref_1371",
-                "surfaceType": 0,
-                "transparent": false,
-                "alphaCutoff": 0,
-                "baseColor": {
-                  "0": 0.42,
-                  "1": 0.42,
-                  "2": 0.44,
-                  "3": 1,
-                  "$ref": "k991004_p_ref_1372",
-                  "$type": "RgbaColor"
-                },
-                "baseColorTextureId": "",
-                "metallic": 0.8,
-                "metallicTextureId": "",
-                "roughness": 0.3,
-                "roughnessTextureId": "",
-                "normalScale": 1,
-                "normalTextureId": "",
-                "reflectance": 0.5,
-                "reflectanceTextureId": "",
-                "tiling": {
-                  "0": 1,
-                  "1": 1,
-                  "$ref": "k991004_p_ref_1373",
-                  "$type": "Vector2"
-                },
-                "offset": {
-                  "0": 0,
-                  "1": 0,
-                  "$ref": "k991004_p_ref_1374",
-                  "$type": "Vector2"
-                },
-                "ior": 1.5,
-                "thickness": 1,
-                "attenuationColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991004_p_ref_1375",
-                  "$type": "RgbaColor"
-                },
-                "attenuationDistance": 1,
-                "frost": 0,
-                "frostTextureId": "",
-                "emissiveColor": {
-                  "0": 1,
-                  "1": 1,
-                  "2": 1,
-                  "3": 1,
-                  "$ref": "k991004_p_ref_1376",
-                  "$type": "RgbaColor"
-                },
-                "emissiveTextureId": "",
-                "emissiveIntensity": 0,
-                "gpuInstancing": false,
-                "adaptiveNormal": false,
-                "adaptiveNormalMode": "automatic",
-                "adaptiveNormalCompensation": 0.4,
-                "adaptiveNormalMaxStrength": 8,
-                "adaptiveNormalFarStrength": 0,
-                "adaptiveNormalStartMip": 1,
-                "adaptiveNormalEndMip": 4,
-                "metallicChannel": 0,
-                "roughnessChannel": 0,
-                "normalFormat": 0
-              },
-              "cullingFace": true,
-              "cullingMode": 2
-            }
-          ],
-          "materials": [
-            {
-              "$circular": "k991004_p_ref_1367"
-            }
-          ],
-          "id": "f0d911b3-6c78-47a5-b47f-85c402dbe04e",
-          "_transform": {
-            "$circular": "k991004_p_ref_1360"
-          },
-          "parent": {
-            "$circular": "k1"
-          },
-          "scene": {
-            "$circular": "kscene"
-          },
-          "meshRenderer": {
-            "$circular": "k991004_p_ref_1365"
-          },
-          "static": false
-        }
-      ],
-      "components": [
-        {
-          "$ref": "k2",
-          "$type": "Transform",
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "id": "dd415be8-488b-467e-9a16-d3b4d3320b12",
-          "entity": {
-            "$circular": "k1"
-          },
-          "hasChangesForNormalMatrix": false,
-          "_position": {
-            "0": 0,
-            "1": 0,
-            "2": 0,
-            "$ref": "k3",
-            "$type": "Vector3"
-          },
-          "_rotation": {
-            "0": 0,
-            "1": 0.0,
-            "2": 0,
-            "$ref": "k4",
-            "$type": "Vector3"
-          },
-          "_rotationQ": {
-            "0": 0,
-            "1": 0.0,
-            "2": 0,
-            "3": 1.0,
-            "$ref": "k5",
-            "$type": "Quaternion"
-          },
-          "_scale": {
-            "0": 1,
-            "1": 1,
-            "2": 1,
-            "$ref": "k6",
-            "$type": "Vector3"
+            "cullingFace": true,
+            "cullingMode": 2
           }
+        ],
+        "materials": [
+          {
+            "$circular": "k991001_p_ref_1367"
+          }
+        ],
+        "id": "8b16a6e4-0a90-4837-8dac-0358ab2562bc",
+        "_transform": {
+          "$circular": "k991001_p_ref_1360"
         },
-        {
-          "$ref": "k7_ref_63",
-          "$type": "RigidBody",
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "id": "19daf0e6-0cbb-4c47-9092-766a2d7d65c8",
-          "name": "Rigid Body",
-          "_type": "dynamic",
-          "_gravityScale": 1,
-          "_linearDamping": 0,
-          "_angularDamping": 0.6,
-          "_continuousCollision": true,
-          "_canSleep": true,
-          "_interpolate": true,
-          "_freezePositionX": false,
-          "_freezePositionY": false,
-          "_freezePositionZ": false,
-          "_freezeRotationX": false,
-          "_freezeRotationY": false,
-          "_freezeRotationZ": false,
-          "entity": {
-            "$circular": "k1"
-          },
-          "open": false
+        "parent": {
+          "$circular": "k1"
         },
-        {
-          "$ref": "k8_ref_18",
-          "$type": "Collider",
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "id": "30f1dd61-2b71-40a5-8b09-772731ab3cca",
-          "entity": {
-            "$circular": "k1"
-          },
-          "name": "Collider",
-          "_shape": "sphere",
-          "_size": {
-            "0": 1,
-            "1": 1,
-            "2": 1,
-            "$ref": "k9",
-            "$type": "Vector3"
-          },
-          "_radius": 0.06,
-          "_height": 1.0,
-          "_center": {
-            "0": 0,
-            "1": 0,
-            "2": 0,
-            "$ref": "k10",
-            "$type": "Vector3"
-          },
-          "_showWireframe": false,
-          "_terrainStep": 1,
-          "_isTrigger": false,
-          "_layer": -1,
-          "_friction": 0.5,
-          "_bounciness": 0,
-          "_density": 1,
-          "_physicsMaterialId": null
+        "scene": {
+          "$circular": "kscene"
         },
-        {
-          "$ref": "k13",
-          "$type": "53bbd405-b993-4be3-9d10-b6237a4cc2e0",
-          "_active": true,
-          "_activeInHierarchy": true,
-          "_awaked": false,
-          "_started": false,
-          "id": "e2d6aa85-e796-4ba5-8cd1-20d481195d9e",
-          "entity": {
-            "$circular": "k1"
-          },
-          "blastSound": "f5a6ef3e-d30d-45ed-a628-86e60fdacdb0"
-        }
-      ],
-      "scene": {
-        "$circular": "kscene"
+        "meshRenderer": {
+          "$circular": "k991001_p_ref_1365"
+        },
+        "static": false
       },
-      "static": false,
-      "_transform": {
-        "$circular": "k2"
+      {
+        "$ref": "k991002_p_ref_1359",
+        "$type": "Entity",
+        "name": "Grenade Top",
+        "layer": 0,
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "children": [],
+        "components": [
+          {
+            "$ref": "k991002_p_ref_1360",
+            "$type": "Transform",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "d910c426-f249-4a97-b90b-1c6b395f029a",
+            "hasChangesForNormalMatrix": false,
+            "_position": {
+              "0": 0,
+              "1": 0.05,
+              "2": 0,
+              "$ref": "k991002_p_ref_1361",
+              "$type": "Vector3"
+            },
+            "_rotation": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "$ref": "k991002_p_ref_1362",
+              "$type": "Vector3"
+            },
+            "_rotationQ": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "$ref": "k991002_p_ref_1363",
+              "$type": "Quaternion"
+            },
+            "_scale": {
+              "0": 0.028,
+              "1": 0.022,
+              "2": 0.028,
+              "$ref": "k991002_p_ref_1364",
+              "$type": "Vector3"
+            },
+            "entity": {
+              "$circular": "k991002_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991002_p_ref_1365",
+            "$type": "MeshRenderer",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "19a7777f-bc17-442b-a3df-96e65c690227",
+            "modelId": null,
+            "meshIndex": 0,
+            "primitiveMeshId": "b7c34e12-9a5f-4d8b-b1e2-7f3a2c9d0e5f",
+            "generatedMesh": false,
+            "entity": {
+              "$circular": "k991002_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991002_p_ref_1367",
+            "$type": "Material",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "cd67cfad-cce7-46e0-8632-2c90624a56a2",
+            "materialId": null,
+            "_cullingFace": true,
+            "_cullingMode": 2,
+            "_layer": -1,
+            "cullingModeOptions": [
+              {
+                "$ref": "k991002_p_ref_1368",
+                "value": 0,
+                "description": "None"
+              },
+              {
+                "$ref": "k991002_p_ref_1369",
+                "value": 1,
+                "description": "Front"
+              },
+              {
+                "$ref": "k991002_p_ref_1370",
+                "value": 2,
+                "description": "Back"
+              }
+            ],
+            "entity": {
+              "$circular": "k991002_p_ref_1359"
+            },
+            "shaderType": "Pbr",
+            "shaderOverrides": {
+              "$ref": "k991002_p_ref_1371",
+              "surfaceType": 0,
+              "transparent": false,
+              "alphaCutoff": 0,
+              "baseColor": {
+                "0": 0.42,
+                "1": 0.42,
+                "2": 0.44,
+                "3": 1,
+                "$ref": "k991002_p_ref_1372",
+                "$type": "RgbaColor"
+              },
+              "baseColorTextureId": "",
+              "metallic": 0.8,
+              "metallicTextureId": "",
+              "roughness": 0.3,
+              "roughnessTextureId": "",
+              "normalScale": 1,
+              "normalTextureId": "",
+              "reflectance": 0.5,
+              "reflectanceTextureId": "",
+              "tiling": {
+                "0": 1,
+                "1": 1,
+                "$ref": "k991002_p_ref_1373",
+                "$type": "Vector2"
+              },
+              "offset": {
+                "0": 0,
+                "1": 0,
+                "$ref": "k991002_p_ref_1374",
+                "$type": "Vector2"
+              },
+              "ior": 1.5,
+              "thickness": 1,
+              "attenuationColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991002_p_ref_1375",
+                "$type": "RgbaColor"
+              },
+              "attenuationDistance": 1,
+              "frost": 0,
+              "frostTextureId": "",
+              "emissiveColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991002_p_ref_1376",
+                "$type": "RgbaColor"
+              },
+              "emissiveTextureId": "",
+              "emissiveIntensity": 0,
+              "gpuInstancing": false,
+              "adaptiveNormal": false,
+              "adaptiveNormalMode": "automatic",
+              "adaptiveNormalCompensation": 0.4,
+              "adaptiveNormalMaxStrength": 8,
+              "adaptiveNormalFarStrength": 0,
+              "adaptiveNormalStartMip": 1,
+              "adaptiveNormalEndMip": 4,
+              "metallicChannel": 0,
+              "roughnessChannel": 0,
+              "normalFormat": 0
+            },
+            "cullingFace": true,
+            "cullingMode": 2
+          }
+        ],
+        "materials": [
+          {
+            "$circular": "k991002_p_ref_1367"
+          }
+        ],
+        "id": "570c50ef-b17b-48df-b6e8-4b6ebd0a6b9d",
+        "_transform": {
+          "$circular": "k991002_p_ref_1360"
+        },
+        "parent": {
+          "$circular": "k1"
+        },
+        "scene": {
+          "$circular": "kscene"
+        },
+        "meshRenderer": {
+          "$circular": "k991002_p_ref_1365"
+        },
+        "static": false
+      },
+      {
+        "$ref": "k991003_p_ref_1359",
+        "$type": "Entity",
+        "name": "Grenade Lever",
+        "layer": 0,
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "children": [],
+        "components": [
+          {
+            "$ref": "k991003_p_ref_1360",
+            "$type": "Transform",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "ac1f3826-d6b4-45a5-b152-4972c5303370",
+            "hasChangesForNormalMatrix": false,
+            "_position": {
+              "0": 0.034,
+              "1": 0.0125,
+              "2": 0,
+              "$ref": "k991003_p_ref_1361",
+              "$type": "Vector3"
+            },
+            "_rotation": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "$ref": "k991003_p_ref_1362",
+              "$type": "Vector3"
+            },
+            "_rotationQ": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "$ref": "k991003_p_ref_1363",
+              "$type": "Quaternion"
+            },
+            "_scale": {
+              "0": 0.007,
+              "1": 0.075,
+              "2": 0.025,
+              "$ref": "k991003_p_ref_1364",
+              "$type": "Vector3"
+            },
+            "entity": {
+              "$circular": "k991003_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991003_p_ref_1365",
+            "$type": "MeshRenderer",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "b49a37bf-a58d-4c58-9ca6-ebc5b0d0119d",
+            "modelId": null,
+            "meshIndex": 0,
+            "primitiveMeshId": "9c4120b0-a4a3-4127-9b18-ac2f45270ee0",
+            "generatedMesh": false,
+            "entity": {
+              "$circular": "k991003_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991003_p_ref_1367",
+            "$type": "Material",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "f47aa54b-4c90-41bc-ad0f-4cd1b4a55b0b",
+            "materialId": null,
+            "_cullingFace": true,
+            "_cullingMode": 2,
+            "_layer": -1,
+            "cullingModeOptions": [
+              {
+                "$ref": "k991003_p_ref_1368",
+                "value": 0,
+                "description": "None"
+              },
+              {
+                "$ref": "k991003_p_ref_1369",
+                "value": 1,
+                "description": "Front"
+              },
+              {
+                "$ref": "k991003_p_ref_1370",
+                "value": 2,
+                "description": "Back"
+              }
+            ],
+            "entity": {
+              "$circular": "k991003_p_ref_1359"
+            },
+            "shaderType": "Pbr",
+            "shaderOverrides": {
+              "$ref": "k991003_p_ref_1371",
+              "surfaceType": 0,
+              "transparent": false,
+              "alphaCutoff": 0,
+              "baseColor": {
+                "0": 0.42,
+                "1": 0.42,
+                "2": 0.44,
+                "3": 1,
+                "$ref": "k991003_p_ref_1372",
+                "$type": "RgbaColor"
+              },
+              "baseColorTextureId": "",
+              "metallic": 0.8,
+              "metallicTextureId": "",
+              "roughness": 0.3,
+              "roughnessTextureId": "",
+              "normalScale": 1,
+              "normalTextureId": "",
+              "reflectance": 0.5,
+              "reflectanceTextureId": "",
+              "tiling": {
+                "0": 1,
+                "1": 1,
+                "$ref": "k991003_p_ref_1373",
+                "$type": "Vector2"
+              },
+              "offset": {
+                "0": 0,
+                "1": 0,
+                "$ref": "k991003_p_ref_1374",
+                "$type": "Vector2"
+              },
+              "ior": 1.5,
+              "thickness": 1,
+              "attenuationColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991003_p_ref_1375",
+                "$type": "RgbaColor"
+              },
+              "attenuationDistance": 1,
+              "frost": 0,
+              "frostTextureId": "",
+              "emissiveColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991003_p_ref_1376",
+                "$type": "RgbaColor"
+              },
+              "emissiveTextureId": "",
+              "emissiveIntensity": 0,
+              "gpuInstancing": false,
+              "adaptiveNormal": false,
+              "adaptiveNormalMode": "automatic",
+              "adaptiveNormalCompensation": 0.4,
+              "adaptiveNormalMaxStrength": 8,
+              "adaptiveNormalFarStrength": 0,
+              "adaptiveNormalStartMip": 1,
+              "adaptiveNormalEndMip": 4,
+              "metallicChannel": 0,
+              "roughnessChannel": 0,
+              "normalFormat": 0
+            },
+            "cullingFace": true,
+            "cullingMode": 2
+          }
+        ],
+        "materials": [
+          {
+            "$circular": "k991003_p_ref_1367"
+          }
+        ],
+        "id": "dcd8505d-8238-43b8-8e11-2c0d0ceec783",
+        "_transform": {
+          "$circular": "k991003_p_ref_1360"
+        },
+        "parent": {
+          "$circular": "k1"
+        },
+        "scene": {
+          "$circular": "kscene"
+        },
+        "meshRenderer": {
+          "$circular": "k991003_p_ref_1365"
+        },
+        "static": false
+      },
+      {
+        "$ref": "k991004_p_ref_1359",
+        "$type": "Entity",
+        "name": "Grenade Pin",
+        "layer": 0,
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "children": [],
+        "components": [
+          {
+            "$ref": "k991004_p_ref_1360",
+            "$type": "Transform",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "69605027-1306-434c-8c76-cc96cc6f6f49",
+            "hasChangesForNormalMatrix": false,
+            "_position": {
+              "0": 0,
+              "1": 0.066,
+              "2": 0,
+              "$ref": "k991004_p_ref_1361",
+              "$type": "Vector3"
+            },
+            "_rotation": {
+              "0": 0,
+              "1": 0,
+              "2": 90,
+              "$ref": "k991004_p_ref_1362",
+              "$type": "Vector3"
+            },
+            "_rotationQ": {
+              "0": 0,
+              "1": 0,
+              "2": 0.7071067811865475,
+              "3": 0.7071067811865476,
+              "$ref": "k991004_p_ref_1363",
+              "$type": "Quaternion"
+            },
+            "_scale": {
+              "0": 0.005,
+              "1": 0.04,
+              "2": 0.005,
+              "$ref": "k991004_p_ref_1364",
+              "$type": "Vector3"
+            },
+            "entity": {
+              "$circular": "k991004_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991004_p_ref_1365",
+            "$type": "MeshRenderer",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "4c7df66d-fca8-4edc-a338-d4384484f572",
+            "modelId": null,
+            "meshIndex": 0,
+            "primitiveMeshId": "b7c34e12-9a5f-4d8b-b1e2-7f3a2c9d0e5f",
+            "generatedMesh": false,
+            "entity": {
+              "$circular": "k991004_p_ref_1359"
+            }
+          },
+          {
+            "$ref": "k991004_p_ref_1367",
+            "$type": "Material",
+            "_active": true,
+            "_activeInHierarchy": true,
+            "_awaked": false,
+            "_started": false,
+            "id": "b7a479bb-fb4a-44ec-9dfe-b399f9aa7380",
+            "materialId": null,
+            "_cullingFace": true,
+            "_cullingMode": 2,
+            "_layer": -1,
+            "cullingModeOptions": [
+              {
+                "$ref": "k991004_p_ref_1368",
+                "value": 0,
+                "description": "None"
+              },
+              {
+                "$ref": "k991004_p_ref_1369",
+                "value": 1,
+                "description": "Front"
+              },
+              {
+                "$ref": "k991004_p_ref_1370",
+                "value": 2,
+                "description": "Back"
+              }
+            ],
+            "entity": {
+              "$circular": "k991004_p_ref_1359"
+            },
+            "shaderType": "Pbr",
+            "shaderOverrides": {
+              "$ref": "k991004_p_ref_1371",
+              "surfaceType": 0,
+              "transparent": false,
+              "alphaCutoff": 0,
+              "baseColor": {
+                "0": 0.42,
+                "1": 0.42,
+                "2": 0.44,
+                "3": 1,
+                "$ref": "k991004_p_ref_1372",
+                "$type": "RgbaColor"
+              },
+              "baseColorTextureId": "",
+              "metallic": 0.8,
+              "metallicTextureId": "",
+              "roughness": 0.3,
+              "roughnessTextureId": "",
+              "normalScale": 1,
+              "normalTextureId": "",
+              "reflectance": 0.5,
+              "reflectanceTextureId": "",
+              "tiling": {
+                "0": 1,
+                "1": 1,
+                "$ref": "k991004_p_ref_1373",
+                "$type": "Vector2"
+              },
+              "offset": {
+                "0": 0,
+                "1": 0,
+                "$ref": "k991004_p_ref_1374",
+                "$type": "Vector2"
+              },
+              "ior": 1.5,
+              "thickness": 1,
+              "attenuationColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991004_p_ref_1375",
+                "$type": "RgbaColor"
+              },
+              "attenuationDistance": 1,
+              "frost": 0,
+              "frostTextureId": "",
+              "emissiveColor": {
+                "0": 1,
+                "1": 1,
+                "2": 1,
+                "3": 1,
+                "$ref": "k991004_p_ref_1376",
+                "$type": "RgbaColor"
+              },
+              "emissiveTextureId": "",
+              "emissiveIntensity": 0,
+              "gpuInstancing": false,
+              "adaptiveNormal": false,
+              "adaptiveNormalMode": "automatic",
+              "adaptiveNormalCompensation": 0.4,
+              "adaptiveNormalMaxStrength": 8,
+              "adaptiveNormalFarStrength": 0,
+              "adaptiveNormalStartMip": 1,
+              "adaptiveNormalEndMip": 4,
+              "metallicChannel": 0,
+              "roughnessChannel": 0,
+              "normalFormat": 0
+            },
+            "cullingFace": true,
+            "cullingMode": 2
+          }
+        ],
+        "materials": [
+          {
+            "$circular": "k991004_p_ref_1367"
+          }
+        ],
+        "id": "f0d911b3-6c78-47a5-b47f-85c402dbe04e",
+        "_transform": {
+          "$circular": "k991004_p_ref_1360"
+        },
+        "parent": {
+          "$circular": "k1"
+        },
+        "scene": {
+          "$circular": "kscene"
+        },
+        "meshRenderer": {
+          "$circular": "k991004_p_ref_1365"
+        },
+        "static": false
       }
+    ],
+    "components": [
+      {
+        "$ref": "k2",
+        "$type": "Transform",
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "id": "dd415be8-488b-467e-9a16-d3b4d3320b12",
+        "entity": {
+          "$circular": "k1"
+        },
+        "hasChangesForNormalMatrix": false,
+        "_position": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "$ref": "k3",
+          "$type": "Vector3"
+        },
+        "_rotation": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "$ref": "k4",
+          "$type": "Vector3"
+        },
+        "_rotationQ": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 1,
+          "$ref": "k5",
+          "$type": "Quaternion"
+        },
+        "_scale": {
+          "0": 1,
+          "1": 1,
+          "2": 1,
+          "$ref": "k6",
+          "$type": "Vector3"
+        }
+      },
+      {
+        "$ref": "k7_ref_63",
+        "$type": "RigidBody",
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "id": "19daf0e6-0cbb-4c47-9092-766a2d7d65c8",
+        "name": "Rigid Body",
+        "_type": "dynamic",
+        "_gravityScale": 1,
+        "_linearDamping": 0,
+        "_angularDamping": 0.6,
+        "_continuousCollision": true,
+        "_canSleep": true,
+        "_interpolate": true,
+        "_freezePositionX": false,
+        "_freezePositionY": false,
+        "_freezePositionZ": false,
+        "_freezeRotationX": false,
+        "_freezeRotationY": false,
+        "_freezeRotationZ": false,
+        "entity": {
+          "$circular": "k1"
+        },
+        "open": false
+      },
+      {
+        "$ref": "k8_ref_18",
+        "$type": "Collider",
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "id": "30f1dd61-2b71-40a5-8b09-772731ab3cca",
+        "entity": {
+          "$circular": "k1"
+        },
+        "name": "Collider",
+        "_shape": "sphere",
+        "_size": {
+          "0": 1,
+          "1": 1,
+          "2": 1,
+          "$ref": "k9",
+          "$type": "Vector3"
+        },
+        "_radius": 0.06,
+        "_height": 1.0,
+        "_center": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "$ref": "k10",
+          "$type": "Vector3"
+        },
+        "_showWireframe": false,
+        "_terrainStep": 1,
+        "_isTrigger": false,
+        "_layer": -1,
+        "_friction": 0.5,
+        "_bounciness": 0,
+        "_density": 1,
+        "_physicsMaterialId": null
+      },
+      {
+        "$ref": "k13",
+        "$type": "53bbd405-b993-4be3-9d10-b6237a4cc2e0",
+        "_active": true,
+        "_activeInHierarchy": true,
+        "_awaked": false,
+        "_started": false,
+        "id": "e2d6aa85-e796-4ba5-8cd1-20d481195d9e",
+        "entity": {
+          "$circular": "k1"
+        },
+        "blastSound": "f5a6ef3e-d30d-45ed-a628-86e60fdacdb0"
+      }
+    ],
+    "scene": {
+      "$circular": "kscene"
+    },
+    "static": false,
+    "_transform": {
+      "$circular": "k2"
     }
-  ]
+  }
 }
