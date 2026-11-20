@@ -1,8 +1,9 @@
-import { AudioTrack, Inject, Int, JsonIgnore, Ref, Script, Signal, String } from '@brave/core';
+import { AudioTrack, Inject, Int, JsonIgnore, Ref, Script, Signal, String, StringCompletionEnum } from '@brave/core';
+import { phrase } from '../shared/phrase';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
-import { Interactable } from './interactable';
+import { IInteractableCaption, Interactable } from './interactable';
 import type { Interactor } from './interactor';
 
 /**
@@ -19,12 +20,12 @@ export class Pickup extends Interactable {
   aimRadius = 0.15;
 
   @String({ header: 'Item', label: 'Item Id', tooltip: 'What the inventory counts it as: the id a Door\'s Key Item or a Socket\'s Item Id says. Two pickups with the same id are the same kind of thing.' }) itemId = '';
-  @String({ label: 'Item Name', tooltip: 'What the player reads: in the prompt and the messages, and in the list of what is carried. Empty: the Item Id.' }) itemName = '';
+  @String({ label: 'Item Name', tooltip: 'What the player reads: in the prompt and the messages, and in the list of what is carried. Empty: the Item Id.', completion: StringCompletionEnum.TranslationKeys }) itemName = '';
   @Int({ label: 'Count', tooltip: 'How many it gives.' }) count = 1;
   @Int({ label: 'Limit', tooltip: 'The most of this item the player can carry (0: no limit, as keys and credits have). It is set by the first pickup of the id that starts; one that finds the player full stays where it is.' }) limit = 0;
-  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {item} is its name. Empty: none.' }) message = 'Picked up {item}';
+  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {item} is its name. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) message = 'Picked up {item}';
   @String({ header: 'Journal', label: 'Journal Category', tooltip: 'Empty: it is not written in the Journal. \'access\' (a key, a card) lists it under Access, and the Journal says whether it was used; anything else is a category of its own.' }) journalCategory = '';
-  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu: in its Items category while the player carries it, or in its own category when it has one.' }) description = '';
+  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu: in its Items category while the player carries it, or in its own category when it has one.', completion: StringCompletionEnum.TranslationKeys }) description = '';
   @Ref(AudioTrack, { header: 'Sound', label: 'Pickup Sound' }) pickupSound = '';
 
   @Inject(Inventory) inventory!: Inventory;
@@ -48,10 +49,16 @@ export class Pickup extends Interactable {
     return this.label;
   }
 
+  // The item's name and what the Journal says of it, unless the caption was written by hand: a pickup with nothing to say but its name keeps the plain prompt it always had, because the prompt names it already.
+  get caption(): IInteractableCaption {
+    const body = this.captionText || this.description;
+    return { title: this.captionTitle || (body ? this.label : ''), body };
+  }
+
   protected onUse(interactor: Interactor): void {
     // Full: it stays where it is. Room for some: what fits is taken and the rest stays.
     if (this.inventory.room(this.itemId) <= 0) {
-      this.hud.showMessage(this.fill('{item} full', this.label));
+      this.hud.showMessage(phrase('inventory.full', '{item} full', { item: this.label }));
       return;
     }
 

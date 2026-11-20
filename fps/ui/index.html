@@ -27,8 +27,11 @@
     <span id="hitmarker" class="hitmarker"><i></i><i></i><i></i><i></i></span>
   </div>
 
-  <div id="prompt" class="prompt"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div>
+  <div id="prompt" class="prompt"><div id="promptCaption" class="caption"><div id="promptTitle" class="caption__title"></div><div id="promptBody" class="caption__body"></div></div><div class="prompt__row"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div></div>
   <div id="message" class="message"></div>
+
+  <!-- The subtitles of what is being said: filled by hud.js from the engine's `Subtitles` (the lines of the clips that play now, in the language in use). Nothing here is clickable. -->
+  <div id="subtitles" class="subtitles" aria-live="polite"></div>
 
   <!-- What can be used, over it on the screen: filled by hud.js from the `Hud` service's markers. -->
   <div id="markers" class="markers"></div>
@@ -37,7 +40,7 @@
   <div id="stamina" class="stamina"><div class="stamina__bar"><div id="staminaFill" class="stamina__fill"></div><i id="staminaMark" class="stamina__mark"></i></div></div>
 
   <div class="status -health">
-    <div class="status__label">Health</div>
+    <div class="status__label" data-translate="hud.health">Health</div>
     <div class="bar"><div id="healthFill" class="bar__fill"></div></div>
     <div id="healthText" class="status__value">100</div>
   </div>
@@ -53,19 +56,21 @@
   <!-- The pause menu: shown by the `PauseMenu` service (assets/services/pause-menu.service.ts) when the game lets go of the pointer (Esc). Its controls are the only clickable things of the page. -->
   <div id="menu" class="menu" aria-hidden="true">
     <div class="menu__panel">
-      <div class="menu__title">Paused</div>
-      <label class="menu__row"><span class="menu__label">Mouse Sensitivity</span><input id="sensitivity" class="menu__slider" type="range" min="0.2" max="3" step="0.05"><span id="sensitivityValue" class="menu__value"></span></label>
-      <label class="menu__row"><span class="menu__label">Field of View</span><input id="fieldOfView" class="menu__slider" type="range" min="50" max="110" step="1"><span id="fieldOfViewValue" class="menu__value"></span></label>
-      <label class="menu__row"><span class="menu__label">Volume</span><input id="volume" class="menu__slider" type="range" min="0" max="1" step="0.01"><span id="volumeValue" class="menu__value"></span></label>
-      <div class="menu__title">Saves</div>
+      <div class="menu__title" data-translate="menu.paused">Paused</div>
+      <label class="menu__row"><span class="menu__label" data-translate="menu.mouseSensitivity">Mouse Sensitivity</span><input id="sensitivity" class="menu__slider" type="range" min="0.2" max="3" step="0.05"><span id="sensitivityValue" class="menu__value"></span></label>
+      <label class="menu__row"><span class="menu__label" data-translate="menu.fieldOfView">Field of View</span><input id="fieldOfView" class="menu__slider" type="range" min="50" max="110" step="1"><span id="fieldOfViewValue" class="menu__value"></span></label>
+      <label class="menu__row"><span class="menu__label" data-translate="menu.volume">Volume</span><input id="volume" class="menu__slider" type="range" min="0" max="1" step="0.01"><span id="volumeValue" class="menu__value"></span></label>
+      <label class="menu__row"><span class="menu__label" data-translate="menu.subtitles">Subtitles</span><input id="subtitlesToggle" class="menu__check" type="checkbox"></label>
+      <label id="languageRow" class="menu__row" hidden><span class="menu__label" data-translate="menu.language">Language</span><select id="language" class="menu__select"></select></label>
+      <div class="menu__title" data-translate="menu.saves">Saves</div>
       <div id="saves" class="saves"></div>
       <div id="savesNote" class="menu__note"></div>
-      <button id="resume" class="menu__button" type="button">Resume</button>
+      <button id="resume" class="menu__button" type="button" data-translate="menu.resume">Resume</button>
       <div class="menu__actions">
-        <button id="restart" class="menu__button -quiet" type="button" disabled>Restart</button>
-        <button id="quit" class="menu__button -quiet" type="button" hidden>Quit</button>
+        <button id="restart" class="menu__button -quiet" type="button" data-translate="menu.restart" disabled>Restart</button>
+        <button id="quit" class="menu__button -quiet" type="button" data-translate="menu.quit" hidden>Quit</button>
       </div>
-      <div class="menu__hint">Esc, or click anywhere on the game &middot; F5 quick save &middot; F9 quick load</div>
+      <div class="menu__hint" data-translate="menu.hint">Esc, or click anywhere on the game &middot; F5 quick save &middot; F9 quick load</div>
     </div>
   </div>
 
@@ -75,7 +80,7 @@
       <nav class="journal__side">
         <div id="journalTitle" class="journal__heading"></div>
         <ul id="journalCategories" class="journal__categories"></ul>
-        <div class="journal__hint">Tab or Esc to close</div>
+        <div class="journal__hint" data-translate="journal.closeHint">Tab or Esc to close</div>
       </nav>
       <section class="journal__stage">
         <div id="journalObject" class="journal__object"></div>
@@ -87,8 +92,8 @@
         <div id="journalEntryBody" class="journal__body"></div>
         <button id="journalAudio" class="journal__audio" type="button" hidden>Play</button>
       </aside>
-      <button id="journalClose" class="journal__close" type="button" aria-label="Close">&times;</button>
-      <div id="journalEmpty" class="journal__empty">Nothing found yet.</div>
+      <button id="journalClose" class="journal__close" type="button" aria-label="Close" data-translate-aria-label="journal.close">&times;</button>
+      <div id="journalEmpty" class="journal__empty" data-translate="journal.empty">Nothing found yet.</div>
     </div>
   </div>
 

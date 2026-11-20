@@ -1,4 +1,4 @@
-import { Bool, Collider, Entity, Float, IEntity, Inject, JsonIgnore, PlayerMovement, Ref, Saved, Script, Signal, String, Time } from '@brave/core';
+import { Bool, Collider, Entity, Float, IEntity, Inject, JsonIgnore, PlayerMovement, Ref, Saved, Script, Signal, String, StringCompletionEnum, Time } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Interactable } from '../interaction/interactable';
 import type { Interactor } from '../interaction/interactor';
@@ -26,8 +26,8 @@ export class Supply extends Interactable {
 
   @Ref(Entity, { header: 'Supply', label: 'Visual', tooltip: 'What it is drawn with: hidden while the supply is used up. Empty: nothing is hidden.' }) visual?: Entity;
   @Float({ label: 'Respawn After', suffix: 's', tooltip: 'Seconds until it is there again after it was taken. 0: it is taken for good.' }) respawnSeconds = 30;
-  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {amount} stands for what it gave. Empty: none.' }) message = '';
-  @String({ label: 'Full Message', tooltip: 'A line on the screen when the player uses it and has no use for it (full health, ammo at the limit). Empty: none, only the click.' }) fullMessage = '';
+  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {amount} stands for what it gave. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) message = '';
+  @String({ label: 'Full Message', tooltip: 'A line on the screen when the player uses it and has no use for it (full health, ammo at the limit). Empty: none, only the click.', completion: StringCompletionEnum.TranslationKeys }) fullMessage = '';
   @Bool({ label: 'Walk Over', tooltip: 'On: it is also taken by walking into the trigger Collider of this entity, with no need to look at it and press E.' }) walkOver = false;
 
   @Inject(Hud) hud!: Hud;

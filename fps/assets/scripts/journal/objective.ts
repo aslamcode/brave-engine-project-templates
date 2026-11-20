@@ -1,4 +1,4 @@
-import { Bool, Inject, Script, ScriptComponent, String } from '@brave/core';
+import { Bool, Inject, Script, ScriptComponent, String, StringCompletionEnum } from '@brave/core';
 import { Journal } from '../../services/journal.service';
 
 /**
@@ -8,8 +8,8 @@ import { Journal } from '../../services/journal.service';
 @Script()
 export class Objective extends ScriptComponent {
 
-  @String({ header: 'Objective', label: 'Title', tooltip: 'What the player reads in the list.' }) title = 'New objective';
-  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu.' }) description = '';
+  @String({ header: 'Objective', label: 'Title', tooltip: 'What the player reads in the list.', completion: StringCompletionEnum.TranslationKeys }) title = 'New objective';
+  @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu.', completion: StringCompletionEnum.TranslationKeys }) description = '';
   @Bool({ label: 'Starts Active', tooltip: 'On: it is in the Journal from the start of the game. Off: until `give()` is called.' }) startsActive = true;
 
   @Inject(Journal) journal!: Journal;

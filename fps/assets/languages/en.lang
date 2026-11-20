@@ -1,0 +1,128 @@
+{
+  "$language": "English",
+  "hud": {
+    "health": "Health",
+    "stance": {
+      "relaxed": "Relaxed",
+      "alert": "Alert"
+    },
+    "died": "You died"
+  },
+  "menu": {
+    "paused": "Paused",
+    "mouseSensitivity": "Mouse Sensitivity",
+    "fieldOfView": "Field of View",
+    "volume": "Volume",
+    "language": "Language",
+    "subtitles": "Subtitles",
+    "saves": "Saves",
+    "save": "Save",
+    "load": "Load",
+    "resume": "Resume",
+    "restart": "Restart",
+    "quit": "Quit",
+    "confirm": "Click again to confirm",
+    "hint": "Esc, or click anywhere on the game · F5 quick save · F9 quick load"
+  },
+  "journal": {
+    "closeHint": "Tab or Esc to close",
+    "close": "Close",
+    "play": "Play",
+    "stop": "Stop",
+    "empty": "Nothing found yet.",
+    "carrying": "Carrying {count}",
+    "carryingOf": "Carrying {count} of {limit}",
+    "status": {
+      "active": "Active",
+      "done": "Done",
+      "failed": "Failed",
+      "unused": "Not used yet",
+      "used": "Used"
+    },
+    "updated": "{title} updated: {entry}",
+    "categories": {
+      "objectives": "Objectives",
+      "items": "Items",
+      "access": "Access",
+      "passwords": "Passwords",
+      "notes": "Notes",
+      "audio": "Audio Logs"
+    }
+  },
+  "saves": {
+    "empty": "Empty",
+    "saved": "Saved to {slot}",
+    "saveFailed": "The game could not be saved",
+    "nothingIn": "Nothing is saved in {slot}",
+    "loaded": "Loaded {slot}",
+    "restarted": "Game restarted",
+    "restartFailed": "The game could not be restarted",
+    "tooOld": "This save is from an older version: save again",
+    "loadFailed": "The save could not be loaded",
+    "slots": {
+      "quick": "Quick",
+      "slot-1": "Slot 1",
+      "slot-2": "Slot 2",
+      "slot-3": "Slot 3"
+    }
+  },
+  "gear": {
+    "none": "No {item}s",
+    "healthFull": "Health full",
+    "healed": "+{amount} health"
+  },
+  "inventory": {
+    "full": "{item} full"
+  },
+  "waves": {
+    "wave": "Wave {number}",
+    "cleared": "All waves cleared"
+  },
+  "demo": {
+    "title": "Language lab",
+    "hint": "Press E on the radio. Pick up the chip. Esc opens the menu.",
+    "radio": {
+      "prompt": "Listen",
+      "name": "Old radio",
+      "description": "The same message every time. Its subtitles follow the language."
+    },
+    "chip": {
+      "prompt": "Take {{ items.chip.name }}",
+      "message": "Picked up {{ items.chip.name }}"
+    }
+  },
+  "subtitles": {
+    "radio-demo": [
+      {
+        "start": 0.0,
+        "end": 2.8,
+        "speaker": "Guard",
+        "text": "Halt! Who goes there?"
+      },
+      {
+        "start": 3.0,
+        "end": 5.8,
+        "speaker": "Guard",
+        "text": "This is a restricted area."
+      },
+      {
+        "start": 6.0,
+        "end": 9.0,
+        "speaker": "Guard",
+        "text": "State your business, or turn around."
+      },
+      {
+        "start": 6.6,
+        "end": 8.6,
+        "speaker": "Radio",
+        "text": "Copy that. Backup is on the way."
+      }
+    ]
+  },
+  "items": {
+    "chip": {
+      "name": "Translation chip",
+      "description": "It holds a few words in every language."
+    }
+  }
+}

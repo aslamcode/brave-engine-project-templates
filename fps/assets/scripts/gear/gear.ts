@@ -1,4 +1,4 @@
-import { Entity, Int, JsonIgnore, Ref, Script, ScriptComponent, String } from '@brave/core';
+import { Entity, Int, JsonIgnore, Ref, Script, ScriptComponent, String, StringCompletionEnum } from '@brave/core';
 import type { Loadout } from './loadout';
 
 /**
@@ -20,7 +20,7 @@ import type { Loadout } from './loadout';
 @Script()
 export class Gear extends ScriptComponent {
 
-  @String({ header: 'Gear', label: 'Name', tooltip: 'What the HUD calls it.' }) label = 'Gear';
+  @String({ header: 'Gear', label: 'Name', tooltip: 'What the HUD calls it.', completion: StringCompletionEnum.TranslationKeys }) label = 'Gear';
   @Int({ label: 'Slot', tooltip: 'The key that takes it in hand: 1 to 9. The mouse wheel goes through the slots in order.' }) slot = 1;
   @Ref(Entity, { label: 'Grip Left', tooltip: 'The point the left hand reaches while this is in hand: a child of the gear. Empty: the left hand stays where the last gear left it.' }) gripLeft?: Entity;
 

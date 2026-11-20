@@ -31,6 +31,7 @@ This is a **Brave Engine** game project: a 3D game made with the Brave Editor, T
 | The Shaper: greybox modelling in the editor | `docs/shaper.md` |
 | Particles, fire, explosions, decals and stains | `docs/effects.md` |
 | Text in the world, fonts, sprites | `docs/text-and-sprites.md` |
+| Languages: the `.lang` files, `{{ key }}` in a text, `Translate`, the UI, a language added after the build, subtitles | `docs/translate.md` |
 | The Director: a controller for an area | `docs/director.md` |
 
 ## The project

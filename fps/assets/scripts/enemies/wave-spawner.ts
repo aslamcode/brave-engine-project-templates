@@ -1,4 +1,5 @@
 import { Collider, Entity, Float, Inject, Int, ISpawnBatch, ISpawnPlacement, JsonIgnore, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, SpawnSystem, State, String, Time, Vector3 } from '@brave/core';
+import { phrase } from '../shared/phrase';
 import { Hud } from '../../services/hud.service';
 import { Health } from '../health/health';
 import { playSound } from '../shared/sound';
@@ -91,7 +92,7 @@ export class WaveSpawner extends ScriptComponent {
       return;
     }
     this.wave++;
-    this.hud.showMessage(`Wave ${this.wave}`, 2.5);
+    this.hud.showMessage(phrase('waves.wave', 'Wave {number}', { number: this.wave }), 2.5);
     playSound(this.waveSound);
     this.onWaveStart.emit(this.wave);
     const count = this.firstWave + this.growth * (this.wave - 1);
@@ -123,7 +124,7 @@ export class WaveSpawner extends ScriptComponent {
       return;
     }
     this.isRunning = false;
-    this.hud.showMessage('All waves cleared', 4);
+    this.hud.showMessage(phrase('waves.cleared', 'All waves cleared'), 4);
     this.onFinished.emit();
   }
 

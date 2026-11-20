@@ -1,5 +1,10 @@
 import { AudioSource, ScriptComponent, Signal } from '@brave/core';
 import type { Interactor } from './interactor';
+/** What a thing says about itself when the player looks at it: a title and a text under it. Both may hold `{{ key }}` (an entry of the language files), so the HUD shows them in the player's language. */
+export interface IInteractableCaption {
+    title: string;
+    body: string;
+}
 /** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what E does when it is looked at). */
 export type InteractableMarker = 'line' | 'simple' | 'none';
 /**
@@ -22,6 +27,8 @@ export type InteractableMarker = 'line' | 'simple' | 'none';
  */
 export declare class Interactable extends ScriptComponent {
     prompt: string;
+    captionTitle: string;
+    captionText: string;
     marker: InteractableMarker;
     markerHeight: number;
     aimRadius: number;
@@ -37,6 +44,8 @@ export declare class Interactable extends ScriptComponent {
     get currentPrompt(): string;
     /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
     promptFor(_interactor: Interactor): string;
+    /** What it says about itself when looked at, under the prompt's box on the HUD. Both empty (the default): it says only what E does. A kind answers with what it knows (a pickup: its item). */
+    get caption(): IInteractableCaption;
     /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
     get peekName(): string;
     /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */

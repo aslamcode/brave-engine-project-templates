@@ -3,18 +3,34 @@
 BraveUiBridge.enablePointerBridging();
 var hud = BraveUiBridge.remote('Hud');
 
+// The words of the page. The language is the game's, read from the same entries the game reads (`BraveUiBridge.Translate`): a text that comes from the game and holds {{ key }} (a pickup's name, a journal
+// entry) is resolved here, so the HUD follows the language by itself; a label of this page that has an entry in the language files (assets/languages) takes its words, and one that has none (a project that took
+// the files out) stays as it is written here, in English. Static labels are marked in index.html with data-translate and need nothing in this file.
+var T = BraveUiBridge.Translate;
+function tr(text) { return typeof text === 'string' && text.indexOf('{{') !== -1 ? T.resolve(text) : text; }
+function word(path, fallback, params) { return T.has(path) ? T.get(path, params) : fallback; }
+var redraw = [];   // what to draw again when the language changes (each part adds its own)
+T.onChange.on(function () { redraw.forEach(function (draw) { draw(); }); });
+
 var el = function (id) { return document.getElementById(id); };
-var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
+var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), promptCaption = el('promptCaption'), promptTitle = el('promptTitle'), promptBody = el('promptBody'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
 var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items'), weapons = el('weapons');
 var staminaBox = el('stamina'), staminaFill = el('staminaFill'), staminaMark = el('staminaMark');
 var markersEl = el('markers'), markerNodes = {};
 var hitTimer, damageTimer, indicatorTimer, indicator = el('indicator');
 
+var lastState = null;
 function render(state) {
-  // The text stays while the prompt fades out, so that the key chip is never left alone on the screen.
-  if (state.prompt !== '') promptText.textContent = state.prompt;
+  lastState = state;
+  // The text stays while the prompt fades out, so that the key chip is never left alone on the screen. What the thing looked at says about itself (its title and its text) is over the line and stays with it.
+  if (state.prompt !== '') {
+    promptText.textContent = tr(state.prompt);
+    promptTitle.textContent = tr(state.captionTitle || '');
+    promptBody.textContent = tr(state.captionBody || '');
+    promptCaption.classList.toggle('-show', !!(state.captionTitle || state.captionBody));
+  }
   prompt.classList.toggle('-show', state.prompt !== '');
-  message.textContent = state.message;
+  message.textContent = tr(state.message);
   message.classList.toggle('-show', state.message !== '');
 
   var share = state.maxHealth > 0 ? Math.max(0, Math.min(1, state.health / state.maxHealth)) : 0;
@@ -33,7 +49,7 @@ function render(state) {
   reserve.textContent = state.reserve;
   // A reserve below zero is a gear that is only counted (a grenade, a medkit): the count alone, with no magazine and no slash.
   ammo.parentNode.classList.toggle('-single', state.reserve < 0);
-  stance.textContent = state.stance === 'alert' ? 'Alert' : 'Relaxed';
+  stance.textContent = state.stance === 'alert' ? word('hud.stance.alert', 'Alert') : word('hud.stance.relaxed', 'Relaxed');
   crosshair.classList.toggle('-alert', state.stance === 'alert');
   crosshair.classList.toggle('-target', !!state.target);
   crosshair.classList.toggle('-arcs', state.crosshair === 'arcs');
@@ -48,7 +64,7 @@ function render(state) {
   (state.weapons || []).forEach(function (name, index) {
     var chip = document.createElement('span');
     chip.className = 'weapons__chip' + (index === state.weapon ? ' -current' : '');
-    chip.textContent = (index + 1) + ' ' + name;
+    chip.textContent = (index + 1) + ' ' + tr(name);
     weapons.appendChild(chip);
   });
 
@@ -72,7 +88,7 @@ function renderItems(state) {
       names.forEach(function (name) {
         var chip = document.createElement('div');
         chip.className = 'item' + (!first && before.indexOf(name) === -1 ? ' -new' : '');
-        chip.textContent = name;
+        chip.textContent = tr(name);
         items.appendChild(chip);
       });
     }
@@ -101,6 +117,12 @@ function drawTwinArcs(radius) {
 
 hud.state().then(render);
 hud.onChange.on(render, { sampleEvery: 50 });
+redraw.push(function () {
+  if (lastState) render(lastState);
+  // The list of what is carried keeps its chips (what is new in it stays lit), so only the words are set again.
+  var names = lastItems === null ? [] : JSON.parse(lastItems);
+  [].slice.call(items.children).forEach(function (chip, index) { if (index < names.length) chip.textContent = tr(names[index]); });
+});
 
 hud.onHit.on(function (hit) {
   hitmarker.classList.toggle('-kill', !!hit.kill);
@@ -128,12 +150,14 @@ hud.onDamaged.on(function (event) {
 function makeMarker() {
   var root = document.createElement('div');
   root.className = 'marker';
-  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><span class="marker__key">E</span><span class="marker__text"></span></div><div class="marker__dot"></div><div class="marker__peek"></div>';
+  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><div class="caption"><div class="caption__title"></div><div class="caption__body"></div></div><div class="marker__row"><span class="marker__key">E</span><span class="marker__text"></span></div></div><div class="marker__dot"></div><div class="marker__peek"></div>';
   markersEl.appendChild(root);
-  return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text'), peek: root.querySelector('.marker__peek') };
+  return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text'), peek: root.querySelector('.marker__peek'), caption: root.querySelector('.caption'), title: root.querySelector('.caption__title'), body: root.querySelector('.caption__body') };
 }
 
+var lastMarkers = null;
 function renderMarkers(list) {
+  lastMarkers = list;
   var width = window.innerWidth, height = window.innerHeight, seen = {}, boxShown = false;
   list.forEach(function (m) {
     var node = markerNodes[m.id] || (markerNodes[m.id] = makeMarker());
@@ -145,8 +169,14 @@ function renderMarkers(list) {
     node.root.classList.toggle('-below', y < 150);
     node.root.classList.toggle('-peek', !m.focused && m.peek !== '');
     node.root.classList.toggle('-left', x > width - 220);
-    if (m.focused && node.text.textContent !== m.prompt) node.text.textContent = m.prompt;
-    if (!m.focused && node.peek.textContent !== m.peek) node.peek.textContent = m.peek;
+    var promptWords = tr(m.prompt), peekWords = tr(m.peek);
+    if (m.focused && node.text.textContent !== promptWords) node.text.textContent = promptWords;
+    if (!m.focused && node.peek.textContent !== peekWords) node.peek.textContent = peekWords;
+    // What it says about itself, over what E does: the box of the one looked at.
+    var titleWords = m.focused ? tr(m.title || '') : '', bodyWords = m.focused ? tr(m.body || '') : '';
+    if (node.title.textContent !== titleWords) node.title.textContent = titleWords;
+    if (node.body.textContent !== bodyWords) node.body.textContent = bodyWords;
+    node.caption.classList.toggle('-show', titleWords !== '' || bodyWords !== '');
     // The box stays on the screen sideways: it is the box that is moved, never the point it is tied to.
     node.box.style.setProperty('--shift', (Math.max(0, 110 - x) - Math.max(0, x - (width - 110))).toFixed(1) + 'px');
     if (m.focused && m.prompt !== '') boxShown = true;
@@ -160,6 +190,38 @@ function renderMarkers(list) {
 }
 
 hud.onMarkers.on(renderMarkers, { sampleEvery: 0 });
+redraw.push(function () { if (lastMarkers) renderMarkers(lastMarkers); });
+
+// The subtitles. The engine only says which lines show now ({ id, speaker, text }, already in the language in use and in time with the sound that plays: it follows the sound itself, so a pause, a skip or the
+// end of the clip is a change of the list) and the page draws them. One element for each id stays while its line stays, so a line does not flicker when another one comes or goes.
+var S = BraveUiBridge.Subtitles, subtitlesEl = el('subtitles'), subtitleNodes = {}, subtitlesToggle = el('subtitlesToggle');
+function renderSubtitles(lines) {
+  var seen = {};
+  lines.forEach(function (line) {
+    seen[line.id] = true;
+    var node = subtitleNodes[line.id];
+    if (!node) {
+      var root = document.createElement('div');
+      root.className = 'subtitle';
+      root.innerHTML = '<span class="subtitle__speaker"></span><span class="subtitle__text"></span>';
+      node = subtitleNodes[line.id] = { root: root, speaker: root.firstChild, text: root.lastChild };
+    }
+    if (node.speaker.textContent !== line.speaker) node.speaker.textContent = line.speaker;
+    node.speaker.hidden = line.speaker === '';
+    if (node.text.textContent !== line.text) node.text.textContent = line.text;
+    subtitlesEl.appendChild(node.root);
+  });
+  Object.keys(subtitleNodes).forEach(function (id) {
+    if (seen[id]) return;
+    subtitlesEl.removeChild(subtitleNodes[id].root);
+    delete subtitleNodes[id];
+  });
+  subtitlesToggle.checked = S.enabled;
+}
+S.onChange.on(renderSubtitles);
+S.ready.then(function () { renderSubtitles(S.lines); });
+// The choice is the `PauseMenu` service's to keep and to apply to the engine; the page hears of it through `Subtitles` like everyone else.
+subtitlesToggle.addEventListener('change', function () { pause.setSubtitles(subtitlesToggle.checked); });
 
 // The pause menu: the `PauseMenu` service says whether it is open and what the three settings are; the controls say what the player changed. The sliders are not moved by the state while one is being dragged.
 var pause = BraveUiBridge.remote('PauseMenu');
@@ -183,6 +245,28 @@ el('resume').addEventListener('click', function () { pause.resume(); });
 pause.state().then(renderMenu);
 pause.onChange.on(renderMenu, { sampleEvery: 0 });
 
+// The language of the game: the row is there when the game has two or more, with each in its own words. The choice is the `PauseMenu` service's to keep (the next start begins with it) and to apply to the engine; the
+// page then hears of it like everyone else, through `Translate`. The service is asked, never the engine's `Translate` directly, so that what the player chose is also what is saved.
+var languageRow = el('languageRow'), languageSelect = el('language'), drawnLanguages = '';
+function renderLanguages() {
+  var languages = T.languages || [], signature = JSON.stringify(languages);
+  languageRow.hidden = languages.length < 2;
+  if (signature !== drawnLanguages) {
+    drawnLanguages = signature;
+    languageSelect.textContent = '';
+    languages.forEach(function (language) {
+      var option = document.createElement('option');
+      option.value = language.code;
+      option.textContent = language.name;
+      languageSelect.appendChild(option);
+    });
+  }
+  languageSelect.value = T.language;
+}
+languageSelect.addEventListener('change', function () { pause.setLanguage(languageSelect.value); });
+redraw.push(renderLanguages);
+renderLanguages();
+
 // The saves of the pause menu: the `SaveGame` service says what each slot holds and what the last save or load said; the buttons send the player's choice back. The rows are rebuilt only when what they show
 // changes, so that a state sent again does not take a button from under the pointer.
 (function () {
@@ -199,9 +283,11 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     row.appendChild(button);
   }
 
+  var lastSaves = null;
   function renderSaves(state) {
+    lastSaves = state;
     var signature = JSON.stringify(state.slots) + '|' + state.busy;
-    note.textContent = state.message || '';
+    note.textContent = tr(state.message || '');
     if (signature === drawn) return;
     drawn = signature;
     list.textContent = '';
@@ -209,20 +295,21 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
       var row = document.createElement('div');
       row.className = 'save';
       var name = document.createElement('span');
-      name.textContent = slot.name;
+      name.textContent = tr(slot.name);
       var info = document.createElement('span');
       info.className = 'save__info';
-      info.textContent = slot.info;
+      info.textContent = tr(slot.info);
       row.appendChild(name);
       row.appendChild(info);
-      addButton(row, 'Save', state.busy, function () { saves.save(slot.id); });
-      addButton(row, 'Load', state.busy || slot.empty, function () { saves.load(slot.id); });
+      addButton(row, word('menu.save', 'Save'), state.busy, function () { saves.save(slot.id); });
+      addButton(row, word('menu.load', 'Load'), state.busy || slot.empty, function () { saves.load(slot.id); });
       list.appendChild(row);
     });
   }
 
   saves.state().then(renderSaves);
   saves.onChange.on(renderSaves, { sampleEvery: 0 });
+  redraw.push(function () { drawn = ''; if (lastSaves) renderSaves(lastSaves); });
 })();
 
 // Restart and Quit ask twice: the first click turns the button into "Click again to confirm" for three seconds and the second does it; the time running out, a click anywhere else, the other button and the menu
@@ -241,7 +328,6 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   }
 
   function confirmable(button, action) {
-    var label = button.textContent;
     button.addEventListener('click', function () {
       if (armed && armed.button === button) {
         disarm();
@@ -249,8 +335,10 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
         return;
       }
       disarm();
+      // The label is taken when the question is asked, so that it is the one of the language in use.
+      var label = button.textContent;
       button.classList.add('-confirm');
-      button.textContent = 'Click again to confirm';
+      button.textContent = word('menu.confirm', 'Click again to confirm');
       armed = { button: button, label: label, timer: setTimeout(disarm, CONFIRM_MS) };
     });
   }
@@ -284,6 +372,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   var signatures = {}, drawnCategory = null;
 
   var STATUS_TEXT = { active: 'Active', done: 'Done', failed: 'Failed', unused: 'Not used yet', used: 'Used' };
+  function statusWords(status) { return word('journal.status.' + status, STATUS_TEXT[status]); }
   var STATUS_TONE = { active: '-accent', unused: '-accent', done: '-ok', used: '-ok', failed: '-danger' };
   // The drawings, one per category of the entry: 120 by 120, drawn with the stroke of the colour of the page's accent.
   var DRAWINGS = {
@@ -328,7 +417,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     categoriesList.textContent = '';
     data.categories.forEach(function (category) {
       var row = makeRow(category.id === data.category);
-      addText(row, 'journal__row-name', category.name);
+      addText(row, 'journal__row-name', tr(category.name));
       addText(row, 'journal__row-count', category.count);
       if (category.news > 0) {
         var dot = document.createElement('span');
@@ -346,8 +435,8 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     data.entries.forEach(function (entry) {
       var row = makeRow(entry.id === data.selected);
       row.classList.toggle('-new', !!entry.isNew);
-      addText(row, 'journal__row-name', entry.title);
-      if (STATUS_TEXT.hasOwnProperty(entry.status)) addText(row, 'journal__badge ' + STATUS_TONE[entry.status], STATUS_TEXT[entry.status]);
+      addText(row, 'journal__row-name', tr(entry.title));
+      if (STATUS_TEXT.hasOwnProperty(entry.status)) addText(row, 'journal__badge ' + STATUS_TONE[entry.status], statusWords(entry.status));
       if (entry.count > 1) addText(row, 'journal__badge', '\u00d7' + entry.count);
       row.addEventListener('click', function () { journal.choose(entry.id); });
       entriesList.appendChild(row);
@@ -373,14 +462,14 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   function renderDetail(data, entry) {
     if (!changed('detail', entry ? JSON.stringify(entry) + '|' + data.playing : '')) return;
     var known = !!entry && STATUS_TEXT.hasOwnProperty(entry.status);
-    entryTitle.textContent = entry ? entry.title : '';
+    entryTitle.textContent = entry ? tr(entry.title) : '';
     // An item is not given a status: it says how many of it are carried.
     var carrying = !!entry && typeof entry.count === 'number';
-    entryStatus.textContent = known ? STATUS_TEXT[entry.status] : carrying ? 'Carrying ' + entry.count + (entry.limit > 0 ? ' of ' + entry.limit : '') : '';
+    entryStatus.textContent = known ? statusWords(entry.status) : carrying ? (entry.limit > 0 ? word('journal.carryingOf', 'Carrying {count} of {limit}', { count: entry.count, limit: entry.limit }) : word('journal.carrying', 'Carrying {count}', { count: entry.count })) : '';
     entryStatus.className = 'journal__status' + (known ? ' ' + STATUS_TONE[entry.status] : carrying ? ' -accent' : '');
-    entryBody.textContent = entry ? entry.body : '';
+    entryBody.textContent = entry ? tr(entry.body) : '';
     audioButton.hidden = !(entry && entry.audio);
-    audioButton.textContent = entry && data.playing === entry.id ? 'Stop' : 'Play';
+    audioButton.textContent = entry && data.playing === entry.id ? word('journal.stop', 'Stop') : word('journal.play', 'Play');
   }
 
   // The chip is not always there: it fades in when something new goes into the menu, stays `hintSeconds` and fades out (0: it stays). What was new before the page came (a game that was loaded) does not show it,
@@ -392,7 +481,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
   }
 
   function renderHint(data) {
-    hintTitle.textContent = data.title;
+    hintTitle.textContent = tr(data.title);
     hint.classList.toggle('-new', data.news > 0);
     if (data.open) {
       clearTimeout(hintTimer);
@@ -407,7 +496,9 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     lastNews = data.news;
   }
 
+  var lastJournal = null;
   function renderJournal(state) {
+    lastJournal = state;
     var data = {
       open: !!state.open, title: state.title || '', categories: state.categories || [], entries: state.entries || [],
       category: state.category || '', selected: state.selected || '', playing: state.playing || '', news: state.news || 0,
@@ -418,7 +509,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
     // The Journal has the whole screen: the pause menu is not seen under it (see `body.-journal .menu`).
     document.body.classList.toggle('-journal', data.open);
     backdrop.setAttribute('aria-hidden', data.open ? 'false' : 'true');
-    heading.textContent = data.title;
+    heading.textContent = tr(data.title);
     emptyNote.classList.toggle('-show', data.categories.length === 0);
     renderCategories(data);
     renderEntries(data);
@@ -462,5 +553,7 @@ pause.onChange.on(renderMenu, { sampleEvery: 0 });
 
   journal.state().then(renderJournal);
   journal.onChange.on(renderJournal, { sampleEvery: 0 });
+  // The lists and the detail are rebuilt only when what they show changes, so a new language asks for all of them again.
+  redraw.push(function () { signatures = {}; if (lastJournal) renderJournal(lastJournal); });
 })();
 

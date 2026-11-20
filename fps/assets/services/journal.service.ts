@@ -1,4 +1,5 @@
-import { AssetSystem, AudioMixerSystem, AudioSystem, BraveEngine, BraveEngineModeEnum, Cursor, Inject, Input, Service, Signal, UISystem } from '@brave/core';
+import { AssetSystem, AudioMixerSystem, AudioSystem, BraveEngine, BraveEngineModeEnum, Cursor, Inject, Input, Service, Signal, Translate, UISystem } from '@brave/core';
+import { phrase } from '../scripts/shared/phrase';
 import { Hud } from './hud.service';
 import { Inventory } from './inventory.service';
 import { PauseMenu } from './pause-menu.service';
@@ -124,6 +125,8 @@ export class Journal {
   onStart() {
     this.started = true;
     this.inventory.onChange.on(() => this.changed(), this);
+    // The names of the categories are words: said again when the language changes.
+    Translate.onChange.on(() => this.changed(), this);
     this.tabListener = Input.keyboard.tab.down((event: KeyboardEvent) => {
       event.preventDefault();
       this.toggle();
@@ -162,7 +165,7 @@ export class Journal {
     if (!entry.id || this.has(entry.id)) return false;
 
     this.entries.push({ id: entry.id, category: entry.category, title: entry.title, body: entry.body ?? '', audio: entry.audio ?? '', status: entry.status ?? '', isNew: true });
-    if (announce) this.hud.showMessage(`${this.title} updated: ${entry.title}`);
+    if (announce) this.hud.showMessage(phrase('journal.updated', '{title} updated: {entry}', { title: this.title, entry: entry.title }));
     this.changed();
     return true;
   }
@@ -356,7 +359,8 @@ export class Journal {
     const ids = [...CATEGORIES.map(category => category.id), ...everything.map(entry => entry.category)].filter((id, index, all) => all.indexOf(id) === index && everything.some(entry => entry.category === id));
     const categories = ids.map(id => {
       const own = everything.filter(entry => entry.category === id);
-      return { id, name: CATEGORIES.find(category => category.id === id)?.name ?? id.charAt(0).toUpperCase() + id.slice(1), count: own.length, news: own.filter(entry => entry.isNew).length };
+      const known = CATEGORIES.find(category => category.id === id);
+      return { id, name: known ? phrase(`journal.categories.${id}`, known.name) : id.charAt(0).toUpperCase() + id.slice(1), count: own.length, news: own.filter(entry => entry.isNew).length };
     });
     const category = categories.some(candidate => candidate.id === this.category) ? this.category : categories[0]?.id ?? '';
     const own = everything.filter(entry => entry.category === category);

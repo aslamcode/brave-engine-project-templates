@@ -1,4 +1,4 @@
-import { AudioTrack, Bool, Inject, JsonIgnore, Ref, Script, Select, Signal, String } from '@brave/core';
+import { AudioTrack, Bool, Inject, JsonIgnore, Ref, Script, Select, Signal, String, StringCompletionEnum } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Journal } from '../../services/journal.service';
 import { Interactable } from '../interaction/interactable';
@@ -16,8 +16,8 @@ export class Collectible extends Interactable {
   aimRadius = 0.15;
 
   @Select({ header: 'Journal', label: 'Category', optionsKey: 'categoryOptions', sort: false, tooltip: 'Where the Journal lists it.' }) category = 'notes';
-  @String({ label: 'Title', tooltip: 'What the player reads in the list, in the prompt and in the message.' }) title = 'A note';
-  @String({ label: 'Text', rows: 6, tooltip: 'What the player reads on the right of the menu: the note, the password, or the transcript of an audio log.' }) body = '';
+  @String({ label: 'Title', tooltip: 'What the player reads in the list, in the prompt and in the message.', completion: StringCompletionEnum.TranslationKeys }) title = 'A note';
+  @String({ label: 'Text', rows: 6, tooltip: 'What the player reads on the right of the menu: the note, the password, or the transcript of an audio log.', completion: StringCompletionEnum.TranslationKeys }) body = '';
   @Ref(AudioTrack, { label: 'Audio Log', tooltip: 'The sound of an audio log: a play button appears in the menu. It plays even while the game is paused.' }) recording = '';
   @Bool({ label: 'Open On Take', tooltip: 'On: the Journal opens on it as soon as it is taken, so it is read at once.' }) openOnTake = true;
 

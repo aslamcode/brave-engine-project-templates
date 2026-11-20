@@ -14,7 +14,7 @@ Sound in a game: Audio Sources play clips (in 3D or flat), an Audio Listener is 
 - The mixer lives in `audio-mixer.json` at the project root; the editor writes it shortly after each edit (undo works). Solo is never saved.
 
 ## Key settings
-- **Audio Source**: Gain 0 to 10 (1), Output (mixer channel; Master), Loop (off), Auto Play (on: plays when the source starts or is enabled), Muted, Speed (1), Bypass Time Scale (on; off = speed times `Time.scale`), Bypass Audio Volumes (off: ignore Audio Volumes).
+- **Audio Source**: Gain 0 to 10 (1), Output (mixer channel; Master), Loop (off), Auto Play (on: plays when the source starts or is enabled), Muted, Speed (1), Bypass Time Scale (on; off = speed times `Time.scale`), Bypass Audio Volumes (off: ignore Audio Volumes). **Show Subtitles** (on): a clip that has a track in the `.lang` files shows its lines by itself while it plays (`translate.md`).
 - **Spatial** (on; off = flat, for music and UI), Stereo Pan -1 to 1 (0). **Distance**: Rolloff Mode Linear / Inverse / Exponential (Linear), Min Distance 1, Max Distance 30, Rolloff Factor 10, in world units. **Cone**: Inner Angle 60, Outer Angle 90 (degrees), Outer Gain 0.3: a source is quieter when it faces away from the listener (set both angles to 360 to make it equal in every direction).
 - **Pooling** (off): every `play()` starts a voice of its own, so plays overlap (footsteps, shots). A voice is a node on the clip decoded once and shared by every source that uses it: starting one is immediate and cheap, so use it for any short sound that can repeat; give a rapid fire one Audio Source with Pooling on, never one per shot. A looping source ignores it.
 - **Audio Listener**: no settings; it follows its entity. The last one started or enabled is the active one.
@@ -23,7 +23,7 @@ Sound in a game: Audio Sources play clips (in 3D or flat), an Audio Listener is 
 - **Audio Player**: Tracks list (Name, Audio, Volume 0 to 1, Loop, Speed), Transition Duration (1 s), Muted, Bypass Time Scale.
 
 ## Scripting
-- `AudioSource`: `play()`, `pause()`, `stop()` (pause and rewind), `src`, `gain`, `loop`, `speed`, `muted`, `output`, `trackTime`, `await trackDuration`, and `onTrackEnd` (a `Signal`, not emitted while looping).
+- `AudioSource`: `play()`, `pause()`, `stop()` (pause and rewind), `src`, `gain`, `loop`, `speed`, `muted`, `output`, `trackTime`, `await trackDuration`, `isPlaying` (a sound of the source is playing now: not paused, not ended, not stopped; read it before starting a line again over itself), and `onTrackEnd` (a `Signal`, not emitted while looping).
 - `AudioPlayer`: `play(track)` fades out what plays and remembers it, `stop(track)` fades it out and brings the remembered ones back, `switchTo(track)` replaces everything, `pause`, `resume`, `setVolume(track, v)`, `pauseAll`, `resumeAll`, `stopAll`. An unknown track name does nothing.
 - `AudioSystem.muted = true` mutes the whole game (ramped).
 - Mixer: `AudioMixerSystem.mixer.flatten()` lists channels (`id`, `name`, `gain` dB, `muted`); `AudioMixerSystem.setPreset(name, seconds)` switches every channel at once.

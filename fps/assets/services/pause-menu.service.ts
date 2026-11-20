@@ -1,4 +1,4 @@
-import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, UISystem } from '@brave/core';
+import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, Subtitles, Translate, UISystem } from '@brave/core';
 
 /** What the menu page shows: whether it is open, the three settings the player can change, and whether the game can be closed from here. */
 export interface IPauseMenuState {
@@ -29,7 +29,8 @@ const ESCAPE_DEBOUNCE_MS = 200;
  * That hand-back is for a build (`holdPointer()`). In the editor's Play closing the menu leaves the pointer free (a screenshot, a look at the editor, with the game running and no menu): the next click on the game holds it.
  * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
- * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
+ * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the language (the engine's `Translate`: what
+ * the player chose, else the one their system asks for when the game has it, else the project's default), the subtitles (the engine's `Subtitles`: on unless the player turned them off), the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
  * not written). `pausesGame` off keeps the game running behind the menu.
  *
@@ -52,6 +53,8 @@ export class PauseMenu {
   @Store({ prefix: 'settings', customName: 'mouseSensitivity' }) savedSensitivity?: number;
   @Store({ prefix: 'settings', customName: 'fieldOfView' }) savedFieldOfView?: number;
   @Store({ prefix: 'settings', customName: 'volume' }) savedVolume?: number;
+  @Store({ prefix: 'settings', customName: 'language' }) savedLanguage?: string;
+  @Store({ prefix: 'settings', customName: 'subtitles' }) savedSubtitles?: boolean;
 
   // The player's camera as the scene made it (what a multiple of sensitivity is a multiple of), by the id of the component: a load or a restart builds the camera again with the same id and what the menu had made of its
   // sensitivity, so the camera itself cannot say what it was made with. The pointer was held once, and the pause is the menu's.
@@ -71,6 +74,10 @@ export class PauseMenu {
     const view = this.eyes()?.getComponent(Camera);
     this.state.fieldOfView = this.savedFieldOfView ?? view?.fieldOfView ?? this.state.fieldOfView;
     this.apply();
+    // Only a choice of the player is kept: a system that happens to ask for a language is no choice, and the game follows it again next time.
+    const language = this.savedLanguage ?? Translate.systemLanguage;
+    if (language) Translate.language = language;
+    Subtitles.enabled = this.savedSubtitles ?? true;
     document.addEventListener('pointerlockchange', this.listener);
     // Esc while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
     this.escapeListener = Input.keyboard.escape.down(() => this.onEscape());
@@ -142,6 +149,18 @@ export class PauseMenu {
       return;
     }
     nwApp()?.quit();
+  }
+
+  /** The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. */
+  setLanguage(code: string): void {
+    Translate.language = code;
+    this.savedLanguage = Translate.language;
+  }
+
+  /** The player turned the subtitles on or off: the engine shows or hides them at once and the next start begins the same way. */
+  setSubtitles(enabled: boolean): void {
+    Subtitles.enabled = enabled;
+    this.savedSubtitles = enabled;
   }
 
   /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */

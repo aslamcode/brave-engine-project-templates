@@ -258,7 +258,8 @@ export class Interactor extends ScriptComponent {
         const isFocused = item.thing === focused;
         const names = peeking === undefined && !isFocused && item.near <= 1;
         if (names) peeking = item.thing.entity.id;
-        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: isFocused ? item.thing.promptFor(this) : '', peek: names ? item.thing.peekName : '', focused: isFocused, line: item.thing.marker === 'line' });
+        const caption = isFocused ? item.thing.caption : undefined;
+        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: isFocused ? item.thing.promptFor(this) : '', title: caption?.title ?? '', body: caption?.body ?? '', peek: names ? item.thing.peekName : '', focused: isFocused, line: item.thing.marker === 'line' });
       }
     }
 
@@ -327,6 +328,8 @@ export class Interactor extends ScriptComponent {
 
   private watch(target: Interactable | undefined): void {
     this.hud?.setPrompt(target ? target.promptFor(this) : '');
+    const caption = target?.caption;
+    this.hud?.setCaption(caption?.title ?? '', caption?.body ?? '');
     if (target === this.target) return;
 
     this.target = target;

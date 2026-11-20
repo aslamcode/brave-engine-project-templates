@@ -3,6 +3,9 @@ import { Signal } from '@brave/core';
 export interface IHudState {
     /** The line under the crosshair: what E does on what the player looks at, or empty. */
     prompt: string;
+    /** What the thing looked at says about itself, over that line: a title and a text. Both empty for a thing that says nothing but what E does. */
+    captionTitle: string;
+    captionBody: string;
     /** Rounds in the magazine, the size of the magazine and the rounds in reserve. */
     ammo: number;
     magazine: number;
@@ -43,6 +46,9 @@ export interface IHudMarker {
     y: number;
     /** What E does, shown in the box of the marker the player looks at. */
     prompt: string;
+    /** The title and the text of the one looked at, over what E does in its box (empty for every other marker, and for a thing that says nothing). */
+    title: string;
+    body: string;
     /** The name of the thing, shown beside the small mark that is nearest to where the player looks (empty for every other one, and for the one looked at, which has its box). */
     peek: string;
     /** The one the player looks at and can use now: the others are small marks. */
@@ -69,6 +75,8 @@ export declare class Hud {
     private messageTimer?;
     private markersKey;
     setPrompt(text: string): void;
+    /** The caption of what the player looks at, over the prompt. */
+    setCaption(title: string, body: string): void;
     /** The rounds of the weapon in hand (`magazine` 0 for a gear that has none). A `reserve` below zero shows the count alone: a grenade, a medkit. */
     setAmmo(ammo: number, magazine: number, reserve: number): void;
     setHealth(health: number, maxHealth: number): void;

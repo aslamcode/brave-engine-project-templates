@@ -4,6 +4,9 @@ import { Invoke, Service, Signal } from '@brave/core';
 export interface IHudState {
   /** The line under the crosshair: what E does on what the player looks at, or empty. */
   prompt: string;
+  /** What the thing looked at says about itself, over that line: a title and a text. Both empty for a thing that says nothing but what E does. */
+  captionTitle: string;
+  captionBody: string;
   /** Rounds in the magazine, the size of the magazine and the rounds in reserve. */
   ammo: number;
   magazine: number;
@@ -45,6 +48,9 @@ export interface IHudMarker {
   y: number;
   /** What E does, shown in the box of the marker the player looks at. */
   prompt: string;
+  /** The title and the text of the one looked at, over what E does in its box (empty for every other marker, and for a thing that says nothing). */
+  title: string;
+  body: string;
   /** The name of the thing, shown beside the small mark that is nearest to where the player looks (empty for every other one, and for the one looked at, which has its box). */
   peek: string;
   /** The one the player looks at and can use now: the others are small marks. */
@@ -55,7 +61,7 @@ export interface IHudMarker {
 
 @Service()
 export class Hud {
-  state: IHudState = { prompt: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false, stamina: 1, staminaShown: false, staminaExhausted: false, staminaResume: 0.3 };
+  state: IHudState = { prompt: '', captionTitle: '', captionBody: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false, stamina: 1, staminaShown: false, staminaExhausted: false, staminaResume: 0.3 };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IHudState>();
@@ -72,6 +78,13 @@ export class Hud {
   setPrompt(text: string): void {
     if (this.state.prompt === text) return;
     this.state.prompt = text;
+    this.changed();
+  }
+
+  /** The caption of what the player looks at, over the prompt. */
+  setCaption(title: string, body: string): void {
+    if (this.state.captionTitle === title && this.state.captionBody === body) return;
+    Object.assign(this.state, { captionTitle: title, captionBody: body });
     this.changed();
   }
 

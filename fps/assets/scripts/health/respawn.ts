@@ -1,4 +1,5 @@
 import { CharacterController, Entity, FirstPersonCamera, Float, Inject, JsonIgnore, PlayerMovement, Ref, Saved, Script, ScriptComponent, Time, Vector3 } from '@brave/core';
+import { phrase } from '../shared/phrase';
 import { Hud } from '../../services/hud.service';
 import { Loadout } from '../gear/loadout';
 import { Health } from './health';
@@ -71,7 +72,7 @@ export class Respawn extends ScriptComponent {
   }
 
   private onDied() {
-    this.hud.showMessage('You died', this.messageSeconds);
+    this.hud.showMessage(phrase('hud.died', 'You died'), this.messageSeconds);
     if (this.movement) this.movement.active = false;
     // Turning the mind off does not stop the body: it would go on at the speed it had.
     if (this.body) this.body.velocity = new Vector3();

@@ -1,4 +1,5 @@
 import { Entity, Float, Inject, Int, JsonIgnore, Ref, Saved, Script, String, Time } from '@brave/core';
+import { phrase } from '../shared/phrase';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Health } from '../health/health';
@@ -88,11 +89,11 @@ export class Medkit extends Gear {
     const health = this.health;
     if (!health || health.isDead) return;
     if (this.count <= 0) {
-      this.hud.showMessage(`No ${this.label.toLowerCase()}s`, 1.2);
+      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.label.toLowerCase() }), 1.2);
       return;
     }
     if (health.current >= health.maximum) {
-      this.hud.showMessage('Health full', 1.2);
+      this.hud.showMessage(phrase('gear.healthFull', 'Health full'), 1.2);
       return;
     }
     this.using = true;
@@ -119,7 +120,7 @@ export class Medkit extends Gear {
     this.stop();
     if (!this.inventory.remove(this.itemId)) return;
     health.heal(this.amount);
-    this.hud.showMessage(`+${Math.round(this.amount)} health`, 1.5);
+    this.hud.showMessage(phrase('gear.healed', '+{amount} health', { amount: Math.round(this.amount) }), 1.5);
     playSound(this.useSound);
   }
 

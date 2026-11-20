@@ -1,4 +1,5 @@
 import { CharacterController, Entity, Float, Inject, Int, JsonIgnore, PrefabAssetMarker, Ref, RigidBody, Saved, Script, SpawnSystem, String, Time, Vector3 } from '@brave/core';
+import { phrase } from '../shared/phrase';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { playSound } from '../shared/sound';
@@ -91,7 +92,7 @@ export class Throwable extends Gear {
   onPrimaryDown(): void {
     if (this.windLeft > 0 || this.cooldownLeft > 0) return;
     if (this.count <= 0) {
-      this.hud.showMessage(`No ${this.label.toLowerCase()}s`, 1.2);
+      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.label.toLowerCase() }), 1.2);
       return;
     }
     this.windLeft = this.windUp;

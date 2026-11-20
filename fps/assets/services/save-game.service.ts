@@ -1,4 +1,5 @@
-import { BraveEngine, BraveEngineModeEnum, IGameSnapshot, Inject, Input, Invoke, ISaveMeta, SaveSystem, Service, Signal } from '@brave/core';
+import { BraveEngine, BraveEngineModeEnum, IGameSnapshot, Inject, Input, Invoke, ISaveMeta, SaveSystem, Service, Signal, Translate } from '@brave/core';
+import { phrase } from '../scripts/shared/phrase';
 import { Hud } from './hud.service';
 import { PauseMenu } from './pause-menu.service';
 
@@ -25,7 +26,8 @@ export interface ISaveGameState {
   canRestart: boolean;
 }
 
-// The places a game is saved to: the quick one (F5 saves, F9 loads) and three the player chooses in the pause menu. The ids are the names the engine keeps them under.
+// The places a game is saved to: the quick one (F5 saves, F9 loads) and three the player chooses in the pause menu. The ids are the names the engine keeps them under; the names (and every line this service says)
+// are the language files' (`saves.*`), with these English words when there is no entry.
 const SLOTS = [
   { id: 'quick', name: 'Quick' },
   { id: 'slot-1', name: 'Slot 1' },
@@ -75,6 +77,8 @@ export class SaveGame {
       if (BraveEngine.mode === BraveEngineModeEnum.Running) void this.load(this.quickSlot);
     });
     void this.refresh();
+    // The slots' names and what they say of themselves are words: said again when the language changes.
+    Translate.onChange.on(() => void this.refresh(), this);
     // The first frame, not now: the Services start after the scenes, in the call that begins it, so the game is whole only once that frame has begun (and a timer of the engine does not run while it is not playing).
     Invoke.setTimeout(() => this.keepStart(), 0);
   }
@@ -93,10 +97,10 @@ export class SaveGame {
     this.busy(true);
     try {
       await SaveSystem.save(slot, { health: Math.round(this.hud.state.health) });
-      this.say(`Saved to ${this.nameOf(slot)}`);
+      this.say(phrase('saves.saved', 'Saved to {slot}', { slot: this.nameOf(slot) }));
     } catch (error) {
       console.error('[SaveGame] the game could not be saved:', error);
-      this.say('The game could not be saved');
+      this.say(phrase('saves.saveFailed', 'The game could not be saved'));
     }
     await this.refresh();
     this.busy(false);
@@ -105,10 +109,10 @@ export class SaveGame {
   /** Brings back the game that was saved in `slot`: the one running is dropped. Says so when there is none. */
   async load(slot: string): Promise<void> {
     await this.bringBack(async () => {
-      if (!(await SaveSystem.load(slot))) return `Nothing is saved in ${this.nameOf(slot)}`;
+      if (!(await SaveSystem.load(slot))) return phrase('saves.nothingIn', 'Nothing is saved in {slot}', { slot: this.nameOf(slot) });
 
       this.pauseMenu.reapply();
-      return `Loaded ${this.nameOf(slot)}`;
+      return phrase('saves.loaded', 'Loaded {slot}', { slot: this.nameOf(slot) });
     }, error => this.whyNotLoaded(error));
   }
 
@@ -120,8 +124,8 @@ export class SaveGame {
     await this.bringBack(async () => {
       await SaveSystem.restoreSnapshot(start);
       this.pauseMenu.reapply();
-      return 'Game restarted';
-    }, () => 'The game could not be restarted');
+      return phrase('saves.restarted', 'Game restarted');
+    }, () => phrase('saves.restartFailed', 'The game could not be restarted'));
   }
 
   /** Reads what is saved again (the page shows it when the menu opens, and after every save). */
@@ -129,7 +133,7 @@ export class SaveGame {
     const saved = new Map((await SaveSystem.slots()).map(meta => [meta.slot, meta]));
     this.state.slots = SLOTS.map(slot => {
       const meta = saved.get(slot.id);
-      return { id: slot.id, name: slot.name, empty: !meta, when: meta ? this.whenOf(meta) : '', info: meta ? this.infoOf(meta) : 'Empty' };
+      return { id: slot.id, name: this.nameOf(slot.id), empty: !meta, when: meta ? this.whenOf(meta) : '', info: meta ? this.infoOf(meta) : phrase('saves.empty', 'Empty') };
     });
     this.changed();
   }
@@ -152,7 +156,7 @@ export class SaveGame {
 
   // A save of an older version of the engine is refused before anything is touched: the game goes on as it was, and the player is told what to do.
   private whyNotLoaded(error: unknown): string {
-    return String((error as Error)?.message ?? error).includes('is not one this engine reads') ? 'This save is from an older version: save again' : 'The save could not be loaded';
+    return String((error as Error)?.message ?? error).includes('is not one this engine reads') ? phrase('saves.tooOld', 'This save is from an older version: save again') : phrase('saves.loadFailed', 'The save could not be loaded');
   }
 
   private keepStart(): void {
@@ -171,7 +175,8 @@ export class SaveGame {
   }
 
   private nameOf(slot: string): string {
-    return SLOTS.find(candidate => candidate.id === slot)?.name ?? slot;
+    const known = SLOTS.find(candidate => candidate.id === slot);
+    return known ? phrase(`saves.slots.${known.id}`, known.name) : slot;
   }
 
   private whenOf(meta: ISaveMeta): string {
@@ -180,7 +185,7 @@ export class SaveGame {
 
   private infoOf(meta: ISaveMeta): string {
     const health = meta.details?.health;
-    return typeof health === 'number' ? `${this.whenOf(meta)} · Health ${health}` : this.whenOf(meta);
+    return typeof health === 'number' ? `${this.whenOf(meta)} · ${phrase('hud.health', 'Health')} ${health}` : this.whenOf(meta);
   }
 
   private say(message: string): void {

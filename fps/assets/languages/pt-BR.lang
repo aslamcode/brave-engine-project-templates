@@ -1,0 +1,128 @@
+{
+  "$language": "Português (Brasil)",
+  "hud": {
+    "health": "Vida",
+    "stance": {
+      "relaxed": "Relaxado",
+      "alert": "Alerta"
+    },
+    "died": "Você morreu"
+  },
+  "menu": {
+    "paused": "Pausado",
+    "mouseSensitivity": "Sensibilidade do mouse",
+    "fieldOfView": "Campo de visão",
+    "volume": "Volume",
+    "language": "Idioma",
+    "subtitles": "Legendas",
+    "saves": "Jogos salvos",
+    "save": "Salvar",
+    "load": "Carregar",
+    "resume": "Continuar",
+    "restart": "Reiniciar",
+    "quit": "Sair",
+    "confirm": "Clique de novo para confirmar",
+    "hint": "Esc, ou clique em qualquer lugar do jogo · F5 salvar rápido · F9 carregar rápido"
+  },
+  "journal": {
+    "closeHint": "Tab ou Esc para fechar",
+    "close": "Fechar",
+    "play": "Tocar",
+    "stop": "Parar",
+    "empty": "Nada encontrado ainda.",
+    "carrying": "Carregando {count}",
+    "carryingOf": "Carregando {count} de {limit}",
+    "status": {
+      "active": "Ativo",
+      "done": "Concluído",
+      "failed": "Falhou",
+      "unused": "Ainda não usado",
+      "used": "Usado"
+    },
+    "updated": "{title} atualizado: {entry}",
+    "categories": {
+      "objectives": "Objetivos",
+      "items": "Itens",
+      "access": "Acessos",
+      "passwords": "Senhas",
+      "notes": "Notas",
+      "audio": "Gravações de áudio"
+    }
+  },
+  "saves": {
+    "empty": "Vazio",
+    "saved": "Salvo em {slot}",
+    "saveFailed": "Não foi possível salvar o jogo",
+    "nothingIn": "Não há nada salvo em {slot}",
+    "loaded": "{slot} carregado",
+    "restarted": "Jogo reiniciado",
+    "restartFailed": "Não foi possível reiniciar o jogo",
+    "tooOld": "Este save é de uma versão mais antiga: salve de novo",
+    "loadFailed": "Não foi possível carregar o save",
+    "slots": {
+      "quick": "Rápido",
+      "slot-1": "Slot 1",
+      "slot-2": "Slot 2",
+      "slot-3": "Slot 3"
+    }
+  },
+  "gear": {
+    "none": "Sem {item}",
+    "healthFull": "Vida cheia",
+    "healed": "+{amount} de vida"
+  },
+  "inventory": {
+    "full": "{item} cheio"
+  },
+  "waves": {
+    "wave": "Onda {number}",
+    "cleared": "Todas as ondas eliminadas"
+  },
+  "demo": {
+    "title": "Laboratório de idiomas",
+    "hint": "Aperte E no rádio. Pegue o chip. Esc abre o menu.",
+    "radio": {
+      "prompt": "Ouvir",
+      "name": "Rádio velho",
+      "description": "A mesma mensagem toda vez. As legendas seguem o idioma."
+    },
+    "chip": {
+      "prompt": "Pegar {{ items.chip.name }}",
+      "message": "{{ items.chip.name }} guardado"
+    }
+  },
+  "subtitles": {
+    "radio-demo": [
+      {
+        "start": 0.0,
+        "end": 3.0,
+        "speaker": "Guarda",
+        "text": "Parada! Quem vai lá?"
+      },
+      {
+        "start": 3.0,
+        "end": 6.0,
+        "speaker": "Guarda",
+        "text": "Esta é uma área restrita."
+      },
+      {
+        "start": 6.0,
+        "end": 9.0,
+        "speaker": "Guarda",
+        "text": "Diga o que veio fazer, ou dê meia-volta."
+      },
+      {
+        "start": 6.8,
+        "end": 8.9,
+        "speaker": "Rádio",
+        "text": "Entendido. O reforço está chegando."
+      }
+    ]
+  },
+  "items": {
+    "chip": {
+      "name": "Chip de tradução",
+      "description": "Guarda algumas palavras em cada idioma."
+    }
+  }
+}

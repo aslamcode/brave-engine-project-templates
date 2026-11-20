@@ -18,7 +18,8 @@ export interface IPauseMenuState {
  * That hand-back is for a build (`holdPointer()`). In the editor's Play closing the menu leaves the pointer free (a screenshot, a look at the editor, with the game running and no menu): the next click on the game holds it.
  * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
- * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the sensitivity and the field of view
+ * The settings are what a player chooses, so they are the game's own, kept in the Vault (`@Store`, under `settings.`) and applied when the game starts and at every change: the language (the engine's `Translate`: what
+ * the player chose, else the one their system asks for when the game has it, else the project's default), the subtitles (the engine's `Subtitles`: on unless the player turned them off), the sensitivity and the field of view
  * go to the camera of the player that is on (the weapon reads them again at rest, so aiming scales from what the player chose), the volume to the master fader of the mixer (for that run only: the mixer file is
  * not written). `pausesGame` off keeps the game running behind the menu.
  *
@@ -37,6 +38,8 @@ export declare class PauseMenu {
     savedSensitivity?: number;
     savedFieldOfView?: number;
     savedVolume?: number;
+    savedLanguage?: string;
+    savedSubtitles?: boolean;
     private baseSensitivity;
     private armed;
     private pausedByMenu;
@@ -68,6 +71,10 @@ export declare class PauseMenu {
     holdPointer(afterEscape?: boolean): void;
     /** Ends the game, by where it runs: the editor's Play is stopped (and fullscreen left), an installed build quits. Nothing happens in a browser tab (`state.canQuit` is false there). The page asks the player to confirm first. */
     quit(): void;
+    /** The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. */
+    setLanguage(code: string): void;
+    /** The player turned the subtitles on or off: the engine shows or hides them at once and the next start begins the same way. */
+    setSubtitles(enabled: boolean): void;
     /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */
     reapply(): void;
     setSensitivity(value: number): void;

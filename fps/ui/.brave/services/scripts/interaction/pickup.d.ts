@@ -2,7 +2,7 @@ import { Signal } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
-import { Interactable } from './interactable';
+import { IInteractableCaption, Interactable } from './interactable';
 import type { Interactor } from './interactor';
 /**
  * An item the player collects with E: it goes into the `Inventory` under `Item Id` (what a locked `Door` or a `Socket` asks for), the `Hud` says so, a sound is heard, and its entity is switched
@@ -30,6 +30,7 @@ export declare class Pickup extends Interactable {
     onStart(): void;
     get currentPrompt(): string;
     get peekName(): string;
+    get caption(): IInteractableCaption;
     protected onUse(interactor: Interactor): void;
     private get label();
 }

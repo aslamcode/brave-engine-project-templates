@@ -6,6 +6,7 @@ The game's interface (menus, HUD, inventory) is a web page layered over the game
 - The engine does not draw it. The page is a transparent overlay (an iframe) over the game. In-world text (nameplates, signs) is the Text component, not this.
 - **The Bridge**: the page calls `remote<T>('ClassName')` and gets that Service's methods as async calls, its plain fields as get/set, and its `Signal` fields as subscriptions, typed with `import type`. No event-name strings. Services themselves: `save-and-services.md`.
 - `ui/` is at the project root, a sibling of `assets/`, never inside it.
+- **Words and subtitles follow the game's language**: `Translate` and `Subtitles` of `@brave/ui-bridge`, and `data-translate` in plain HTML (`translate.md`).
 
 ## Add it
 - Create `ui/` with an `index.html` in it (a plain page needs no build step). There is no starter yet. The kit's page loads `reset.css` before its own CSS (no focus ring or blue outline on anything that is clicked, no browser look on buttons, lists and headings): copy it when you start a page of your own, and write a `:focus-visible` style yourself if you want one.

@@ -1,6 +1,12 @@
-import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String } from '@brave/core';
+import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String, StringCompletionEnum } from '@brave/core';
 import type { Interactor } from './interactor';
 import { playClip } from '../shared/sound';
+
+/** What a thing says about itself when the player looks at it: a title and a text under it. Both may hold `{{ key }}` (an entry of the language files), so the HUD shows them in the player's language. */
+export interface IInteractableCaption {
+  title: string;
+  body: string;
+}
 
 /** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what E does when it is looked at). */
 export type InteractableMarker = 'line' | 'simple' | 'none';
@@ -26,7 +32,10 @@ export type InteractableMarker = 'line' | 'simple' | 'none';
 @Script()
 export class Interactable extends ScriptComponent {
 
-  @String({ header: 'Prompt', label: 'Prompt', tooltip: 'What E does on this, shown under the crosshair while the player looks at it and it can be used. {item} stands for the name of its item, where it has one.' }) prompt = 'Use';
+  @String({ header: 'Prompt', label: 'Prompt', tooltip: 'What E does on this, shown under the crosshair while the player looks at it and it can be used. {item} stands for the name of its item, where it has one.', completion: StringCompletionEnum.TranslationKeys }) prompt = 'Use';
+
+  @String({ header: 'Caption', label: 'Caption Title', tooltip: 'The name the player reads over the prompt while looking at it: "Terminal", "Power cell". It may hold {{ key }}, an entry of the language files, so that it follows the language. A Pickup gives its item\'s name when this is empty and it has something to say.', completion: StringCompletionEnum.TranslationKeys }) captionTitle = '';
+  @String({ label: 'Caption Text', rows: 3, tooltip: 'A line or two under the title: what it is, what it is for. It may hold {{ key }} too. A Pickup says its Description when this is empty.', completion: StringCompletionEnum.TranslationKeys }) captionText = '';
 
   @Select({ header: 'Marker', label: 'Marker', optionsKey: 'markerOptions', sort: false, tooltip: 'How the player sees it can be used: Line is a glass box with the prompt, over it and tied to it by a line (for things on the floor, small things); Simple puts the box on it with no line; None draws nothing. Near ones that are not looked at are a small mark either way.' }) marker: InteractableMarker = 'line';
   @Float({ label: 'Marker Height', suffix: 'm', tooltip: 'Where the marker is tied: the centre of the biggest thing this entity is drawn with, and this much above it (negative: below), to put it on the handle of a drawer or the top of a pickup. An entity with nothing drawn takes its origin.' }) markerHeight = 0;
@@ -49,6 +58,11 @@ export class Interactable extends ScriptComponent {
   /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
   promptFor(_interactor: Interactor): string {
     return this.currentPrompt;
+  }
+
+  /** What it says about itself when looked at, under the prompt's box on the HUD. Both empty (the default): it says only what E does. A kind answers with what it knows (a pickup: its item). */
+  get caption(): IInteractableCaption {
+    return { title: this.captionTitle, body: this.captionText };
   }
 
   /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */

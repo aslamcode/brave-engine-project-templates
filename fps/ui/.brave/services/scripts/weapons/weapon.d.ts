@@ -52,6 +52,7 @@ export declare class Weapon extends ScriptComponent {
     onAimStart: Signal<any>;
     private loadout?;
     private cache?;
+    private bare;
     private bulletMask?;
     private body?;
     private movement?;
@@ -118,6 +119,7 @@ export declare class Weapon extends ScriptComponent {
     private updateAim;
     private endAim;
     private updateSpread;
+    private updateCrosshair;
     private showSpread;
     private updateRecoil;
     private flash;

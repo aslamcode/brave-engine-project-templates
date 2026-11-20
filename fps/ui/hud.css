@@ -61,11 +61,26 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .hitmarker { transition: opacity 0.25s ease-out; }
 
 /* What E does on what the player looks at. */
-.prompt { position: fixed; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); opacity: 0; transition: opacity 0.12s; }
+.prompt { position: fixed; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 7px 14px 7px 8px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); opacity: 0; transition: opacity 0.12s; }
 .prompt.-show { opacity: 1; }
 .prompt.-hidden { opacity: 0; }   /* a marker's box says what E does */
+.prompt__row { display: flex; align-items: center; gap: 10px; }
 .prompt__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; }
 .prompt__text { font-size: 15px; letter-spacing: 0.01em; }
+
+/* The subtitles: the lines of what is being said, at the bottom centre between the two status panels, one over the other when two people talk. */
+.subtitles { position: fixed; left: 50%; bottom: 64px; transform: translateX(-50%); width: min(70vw, 760px); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+.subtitle { max-width: 100%; padding: 7px 16px; border-radius: 8px; background: rgba(0, 0, 0, 0.62); text-align: center; font-size: 19px; line-height: 1.35; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); animation: subtitle-in 0.12s ease-out; }
+.subtitle__speaker { margin-right: 8px; font-weight: 700; color: var(--accent); }
+.subtitle__speaker[hidden] { display: none; }
+@keyframes subtitle-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* What the thing looked at says about itself, over what E does: a title and a text under it. Only there when the thing has something to say (the page hides the empty one); the text wraps, the prompt does not. */
+.caption { display: none; max-width: 300px; padding: 2px 4px 4px 6px; white-space: normal; }
+.caption.-show { display: block; }
+.caption__title { font-size: 14px; font-weight: 700; letter-spacing: 0.03em; }
+.caption__body { margin-top: 2px; font-size: 13px; line-height: 1.35; color: var(--muted); }
+.caption__title:empty, .caption__body:empty { display: none; }
 
 /* A line for a few seconds, near the top. */
 .message { position: fixed; left: 50%; top: 11%; transform: translateX(-50%); padding: 9px 20px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); font-size: 17px; letter-spacing: 0.02em; opacity: 0; transition: opacity 0.35s; text-align: center; max-width: 70vw; }
@@ -115,12 +130,15 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .marker__dot { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); border: 1.5px solid rgba(255, 255, 255, 0.85); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); }
 .marker__line, .marker__box { display: none; }
 .marker.-focused .marker__dot { left: -7px; top: -7px; width: 14px; height: 14px; border-color: var(--accent); }
-.marker.-focused .marker__box { display: flex; align-items: center; gap: 10px; position: absolute; bottom: 24px; left: 0; transform: translateX(calc(-50% + var(--shift, 0px))); padding: 6px 14px 6px 7px; border-radius: 12px; white-space: nowrap; background: rgba(255, 255, 255, 0.1); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+.marker.-focused .marker__box { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; position: absolute; bottom: 24px; left: 0; transform: translateX(calc(-50% + var(--shift, 0px))); padding: 6px 14px 6px 7px; border-radius: 12px; white-space: nowrap; background: rgba(255, 255, 255, 0.1); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
 .marker.-focused.-line .marker__box { bottom: 80px; }
 .marker.-focused.-line .marker__line { display: block; position: absolute; left: -1px; bottom: 7px; width: 2px; height: 73px; background: linear-gradient(to top, var(--accent), rgba(255, 255, 255, 0.35)); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.3); }
 .marker.-focused.-below .marker__box { bottom: auto; top: 24px; }
 .marker.-focused.-line.-below .marker__box { top: 80px; }
 .marker.-focused.-line.-below .marker__line { bottom: auto; top: 7px; background: linear-gradient(to bottom, var(--accent), rgba(255, 255, 255, 0.35)); }
+.marker__row { display: flex; align-items: center; gap: 10px; }
+/* The marker is a box of no width, so a text that wraps would wrap at its narrowest word: it takes the width it wants, up to 260 px. */
+.marker__box .caption { width: max-content; max-width: 260px; }
 .marker__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; background: rgba(0, 0, 0, 0.18); }
 .marker__text { font-size: 15px; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); }
 .marker__peek { display: none; }
@@ -136,6 +154,10 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .menu__title { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(244, 246, 248, 0.6); }
 .menu__row { display: grid; grid-template-columns: 150px 1fr 48px; align-items: center; gap: 12px; font-size: 14px; }
 .menu__value { text-align: right; font-variant-numeric: tabular-nums; color: rgba(244, 246, 248, 0.7); }
+.menu__row[hidden] { display: none; }
+.menu__check { justify-self: start; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.menu__select { grid-column: 2 / 4; padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.08); color: inherit; font: inherit; cursor: pointer; }
+.menu__select option { color: #111; }
 .menu__slider { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .menu__button { padding: 9px 0; border: 1.5px solid var(--accent); border-radius: 6px; background: transparent; color: var(--accent); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; }
 .menu__button:hover { background: rgba(255, 180, 84, 0.14); }
