@@ -15,7 +15,7 @@ export type CrosshairStyle = 'dot' | 'arcs' | 'twin-arcs';
 @Script({ inheritProperties: true })
 export class Firearm extends Gear {
 
-  label = 'Rifle';
+  label = '{{ gear.rifle }}';
 
   @Ref(Entity, { header: 'Parts', label: 'Muzzle', tooltip: 'A point at the barrel tip, off at the start, with a Light on it: it is switched on for a few frames at each shot.' }) muzzle?: Entity;
   @Ref(Entity, { label: 'Shot Sound', tooltip: 'An entity with an Audio Source, or with several as children: one of them plays at each shot.' }) shotSound?: Entity;

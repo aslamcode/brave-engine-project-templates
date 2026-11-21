@@ -20,6 +20,8 @@ export declare class Gear extends ScriptComponent {
     label: string;
     slot: number;
     gripLeft?: Entity;
+    /** The name as the player reads it now: `label` may be an entry of the language files (`{{ gear.rifle }}`), taken in. For what a script builds a sentence of; the HUD reads `label` itself. */
+    get displayLabel(): string;
     /** The `Loadout` that carries it: set when the `Loadout` lists its gear. */
     loadout?: Loadout;
     /** What the list of what is carried says of it: its name, and whatever else the player should see at a glance (a grenade says how many are left). */

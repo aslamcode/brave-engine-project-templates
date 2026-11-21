@@ -21,7 +21,7 @@ export declare function parseRequirement(text: string): IRequirementPart[];
 /** How far `parts` are met by `held` (how many of an id there are). */
 export declare function progressOf(parts: IRequirementPart[], held: (id: string) => number): IRequirementProgress;
 /**
- * Fills a prompt or a message: `{item}` is the name of the item, `{have}` and `{need}` the progress. A requirement that asks for more than one thing in all ends with ` (2 of 5)` by itself, unless the text
- * already says `{have}` somewhere (then it is placed where the text wants it).
+ * Fills a prompt or a message, said in the player's language (it may be an entry, `{{ prompts.needs }}`): `{item}` is the name of the item, `{have}` and `{need}` the progress. A requirement that asks for more than
+ * one thing in all ends with ` (2 of 5)` by itself (`prompts.progress`), unless the text already says `{have}` somewhere (then it is placed where the text wants it).
  */
 export declare function fillRequirement(text: string, item: string, progress: Pick<IRequirementProgress, 'have' | 'need'>): string;

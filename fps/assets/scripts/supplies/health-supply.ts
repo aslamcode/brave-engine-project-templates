@@ -6,9 +6,9 @@ import { Supply } from './supply';
 @Script({ inheritProperties: true })
 export class HealthSupply extends Supply {
 
-  prompt = 'Use first aid kit (+{amount} HP)';
-  message = '+{amount} health';
-  fullMessage = 'Health full';
+  prompt = '{{ prompts.useMedkit }}';
+  message = '{{ gear.healed }}';
+  fullMessage = '{{ gear.healthFull }}';
 
   @Float({ header: 'Health', label: 'Amount', suffix: 'HP', tooltip: 'How much it heals.' }) amount = 35;
 

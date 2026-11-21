@@ -24449,7 +24449,7 @@
                                                       "entity": {
                                                         "$circular": "pl_p_ref_1358"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pl_k72"
@@ -26508,7 +26508,7 @@
                                                       "boltSound": {
                                                         "$circular": "k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -37538,7 +37538,7 @@
                                                       "entity": {
                                                         "$circular": "pb_p_ref_1844"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pb_k72"
@@ -39597,7 +39597,7 @@
                                                       "boltSound": {
                                                         "$circular": "pb_k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -69093,7 +69093,7 @@
           "entity": {
             "$circular": "k995001"
           },
-          "title": "Journal",
+          "title": "{{ journal.title }}",
           "pausesGame": true
         }
       ],

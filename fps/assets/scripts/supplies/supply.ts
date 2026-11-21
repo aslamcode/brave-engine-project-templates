@@ -2,6 +2,7 @@ import { Bool, Collider, Entity, Float, IEntity, Inject, JsonIgnore, PlayerMovem
 import { Hud } from '../../services/hud.service';
 import { Interactable } from '../interaction/interactable';
 import type { Interactor } from '../interaction/interactor';
+import { fillText } from '../shared/phrase';
 import { playSound } from '../shared/sound';
 
 /**
@@ -45,7 +46,7 @@ export class Supply extends Interactable {
 
   /** What E does: the prompt, with {amount} for what it gives. */
   get currentPrompt(): string {
-    return this.prompt.replace('{amount}', `${Math.round(this.promptAmount())}`);
+    return fillText(this.prompt, { amount: Math.round(this.promptAmount()) });
   }
 
   /** It can be used until it is taken (a used up supply is not marked, and E does nothing on it). */
@@ -119,7 +120,7 @@ export class Supply extends Interactable {
     this.isTaken = true;
     this.respawnLeft = this.respawnSeconds;
     this.show(false);
-    if (this.message) this.hud.showMessage(this.message.replace('{amount}', `${Math.round(amount)}`));
+    if (this.message) this.hud.showMessage(fillText(this.message, { amount: Math.round(amount) }));
     playSound(this.entity);
     this.onTaken.emit(player);
     return true;

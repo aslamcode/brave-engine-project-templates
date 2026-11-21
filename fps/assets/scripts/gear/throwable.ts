@@ -16,7 +16,7 @@ import { Gear } from './gear';
 @Script({ inheritProperties: true })
 export class Throwable extends Gear {
 
-  label = 'Grenade';
+  label = '{{ gear.grenade }}';
   slot = 3;
 
   @String({ header: 'Item', label: 'Item Id', tooltip: 'What the Inventory counts it as. A Pickup with this id gives one more.' }) itemId = 'grenade';
@@ -92,7 +92,7 @@ export class Throwable extends Gear {
   onPrimaryDown(): void {
     if (this.windLeft > 0 || this.cooldownLeft > 0) return;
     if (this.count <= 0) {
-      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.label.toLowerCase() }), 1.2);
+      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.displayLabel.toLowerCase() }), 1.2);
       return;
     }
     this.windLeft = this.windUp;

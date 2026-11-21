@@ -27816,11 +27816,11 @@
           "duration": 0.9,
           "locked": false,
           "keyItemId": "",
-          "prompt": "Open door",
-          "closePrompt": "Close door",
-          "lockedPrompt": "Locked",
-          "unlockPrompt": "Unlock door",
-          "lockedMessage": "The door is locked"
+          "prompt": "{{ prompts.door.open }}",
+          "closePrompt": "{{ prompts.door.close }}",
+          "lockedPrompt": "{{ prompts.locked }}",
+          "unlockPrompt": "{{ prompts.door.unlock }}",
+          "lockedMessage": "{{ messages.door.locked }}"
         }
       ],
       "scene": {
@@ -31724,11 +31724,11 @@
           "duration": 0.9,
           "locked": true,
           "keyItemId": "key",
-          "prompt": "Open door",
-          "closePrompt": "Close door",
-          "lockedPrompt": "Locked",
-          "unlockPrompt": "Unlock door",
-          "lockedMessage": "The door is locked"
+          "prompt": "{{ prompts.door.open }}",
+          "closePrompt": "{{ prompts.door.close }}",
+          "lockedPrompt": "{{ prompts.locked }}",
+          "unlockPrompt": "{{ prompts.door.unlock }}",
+          "lockedMessage": "{{ messages.door.locked }}"
         }
       ],
       "scene": {
@@ -48610,12 +48610,12 @@
                         "$circular": "k116"
                       },
                       "itemId": "key",
-                      "itemName": "key",
-                      "prompt": "Take {item}",
-                      "message": "Picked up {item}",
+                      "itemName": "{{ items.key.name }}",
+                      "prompt": "{{ prompts.take }}",
+                      "message": "{{ messages.picked }}",
                       "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4",
                       "journalCategory": "access",
-                      "description": "A small brass key from the drawer. It opens the inner door of the house."
+                      "description": "{{ items.key.description }}"
                     }
                   ],
                   "scene": {
@@ -48823,8 +48823,8 @@
               "duration": 0.6,
               "easing": "ease-out",
               "closeSoundWhenShut": false,
-              "prompt": "Open drawer",
-              "closePrompt": "Close drawer"
+              "prompt": "{{ prompts.drawer.open }}",
+              "closePrompt": "{{ prompts.drawer.close }}"
             }
           ],
           "scene": {
@@ -58604,11 +58604,11 @@
             "$circular": "k143"
           },
           "itemId": "power-cell",
-          "itemName": "power cell",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
+          "itemName": "{{ items.powerCell.name }}",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4",
-          "description": "A sealed power cell, still warm. The socket at the back of the house takes it."
+          "description": "{{ items.powerCell.description }}"
         }
       ],
       "scene": {
@@ -65999,11 +65999,11 @@
             "$circular": "k159"
           },
           "itemId": "power-cell",
-          "itemName": "power cell",
-          "prompt": "Place {item}",
-          "needsPrompt": "Needs {item}",
-          "needsMessage": "It needs a power cell",
-          "filledMessage": "Power restored",
+          "itemName": "{{ items.powerCell.name }}",
+          "prompt": "{{ prompts.place }}",
+          "needsPrompt": "{{ prompts.needs }}",
+          "needsMessage": "{{ messages.needsPowerCell }}",
+          "filledMessage": "{{ messages.powerRestored }}",
           "putSound": "b38a44b2-5e2d-49c3-ae32-8a88e788869e",
           "placed": {
             "$circular": "k170"
@@ -84577,7 +84577,7 @@
                                                       "entity": {
                                                         "$circular": "pl_p_ref_1358"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pl_k72"
@@ -86636,7 +86636,7 @@
                                                       "boltSound": {
                                                         "$circular": "k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -97682,7 +97682,7 @@
                                                       "entity": {
                                                         "$circular": "pb_p_ref_1844"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pb_k72"
@@ -99741,7 +99741,7 @@
                                                       "boltSound": {
                                                         "$circular": "pb_k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -152938,7 +152938,7 @@
           "entity": {
             "$circular": "k995001"
           },
-          "title": "Journal",
+          "title": "{{ journal.title }}",
           "pausesGame": true
         }
       ],
@@ -153016,8 +153016,8 @@
           "entity": {
             "$circular": "k995008"
           },
-          "title": "Restore the power",
-          "description": "The lamp in the back room has no power. There is a power cell somewhere in the house, and a socket at the back."
+          "title": "{{ objectives.power.title }}",
+          "description": "{{ objectives.power.description }}"
         }
       ],
       "scene": {
@@ -154277,8 +154277,8 @@
             "$circular": "k995015"
           },
           "category": "notes",
-          "title": "A torn page",
-          "body": "...the lights went out on the third night. Whoever is still in the house, the power cell is in the front room, and the socket is at the back, past the inner door.\n\nI took the key and left the drawer open."
+          "title": "{{ notes.page.title }}",
+          "body": "{{ notes.page.body }}"
         }
       ],
       "scene": {
@@ -155538,8 +155538,8 @@
             "$circular": "k995023"
           },
           "category": "audio",
-          "title": "Voice memo, day 3",
-          "body": "\"If you are hearing this, the generator is down. I could not reach the back room: the inner door is locked, and the key is in the drawer in the front. I will try again at dawn.\"\n\n(The sound of this one is a placeholder: replace it with your own recording.)",
+          "title": "{{ notes.memo.title }}",
+          "body": "{{ notes.memo.body }}",
           "recording": "f94709b8-b87b-45e3-ae4e-ec40cc27840e"
         }
       ],
@@ -156800,8 +156800,8 @@
             "$circular": "k995031"
           },
           "category": "passwords",
-          "title": "Maintenance code",
-          "body": "Panel in the back room: 7 3 1 9"
+          "title": "{{ notes.code.title }}",
+          "body": "{{ notes.code.body }}"
         }
       ],
       "scene": {
@@ -157699,10 +157699,10 @@
             "$circular": "k998001"
           },
           "itemId": "grenade",
-          "itemName": "grenade",
+          "itemName": "{{ items.grenade.name }}",
           "limit": 4,
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -158601,10 +158601,10 @@
             "$circular": "k998015"
           },
           "itemId": "grenade",
-          "itemName": "grenade",
+          "itemName": "{{ items.grenade.name }}",
           "limit": 4,
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -162359,10 +162359,10 @@
             "$circular": "k998029"
           },
           "itemId": "medkit",
-          "itemName": "medkit",
+          "itemName": "{{ items.medkit.name }}",
           "limit": 3,
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -164905,10 +164905,10 @@
             "$circular": "k993001"
           },
           "itemId": "fragment-1",
-          "itemName": "data fragment 1",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
-          "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+          "itemName": "{{ items.fragment.name }} 1",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
+          "description": "{{ items.fragment.description }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -167451,10 +167451,10 @@
             "$circular": "k993015"
           },
           "itemId": "fragment-2",
-          "itemName": "data fragment 2",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
-          "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+          "itemName": "{{ items.fragment.name }} 2",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
+          "description": "{{ items.fragment.description }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -169997,10 +169997,10 @@
             "$circular": "k993029"
           },
           "itemId": "fragment-3",
-          "itemName": "data fragment 3",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
-          "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+          "itemName": "{{ items.fragment.name }} 3",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
+          "description": "{{ items.fragment.description }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -172543,10 +172543,10 @@
             "$circular": "k993043"
           },
           "itemId": "fragment-4",
-          "itemName": "data fragment 4",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
-          "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+          "itemName": "{{ items.fragment.name }} 4",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
+          "description": "{{ items.fragment.description }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -175089,10 +175089,10 @@
             "$circular": "k993057"
           },
           "itemId": "fragment-5",
-          "itemName": "data fragment 5",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
-          "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+          "itemName": "{{ items.fragment.name }} 5",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
+          "description": "{{ items.fragment.description }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4"
         }
       ],
@@ -175170,8 +175170,8 @@
           "entity": {
             "$circular": "k993071"
           },
-          "title": "Restore the archive",
-          "description": "Five data fragments are scattered over the house and its yard. The console in the back room takes them all, as the player finds them."
+          "title": "{{ objectives.archive.title }}",
+          "description": "{{ objectives.archive.description }}"
         }
       ],
       "scene": {
@@ -198726,10 +198726,10 @@
             "$circular": "k993078"
           },
           "itemId": "fragment-1, fragment-2, fragment-3, fragment-4, fragment-5",
-          "prompt": "Place {item}",
-          "needsPrompt": "Needs {item}",
-          "needsMessage": "The console needs the five fragments",
-          "filledMessage": "Placed {item}",
+          "prompt": "{{ prompts.place }}",
+          "needsPrompt": "{{ prompts.needs }}",
+          "needsMessage": "{{ messages.needsFragments }}",
+          "filledMessage": "{{ messages.placed }}",
           "putSound": "b38a44b2-5e2d-49c3-ae32-8a88e788869e",
           "placed": {
             "$circular": "k993089"

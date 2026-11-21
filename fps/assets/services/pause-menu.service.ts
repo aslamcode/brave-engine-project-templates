@@ -1,4 +1,4 @@
-import { AudioMixerSystem, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, Subtitles, Translate, UISystem } from '@brave/core';
+import { AudioMixerSystem, AudioSource, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, Subtitles, Translate, UISystem } from '@brave/core';
 
 /** What the menu page shows: whether it is open, the three settings the player can change, and whether the game can be closed from here. */
 export interface IPauseMenuState {
@@ -9,6 +9,8 @@ export interface IPauseMenuState {
   fieldOfView: number;
   /** The master volume, 0 to 1. */
   volume: number;
+  /** The player changed the language and the voices of the new one are being loaded: the menu says Loading and keeps Continue off until they are ready, so the game is given back already speaking it. */
+  languageBusy: boolean;
   /** The game can be closed from the menu: in the editor's Play (it stops the Play) and in an installed build (the app quits), not in a browser tab, which a page cannot close. */
   canQuit: boolean;
 }
@@ -42,7 +44,7 @@ const ESCAPE_DEBOUNCE_MS = 200;
  */
 @Service()
 export class PauseMenu {
-  state: IPauseMenuState = { open: false, sensitivity: SENSITIVITY.start, fieldOfView: 60, volume: 1, canQuit: false };
+  state: IPauseMenuState = { open: false, sensitivity: SENSITIVITY.start, fieldOfView: 60, volume: 1, languageBusy: false, canQuit: false };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IPauseMenuState>();
@@ -118,12 +120,16 @@ export class PauseMenu {
    * `UISystem.interactive` off.
    */
   leave(): void {
+    if (this.state.languageBusy) return;
+
     this.close();
     this.holdPointer(true);
   }
 
   /** The Resume button: asks for the pointer again (the click that made this call counts as the player's) and closes the menu either way, so that it never traps the player: if the pointer was not given, the next click on the game gives it. */
   resume(): void {
+    if (this.state.languageBusy) return;
+
     this.holdPointer();
     this.close();
   }
@@ -151,10 +157,21 @@ export class PauseMenu {
     nwApp()?.quit();
   }
 
-  /** The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. */
-  setLanguage(code: string): void {
+  /**
+   * The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. The voices of the new language
+   * are loaded before the game is given back (`AudioSource.whenLanguageReady()`): `state.languageBusy` is on meanwhile, and Continue and Esc do nothing.
+   */
+  async setLanguage(code: string): Promise<void> {
     Translate.language = code;
     this.savedLanguage = Translate.language;
+    this.state.languageBusy = true;
+    this.changed();
+    try {
+      await AudioSource.whenLanguageReady();
+    } finally {
+      this.state.languageBusy = false;
+      this.changed();
+    }
   }
 
   /** The player turned the subtitles on or off: the engine shows or hides them at once and the next start begins the same way. */

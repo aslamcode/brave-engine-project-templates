@@ -12,7 +12,7 @@ import type { Interactor } from '../interaction/interactor';
 @Script({ inheritProperties: true })
 export class Collectible extends Interactable {
 
-  prompt = 'Take {item}';
+  prompt = '{{ prompts.take }}';
   aimRadius = 0.15;
 
   @Select({ header: 'Journal', label: 'Category', optionsKey: 'categoryOptions', sort: false, tooltip: 'Where the Journal lists it.' }) category = 'notes';

@@ -16,7 +16,7 @@ import { Gear } from './gear';
 @Script({ inheritProperties: true })
 export class Medkit extends Gear {
 
-  label = 'Medkit';
+  label = '{{ gear.medkit }}';
   slot = 4;
 
   @String({ header: 'Item', label: 'Item Id', tooltip: 'What the Inventory counts it as. A Pickup with this id gives one more.' }) itemId = 'medkit';
@@ -89,7 +89,7 @@ export class Medkit extends Gear {
     const health = this.health;
     if (!health || health.isDead) return;
     if (this.count <= 0) {
-      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.label.toLowerCase() }), 1.2);
+      this.hud.showMessage(phrase('gear.none', 'No {item}s', { item: this.displayLabel.toLowerCase() }), 1.2);
       return;
     }
     if (health.current >= health.maximum) {

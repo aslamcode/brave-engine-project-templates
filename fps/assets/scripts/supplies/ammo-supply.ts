@@ -6,9 +6,9 @@ import { Supply } from './supply';
 @Script({ inheritProperties: true })
 export class AmmoSupply extends Supply {
 
-  prompt = 'Take {amount} rounds';
-  message = '+{amount} rounds';
-  fullMessage = 'Ammo full';
+  prompt = '{{ prompts.takeRounds }}';
+  message = '{{ messages.rounds }}';
+  fullMessage = '{{ messages.ammoFull }}';
 
   @String({ header: 'Ammo', label: 'Ammo Type', tooltip: 'The item of the Inventory the rounds are: the Ammo Type of the weapons that fire them.' }) ammoType = 'ammo-rifle';
   @Int({ label: 'Rounds', tooltip: 'How many rounds it gives.' }) rounds = 30;

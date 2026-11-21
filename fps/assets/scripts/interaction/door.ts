@@ -44,7 +44,7 @@ export type DoorSides = 'fixed' | 'both' | 'front';
 @Script({ inheritProperties: true })
 export class Door extends Interactable {
 
-  prompt = 'Open door';
+  prompt = '{{ prompts.door.open }}';
 
   @Select({ header: 'Movement', label: 'Mode', optionsKey: 'modeOptions', sort: false, tooltip: 'Rotate: a hinged door, turns about the Axis. Slide: a drawer, a shutter or a gate, moves along the Axis.' }) mode: DoorMode = 'rotate';
   @Vec3({ label: 'Axis', tooltip: 'In the space of the Leaf\'s parent. Rotate: the line it turns about (0, 1, 0 is a door on its hinges). Slide: the way it goes.' }) axis = new Vector3(0, 1, 0);
@@ -59,13 +59,13 @@ export class Door extends Interactable {
   @String({ label: 'Key Item', tooltip: 'The id of the item in the Inventory that unlocks it. Empty: no item unlocks it. Several things (the pieces of a puzzle): their ids separated by commas, "piece-1, piece-2"; "fuse x3" asks for three of one kind.' }) keyItemId = '';
   @Bool({ label: 'Use Up Key', tooltip: 'On: the key is taken out of the Inventory when it opens the lock (the Journal still lists it, as used). Off: the player keeps it, for another door that takes the same key.' }) consumesKey = true;
 
-  @String({ header: 'Prompts', label: 'Close Prompt', tooltip: 'Shown while it is open. (The Prompt above is shown while it is closed.)', completion: StringCompletionEnum.TranslationKeys }) closePrompt = 'Close door';
-  @String({ label: 'Locked Prompt', tooltip: 'Shown while it is locked and nothing the player can carry opens it (a Key Item that is empty: only a script unlocks it).', completion: StringCompletionEnum.TranslationKeys }) lockedPrompt = 'Locked';
-  @String({ label: 'Needs Prompt', tooltip: 'Shown while it is locked and the player lacks the Key Item. {item} is the name of the first thing missing. When the lock asks for more than one thing, " (2 of 5)" follows by itself; {have} and {need} put the numbers where the text wants them.', completion: StringCompletionEnum.TranslationKeys }) needsPrompt = 'Needs {item}';
-  @String({ label: 'Unlock Prompt', tooltip: 'Shown while it is locked and the player has the Key Item.', completion: StringCompletionEnum.TranslationKeys }) unlockPrompt = 'Unlock door';
-  @String({ label: 'Locked Message', tooltip: 'A line on the screen when the player tries it locked. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) lockedMessage = 'The door is locked';
-  @String({ label: 'Wrong Side Prompt', tooltip: 'Opens From, Front side only: shown on the side it does not open from.', completion: StringCompletionEnum.TranslationKeys }) wrongSidePrompt = 'Opens from the other side';
-  @String({ label: 'Wrong Side Message', tooltip: 'Opens From, Front side only: a line on the screen when the player tries it from the side it does not open from. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) wrongSideMessage = 'It does not open from this side';
+  @String({ header: 'Prompts', label: 'Close Prompt', tooltip: 'Shown while it is open. (The Prompt above is shown while it is closed.)', completion: StringCompletionEnum.TranslationKeys }) closePrompt = '{{ prompts.door.close }}';
+  @String({ label: 'Locked Prompt', tooltip: 'Shown while it is locked and nothing the player can carry opens it (a Key Item that is empty: only a script unlocks it).', completion: StringCompletionEnum.TranslationKeys }) lockedPrompt = '{{ prompts.locked }}';
+  @String({ label: 'Needs Prompt', tooltip: 'Shown while it is locked and the player lacks the Key Item. {item} is the name of the first thing missing. When the lock asks for more than one thing, " (2 of 5)" follows by itself; {have} and {need} put the numbers where the text wants them.', completion: StringCompletionEnum.TranslationKeys }) needsPrompt = '{{ prompts.needs }}';
+  @String({ label: 'Unlock Prompt', tooltip: 'Shown while it is locked and the player has the Key Item.', completion: StringCompletionEnum.TranslationKeys }) unlockPrompt = '{{ prompts.door.unlock }}';
+  @String({ label: 'Locked Message', tooltip: 'A line on the screen when the player tries it locked. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) lockedMessage = '{{ messages.door.locked }}';
+  @String({ label: 'Wrong Side Prompt', tooltip: 'Opens From, Front side only: shown on the side it does not open from.', completion: StringCompletionEnum.TranslationKeys }) wrongSidePrompt = '{{ prompts.door.wrongSide }}';
+  @String({ label: 'Wrong Side Message', tooltip: 'Opens From, Front side only: a line on the screen when the player tries it from the side it does not open from. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) wrongSideMessage = '{{ messages.door.wrongSide }}';
 
   @Ref(AudioTrack, { header: 'Sounds', label: 'Open Sound' }) openSound = '';
   @Ref(AudioTrack, { label: 'Close Sound' }) closeSound = '';

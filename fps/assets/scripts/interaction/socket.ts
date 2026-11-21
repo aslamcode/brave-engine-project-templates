@@ -31,11 +31,11 @@ import type { Interactor } from './interactor';
 @Script({ inheritProperties: true })
 export class Socket extends Interactable {
 
-  prompt = 'Place {item}';
+  prompt = '{{ prompts.place }}';
 
   @String({ header: 'Item', label: 'Item Id', tooltip: 'The item it accepts: the Item Id of a Pickup. Several things (the pieces of a puzzle): their ids separated by commas, "piece-1, piece-2"; "fuse x3" asks for three of one kind.' }) itemId = '';
   @String({ label: 'Item Name', tooltip: 'What the player reads in the prompts, when it takes one item. Empty: the name the Pickup gave the inventory, or the id. (Several things are named by their own.)', completion: StringCompletionEnum.TranslationKeys }) itemName = '';
-  @String({ label: 'Needs Prompt', tooltip: 'Shown while the player carries nothing it still needs. {item} is the name of the first thing missing. When it takes more than one thing, " (2 of 5)" follows by itself; {have} and {need} put the numbers where the text wants them.', completion: StringCompletionEnum.TranslationKeys }) needsPrompt = 'Needs {item}';
+  @String({ label: 'Needs Prompt', tooltip: 'Shown while the player carries nothing it still needs. {item} is the name of the first thing missing. When it takes more than one thing, " (2 of 5)" follows by itself; {have} and {need} put the numbers where the text wants them.', completion: StringCompletionEnum.TranslationKeys }) needsPrompt = '{{ prompts.needs }}';
   @String({ label: 'Needs Message', tooltip: 'A line on the screen when the player tries it without the item. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) needsMessage = '';
 
   @Ref(Entity, { header: 'As Pieces Go In', label: 'Placed Parts', tooltip: 'For a socket that takes several things: an entity that starts switched off whose children, all switched off, stand for them one each in the order of Item Id ("fuse x3" is three). It is switched on with the first, and each child with its own. Empty: nothing shows until it is filled.' }) placedParts?: IEntity;
@@ -45,7 +45,7 @@ export class Socket extends Interactable {
   @Ref(Objective, { label: 'Completes Objective', tooltip: 'An Objective of the Journal that is done when this is filled.' }) objective?: Objective;
   @Bool({ label: 'Unlock Target' }) unlocksTarget = true;
   @Bool({ label: 'Open Target' }) opensTarget = false;
-  @String({ label: 'Filled Message', tooltip: 'A line on the screen each time something goes in. {item} is what went in; when it takes more than one thing, " (2 of 5)" follows. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) filledMessage = 'Placed {item}';
+  @String({ label: 'Filled Message', tooltip: 'A line on the screen each time something goes in. {item} is what went in; when it takes more than one thing, " (2 of 5)" follows. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) filledMessage = '{{ messages.placed }}';
   @Ref(AudioTrack, { header: 'Sound', label: 'Put Sound' }) putSound = '';
 
   @Inject(Inventory) inventory!: Inventory;

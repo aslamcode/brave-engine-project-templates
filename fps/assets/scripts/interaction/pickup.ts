@@ -16,14 +16,14 @@ import type { Interactor } from './interactor';
 @Script({ inheritProperties: true })
 export class Pickup extends Interactable {
 
-  prompt = 'Take {item}';
+  prompt = '{{ prompts.take }}';
   aimRadius = 0.15;
 
   @String({ header: 'Item', label: 'Item Id', tooltip: 'What the inventory counts it as: the id a Door\'s Key Item or a Socket\'s Item Id says. Two pickups with the same id are the same kind of thing.' }) itemId = '';
   @String({ label: 'Item Name', tooltip: 'What the player reads: in the prompt and the messages, and in the list of what is carried. Empty: the Item Id.', completion: StringCompletionEnum.TranslationKeys }) itemName = '';
   @Int({ label: 'Count', tooltip: 'How many it gives.' }) count = 1;
   @Int({ label: 'Limit', tooltip: 'The most of this item the player can carry (0: no limit, as keys and credits have). It is set by the first pickup of the id that starts; one that finds the player full stays where it is.' }) limit = 0;
-  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {item} is its name. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) message = 'Picked up {item}';
+  @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {item} is its name. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) message = '{{ messages.picked }}';
   @String({ header: 'Journal', label: 'Journal Category', tooltip: 'Empty: it is not written in the Journal. \'access\' (a key, a card) lists it under Access, and the Journal says whether it was used; anything else is a category of its own.' }) journalCategory = '';
   @String({ label: 'Description', rows: 3, tooltip: 'What the Journal says about it, on the right of the menu: in its Items category while the player carries it, or in its own category when it has one.', completion: StringCompletionEnum.TranslationKeys }) description = '';
   @Ref(AudioTrack, { header: 'Sound', label: 'Pickup Sound' }) pickupSound = '';

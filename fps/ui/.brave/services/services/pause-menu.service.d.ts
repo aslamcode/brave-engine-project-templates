@@ -8,6 +8,8 @@ export interface IPauseMenuState {
     fieldOfView: number;
     /** The master volume, 0 to 1. */
     volume: number;
+    /** The player changed the language and the voices of the new one are being loaded: the menu says Loading and keeps Continue off until they are ready, so the game is given back already speaking it. */
+    languageBusy: boolean;
     /** The game can be closed from the menu: in the editor's Play (it stops the Play) and in an installed build (the app quits), not in a browser tab, which a page cannot close. */
     canQuit: boolean;
 }
@@ -71,8 +73,11 @@ export declare class PauseMenu {
     holdPointer(afterEscape?: boolean): void;
     /** Ends the game, by where it runs: the editor's Play is stopped (and fullscreen left), an installed build quits. Nothing happens in a browser tab (`state.canQuit` is false there). The page asks the player to confirm first. */
     quit(): void;
-    /** The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. */
-    setLanguage(code: string): void;
+    /**
+     * The player chose a language (the menu's list, each in its own words): the game uses it at once, the pages hear of it through `Translate`, and the next start begins with it. The voices of the new language
+     * are loaded before the game is given back (`AudioSource.whenLanguageReady()`): `state.languageBusy` is on meanwhile, and Continue and Esc do nothing.
+     */
+    setLanguage(code: string): Promise<void>;
     /** The player turned the subtitles on or off: the engine shows or hides them at once and the next start begins the same way. */
     setSubtitles(enabled: boolean): void;
     /** Puts the player's settings on the camera of the player that is on, again: a load or a restart builds a new player whose camera has what the scene was saved with. */

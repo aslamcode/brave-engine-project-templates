@@ -60,6 +60,6 @@ export declare class Interactable extends ScriptComponent {
     protected onUse(_interactor: Interactor): void;
     /** Plays a clip through `source` (this one's Audio Source when none is given) at a slightly different pitch each time. */
     protected play(clip: string, source?: AudioSource): void;
-    /** A text with its `{item}` replaced by the name of the item. */
+    /** A text said in the player's language with its `{item}` replaced by the name of the item (the text may be an entry, `{{ prompts.take }}`, and the name too). */
     protected fill(text: string, item: string): string;
 }

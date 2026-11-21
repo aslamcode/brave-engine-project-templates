@@ -14,6 +14,7 @@
     "fieldOfView": "Field of View",
     "volume": "Volume",
     "language": "Language",
+    "loading": "Loading…",
     "subtitles": "Subtitles",
     "saves": "Saves",
     "save": "Save",
@@ -47,7 +48,8 @@
       "passwords": "Passwords",
       "notes": "Notes",
       "audio": "Audio Logs"
-    }
+    },
+    "title": "Journal"
   },
   "saves": {
     "empty": "Empty",
@@ -69,7 +71,11 @@
   "gear": {
     "none": "No {item}s",
     "healthFull": "Health full",
-    "healed": "+{amount} health"
+    "healed": "+{amount} health",
+    "rifle": "Rifle",
+    "shotgun": "Shotgun",
+    "grenade": "Grenade",
+    "medkit": "Medkit"
   },
   "inventory": {
     "full": "{item} full"
@@ -77,6 +83,93 @@
   "waves": {
     "wave": "Wave {number}",
     "cleared": "All waves cleared"
+  },
+  "prompts": {
+    "take": "Take {item}",
+    "place": "Place {item}",
+    "needs": "Needs {item}",
+    "locked": "Locked",
+    "takeRounds": "Take {amount} rounds",
+    "useMedkit": "Use first aid kit (+{amount} HP)",
+    "door": {
+      "open": "Open door",
+      "close": "Close door",
+      "unlock": "Unlock door",
+      "wrongSide": "Opens from the other side"
+    },
+    "drawer": {
+      "open": "Open drawer",
+      "close": "Close drawer"
+    },
+    "shutter": {
+      "open": "Open shutter",
+      "close": "Close shutter"
+    },
+    "progress": "{have} of {need}"
+  },
+  "messages": {
+    "picked": "Picked up {item}",
+    "placed": "Placed {item}",
+    "powerRestored": "Power restored",
+    "rounds": "+{amount} rounds",
+    "ammoFull": "Ammo full",
+    "needsPowerCell": "It needs a power cell",
+    "needsFragments": "The console needs the five fragments",
+    "door": {
+      "locked": "The door is locked",
+      "wrongSide": "It does not open from this side"
+    },
+    "shutter": {
+      "locked": "The shutter is locked"
+    }
+  },
+  "items": {
+    "chip": {
+      "name": "Translation chip",
+      "description": "It holds a few words in every language."
+    },
+    "medkit": {
+      "name": "medkit"
+    },
+    "grenade": {
+      "name": "grenade"
+    },
+    "key": {
+      "name": "key",
+      "description": "A small brass key from the drawer. It opens the inner door of the house."
+    },
+    "powerCell": {
+      "name": "power cell",
+      "description": "A sealed power cell, still warm. The socket at the back of the house takes it."
+    },
+    "fragment": {
+      "description": "A fragment of the archive's index, a small glowing chip. The console at the back of the house takes all five.",
+      "name": "data fragment"
+    }
+  },
+  "objectives": {
+    "power": {
+      "title": "Restore the power",
+      "description": "The lamp in the back room has no power. There is a power cell somewhere in the house, and a socket at the back."
+    },
+    "archive": {
+      "title": "Restore the archive",
+      "description": "Five data fragments are scattered over the house and its yard. The console in the back room takes them all, as the player finds them."
+    }
+  },
+  "notes": {
+    "page": {
+      "title": "A torn page",
+      "body": "...the lights went out on the third night. Whoever is still in the house, the power cell is in the front room, and the socket is at the back, past the inner door.\n\nI took the key and left the drawer open."
+    },
+    "code": {
+      "title": "Maintenance code",
+      "body": "Panel in the back room: 7 3 1 9"
+    },
+    "memo": {
+      "title": "Voice memo, day 3",
+      "body": "\"If you are hearing this, the generator is down. I could not reach the back room: the inner door is locked, and the key is in the drawer in the front. I will try again at dawn.\"\n\n(The sound of this one is a placeholder: replace it with your own recording.)"
+    }
   },
   "demo": {
     "title": "Language lab",
@@ -95,34 +188,46 @@
     "radio-demo": [
       {
         "start": 0.0,
-        "end": 2.8,
+        "end": 7.5,
         "speaker": "Guard",
-        "text": "Halt! Who goes there?"
+        "text": "Halt! Who goes there? This sector has been closed since the power failed, and nobody is supposed to be down here."
       },
       {
-        "start": 3.0,
-        "end": 5.8,
-        "speaker": "Guard",
-        "text": "This is a restricted area."
-      },
-      {
-        "start": 6.0,
+        "start": 4.0,
         "end": 9.0,
+        "speaker": "Guard",
+        "text": "Show me your badge, slowly, and keep your hands where I can see them."
+      },
+      {
+        "start": 7.0,
+        "end": 15.0,
+        "speaker": "Radio",
+        "text": "Copy that, we have your signal. Backup is on the way, so hold your position and do not let anyone through that door until we get there."
+      },
+      {
+        "start": 10.0,
+        "end": 15.5,
         "speaker": "Guard",
         "text": "State your business, or turn around."
       },
       {
-        "start": 6.6,
-        "end": 8.6,
+        "start": 13.0,
+        "end": 20.0,
         "speaker": "Radio",
-        "text": "Copy that. Backup is on the way."
+        "text": "Command says the lockdown holds until the generators are back, and that goes for everyone, no exceptions."
+      },
+      {
+        "start": 20.3,
+        "end": 21.0,
+        "speaker": "Guard",
+        "text": "Understood. Moving to the east gate now, over and out."
+      },
+      {
+        "start": 20.8,
+        "end": 21.5,
+        "speaker": "Radio",
+        "text": "Roger. Stay sharp out there, and watch the generators."
       }
     ]
-  },
-  "items": {
-    "chip": {
-      "name": "Translation chip",
-      "description": "It holds a few words in every language."
-    }
   }
 }

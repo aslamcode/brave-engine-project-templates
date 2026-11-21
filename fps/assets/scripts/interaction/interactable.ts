@@ -1,5 +1,6 @@
 import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String, StringCompletionEnum } from '@brave/core';
 import type { Interactor } from './interactor';
+import { fillText } from '../shared/phrase';
 import { playClip } from '../shared/sound';
 
 /** What a thing says about itself when the player looks at it: a title and a text under it. Both may hold `{{ key }}` (an entry of the language files), so the HUD shows them in the player's language. */
@@ -98,8 +99,8 @@ export class Interactable extends ScriptComponent {
     playClip(source ?? this.audio ?? this.entity.getComponent(AudioSource), clip, this.pitchVariation);
   }
 
-  /** A text with its `{item}` replaced by the name of the item. */
+  /** A text said in the player's language with its `{item}` replaced by the name of the item (the text may be an entry, `{{ prompts.take }}`, and the name too). */
   protected fill(text: string, item: string): string {
-    return text.replace('{item}', item);
+    return fillText(text, { item });
   }
 }

@@ -135,6 +135,7 @@ export declare class Journal {
     }): void;
     private markSeen;
     private carried;
+    private capitalized;
     private snapshot;
     private changed;
 }

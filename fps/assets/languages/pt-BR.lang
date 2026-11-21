@@ -14,6 +14,7 @@
     "fieldOfView": "Campo de visão",
     "volume": "Volume",
     "language": "Idioma",
+    "loading": "Carregando…",
     "subtitles": "Legendas",
     "saves": "Jogos salvos",
     "save": "Salvar",
@@ -47,7 +48,8 @@
       "passwords": "Senhas",
       "notes": "Notas",
       "audio": "Gravações de áudio"
-    }
+    },
+    "title": "Diário"
   },
   "saves": {
     "empty": "Vazio",
@@ -69,7 +71,11 @@
   "gear": {
     "none": "Sem {item}",
     "healthFull": "Vida cheia",
-    "healed": "+{amount} de vida"
+    "healed": "+{amount} de vida",
+    "rifle": "Rifle",
+    "shotgun": "Escopeta",
+    "grenade": "Granada",
+    "medkit": "Kit médico"
   },
   "inventory": {
     "full": "{item} cheio"
@@ -77,6 +83,93 @@
   "waves": {
     "wave": "Onda {number}",
     "cleared": "Todas as ondas eliminadas"
+  },
+  "prompts": {
+    "take": "Pegar {item}",
+    "place": "Colocar {item}",
+    "needs": "Precisa de {item}",
+    "locked": "Trancada",
+    "takeRounds": "Pegar {amount} munições",
+    "useMedkit": "Usar kit de primeiros socorros (+{amount} de vida)",
+    "door": {
+      "open": "Abrir porta",
+      "close": "Fechar porta",
+      "unlock": "Destrancar porta",
+      "wrongSide": "Abre pelo outro lado"
+    },
+    "drawer": {
+      "open": "Abrir gaveta",
+      "close": "Fechar gaveta"
+    },
+    "shutter": {
+      "open": "Abrir persiana",
+      "close": "Fechar persiana"
+    },
+    "progress": "{have} de {need}"
+  },
+  "messages": {
+    "picked": "Item obtido: {item}",
+    "placed": "Item colocado: {item}",
+    "powerRestored": "Energia restaurada",
+    "rounds": "+{amount} munições",
+    "ammoFull": "Munição cheia",
+    "needsPowerCell": "Precisa de uma célula de energia",
+    "needsFragments": "O console precisa dos cinco fragmentos",
+    "door": {
+      "locked": "A porta está trancada",
+      "wrongSide": "Não abre deste lado"
+    },
+    "shutter": {
+      "locked": "A persiana está trancada"
+    }
+  },
+  "items": {
+    "chip": {
+      "name": "Chip de tradução",
+      "description": "Guarda algumas palavras em cada idioma."
+    },
+    "medkit": {
+      "name": "kit médico"
+    },
+    "grenade": {
+      "name": "granada"
+    },
+    "key": {
+      "name": "chave",
+      "description": "Uma pequena chave de latão da gaveta. Abre a porta interna da casa."
+    },
+    "powerCell": {
+      "name": "célula de energia",
+      "description": "Uma célula de energia lacrada, ainda quente. O encaixe nos fundos da casa a recebe."
+    },
+    "fragment": {
+      "description": "Um fragmento do índice do arquivo, um pequeno chip brilhante. O console nos fundos da casa recebe os cinco.",
+      "name": "fragmento de dados"
+    }
+  },
+  "objectives": {
+    "power": {
+      "title": "Restaurar a energia",
+      "description": "A lâmpada do quarto dos fundos está sem energia. Há uma célula de energia em algum lugar da casa, e um encaixe nos fundos."
+    },
+    "archive": {
+      "title": "Restaurar o arquivo",
+      "description": "Cinco fragmentos de dados estão espalhados pela casa e pelo quintal. O console do quarto dos fundos recebe todos, conforme o jogador os encontra."
+    }
+  },
+  "notes": {
+    "page": {
+      "title": "Uma página rasgada",
+      "body": "...as luzes se apagaram na terceira noite. Quem ainda estiver na casa: a célula de energia está na sala da frente, e o encaixe fica nos fundos, depois da porta interna.\n\nEu levei a chave e deixei a gaveta aberta."
+    },
+    "code": {
+      "title": "Código de manutenção",
+      "body": "Painel do quarto dos fundos: 7 3 1 9"
+    },
+    "memo": {
+      "title": "Memorando de voz, dia 3",
+      "body": "\"Se você está ouvindo isto, o gerador caiu. Não consegui chegar ao quarto dos fundos: a porta interna está trancada, e a chave está na gaveta da frente. Tento de novo ao amanhecer.\"\n\n(O som deste é um provisório: troque pela sua própria gravação.)"
+    }
   },
   "demo": {
     "title": "Laboratório de idiomas",
@@ -95,34 +188,46 @@
     "radio-demo": [
       {
         "start": 0.0,
-        "end": 3.0,
+        "end": 7.8,
         "speaker": "Guarda",
-        "text": "Parada! Quem vai lá?"
+        "text": "Parada! Quem vai lá? Este setor está fechado desde que a energia caiu, e ninguém deveria estar aqui embaixo."
       },
       {
-        "start": 3.0,
-        "end": 6.0,
+        "start": 4.2,
+        "end": 9.4,
         "speaker": "Guarda",
-        "text": "Esta é uma área restrita."
+        "text": "Mostre seu crachá, devagar, e mantenha as mãos onde eu possa vê-las."
       },
       {
-        "start": 6.0,
-        "end": 9.0,
+        "start": 7.3,
+        "end": 15.6,
+        "speaker": "Rádio",
+        "text": "Entendido, recebemos o seu sinal. O reforço está a caminho, então mantenha a posição e não deixe ninguém passar por aquela porta até a gente chegar."
+      },
+      {
+        "start": 10.3,
+        "end": 16.0,
         "speaker": "Guarda",
         "text": "Diga o que veio fazer, ou dê meia-volta."
       },
       {
-        "start": 6.8,
-        "end": 8.9,
+        "start": 13.4,
+        "end": 21.0,
         "speaker": "Rádio",
-        "text": "Entendido. O reforço está chegando."
+        "text": "O comando diz que o bloqueio continua até os geradores voltarem, e isso vale para todos, sem exceção."
+      },
+      {
+        "start": 21.1,
+        "end": 21.8,
+        "speaker": "Guarda",
+        "text": "Entendido. Indo para o portão leste agora, câmbio e desligo."
+      },
+      {
+        "start": 21.5,
+        "end": 21.95,
+        "speaker": "Rádio",
+        "text": "Certo. Fique atento por aí e vigie os geradores."
       }
     ]
-  },
-  "items": {
-    "chip": {
-      "name": "Chip de tradução",
-      "description": "Guarda algumas palavras em cada idioma."
-    }
   }
 }

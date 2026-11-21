@@ -351,7 +351,12 @@ export class Journal {
 
     return this.inventory.list()
       .filter(item => !item.hidden && !this.has(item.id))
-      .map(item => ({ id: item.id, category: 'items', title: item.name.charAt(0).toUpperCase() + item.name.slice(1), body: item.description, audio: '', status: '' as JournalStatus, isNew: false, count: item.count, limit: item.limit }));
+      .map(item => ({ id: item.id, category: 'items', title: this.capitalized(Translate.resolve(item.name)), body: item.description, audio: '', status: '' as JournalStatus, isNew: false, count: item.count, limit: item.limit }));
+  }
+
+  // A name is lower case in a sentence ("take medkit") and starts the line in a list.
+  private capitalized(text: string): string {
+    return text.charAt(0).toUpperCase() + text.slice(1);
   }
 
   private snapshot(): IJournalState {

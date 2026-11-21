@@ -17147,10 +17147,10 @@
           "easing": "linear",
           "closeSoundWhenShut": false,
           "locked": true,
-          "prompt": "Open shutter",
-          "closePrompt": "Close shutter",
-          "lockedPrompt": "Locked",
-          "lockedMessage": "The shutter is locked"
+          "prompt": "{{ prompts.shutter.open }}",
+          "closePrompt": "{{ prompts.shutter.close }}",
+          "lockedPrompt": "{{ prompts.locked }}",
+          "lockedMessage": "{{ messages.shutter.locked }}"
         }
       ],
       "scene": {
@@ -21054,11 +21054,11 @@
           "duration": 0.9,
           "locked": false,
           "keyItemId": "",
-          "prompt": "Open door",
-          "closePrompt": "Close door",
-          "lockedPrompt": "Locked",
-          "unlockPrompt": "Unlock door",
-          "lockedMessage": "The door is locked"
+          "prompt": "{{ prompts.door.open }}",
+          "closePrompt": "{{ prompts.door.close }}",
+          "lockedPrompt": "{{ prompts.locked }}",
+          "unlockPrompt": "{{ prompts.door.unlock }}",
+          "lockedMessage": "{{ messages.door.locked }}"
         }
       ],
       "scene": {
@@ -24962,11 +24962,11 @@
           "duration": 0.9,
           "locked": true,
           "keyItemId": "key",
-          "prompt": "Open door",
-          "closePrompt": "Close door",
-          "lockedPrompt": "Locked",
-          "unlockPrompt": "Unlock door",
-          "lockedMessage": "The door is locked"
+          "prompt": "{{ prompts.door.open }}",
+          "closePrompt": "{{ prompts.door.close }}",
+          "lockedPrompt": "{{ prompts.locked }}",
+          "unlockPrompt": "{{ prompts.door.unlock }}",
+          "lockedMessage": "{{ messages.door.locked }}"
         }
       ],
       "scene": {
@@ -41848,12 +41848,12 @@
                         "$circular": "k127"
                       },
                       "itemId": "key",
-                      "itemName": "key",
-                      "prompt": "Take {item}",
-                      "message": "Picked up {item}",
+                      "itemName": "{{ items.key.name }}",
+                      "prompt": "{{ prompts.take }}",
+                      "message": "{{ messages.picked }}",
                       "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4",
                       "journalCategory": "access",
-                      "description": "A small brass key from the drawer. It opens the inner door of the house."
+                      "description": "{{ items.key.description }}"
                     }
                   ],
                   "scene": {
@@ -42061,8 +42061,8 @@
               "duration": 0.6,
               "easing": "ease-out",
               "closeSoundWhenShut": false,
-              "prompt": "Open drawer",
-              "closePrompt": "Close drawer"
+              "prompt": "{{ prompts.drawer.open }}",
+              "closePrompt": "{{ prompts.drawer.close }}"
             }
           ],
           "scene": {
@@ -51842,11 +51842,11 @@
             "$circular": "k154"
           },
           "itemId": "power-cell",
-          "itemName": "power cell",
-          "prompt": "Take {item}",
-          "message": "Picked up {item}",
+          "itemName": "{{ items.powerCell.name }}",
+          "prompt": "{{ prompts.take }}",
+          "message": "{{ messages.picked }}",
           "pickupSound": "973b5478-742e-4261-b3da-6de42a935da4",
-          "description": "A sealed power cell, still warm. The socket at the back of the house takes it."
+          "description": "{{ items.powerCell.description }}"
         }
       ],
       "scene": {
@@ -59237,11 +59237,11 @@
             "$circular": "k170"
           },
           "itemId": "power-cell",
-          "itemName": "power cell",
-          "prompt": "Place {item}",
-          "needsPrompt": "Needs {item}",
-          "needsMessage": "It needs a power cell",
-          "filledMessage": "Power restored",
+          "itemName": "{{ items.powerCell.name }}",
+          "prompt": "{{ prompts.place }}",
+          "needsPrompt": "{{ prompts.needs }}",
+          "needsMessage": "{{ messages.needsPowerCell }}",
+          "filledMessage": "{{ messages.powerRestored }}",
           "putSound": "b38a44b2-5e2d-49c3-ae32-8a88e788869e",
           "placed": {
             "$circular": "k181"
@@ -66113,7 +66113,7 @@
                                                       "entity": {
                                                         "$circular": "pl_p_ref_1358"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pl_k72"
@@ -68172,7 +68172,7 @@
                                                       "boltSound": {
                                                         "$circular": "k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -79202,7 +79202,7 @@
                                                       "entity": {
                                                         "$circular": "pb_p_ref_1844"
                                                       },
-                                                      "label": "Rifle",
+                                                      "label": "{{ gear.rifle }}",
                                                       "slot": 1,
                                                       "muzzle": {
                                                         "$circular": "pb_k72"
@@ -81261,7 +81261,7 @@
                                                       "boltSound": {
                                                         "$circular": "pb_k900028"
                                                       },
-                                                      "label": "Shotgun",
+                                                      "label": "{{ gear.shotgun }}",
                                                       "slot": 2,
                                                       "roundsPerMinute": 70.0,
                                                       "pellets": 10,
@@ -88008,7 +88008,7 @@
           "entity": {
             "$circular": "k995001"
           },
-          "title": "Journal",
+          "title": "{{ journal.title }}",
           "pausesGame": true
         }
       ],
