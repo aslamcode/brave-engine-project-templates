@@ -32,6 +32,7 @@ This is a **Brave Engine** game project: a 3D game made with the Brave Editor, T
 | Particles, fire, explosions, decals and stains | `docs/effects.md` |
 | Text in the world, fonts, sprites | `docs/text-and-sprites.md` |
 | Languages: the `.lang` files, `{{ key }}` in a text, `Translate`, the UI, a language added after the build, subtitles | `docs/translate.md` |
+| Surfaces: what a floor is made of, the `Surface` of a material, asking the ground under a foot or a bullet | `docs/surfaces.md` |
 | The Director: a controller for an area | `docs/director.md` |
 
 ## The project

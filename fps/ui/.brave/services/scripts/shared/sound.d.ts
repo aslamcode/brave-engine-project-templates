@@ -6,6 +6,10 @@ export interface ISoundOptions {
     gain?: number;
     /** Default `random`. */
     order?: SoundOrder;
+    /**
+     * Plays exactly this variation instead of choosing one (0 is the first, and a number past the last wraps round): for a caller that keeps an order of its own, the steps of a pattern. `order` is then not looked at.
+     */
+    variation?: number;
 }
 /**
  * Plays the sound an entity holds: its own Audio Source, or one of its children's (a gunshot with three variations is an entity with three children, each an Audio Source). The variation is never the one
@@ -20,3 +24,8 @@ export declare function playSound(holder?: Entity, options?: ISoundOptions): voi
  * One Audio Source plays one clip at a time, so this swaps the clip it holds. A sound that starts while another still plays through the same source cuts the other.
  */
 export declare function playClip(source: AudioSource | undefined, clip: string, variation?: number): void;
+/**
+ * The places a step pattern names, in the order written, from what the Inspector holds: `'1 2 3 4 3 4 2 3'` is `[1, 2, 3, 4, 3, 4, 2, 3]`. A place is the position of a variation among the children of its holder, counted from 1.
+ * Anything that is not a digit separates two of them, so spaces, commas and dashes all do, and a 0 names no variation and is left out. Nothing usable gives an empty list.
+ */
+export declare function parseStepPattern(text: string | undefined): number[];

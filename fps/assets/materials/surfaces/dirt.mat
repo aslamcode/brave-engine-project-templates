@@ -59,5 +59,6 @@
     "normalFormat": 0
   },
   "cullingFace": true,
-  "cullingMode": 2
+  "cullingMode": 2,
+  "surface": "24b04179-75a8-5c32-9618-5a67fd573557"
 }

@@ -8,6 +8,10 @@ export interface ISoundOptions {
   gain?: number;
   /** Default `random`. */
   order?: SoundOrder;
+  /**
+   * Plays exactly this variation instead of choosing one (0 is the first, and a number past the last wraps round): for a caller that keeps an order of its own, the steps of a pattern. `order` is then not looked at.
+   */
+  variation?: number;
 }
 
 // The variation each holder played last: a sound that plays twice in a row, which a plain random choice does now and then, is what makes a gunshot, a step or a hurt cry sound like a machine.
@@ -22,7 +26,7 @@ export function playSound(holder?: Entity, options: ISoundOptions = {}): void {
   if (!holder) return;
   const own = holder.getComponent(AudioSource);
   const sources = own ? [own] : holder.children.map(child => child.getComponent(AudioSource)).filter((source): source is AudioSource => !!source);
-  const source = variationOf(holder, sources, options.order ?? 'random');
+  const source = options.variation !== undefined ? exactly(sources, options.variation) : variationOf(holder, sources, options.order ?? 'random');
   if (!source) return;
   if (options.gain !== undefined) source.gain = Math.max(options.gain, 0);
   void source.play();
@@ -41,6 +45,20 @@ export function playClip(source: AudioSource | undefined, clip: string, variatio
   if (source.src !== clip) source.src = clip;
   // The pitch is set once play() has waited for the clip to load: a media element goes back to its normal rate whenever a new source is loaded, which happens after this function has returned.
   void source.play().then(() => { source.speed = 1 + (Math.random() * 2 - 1) * variation; });
+}
+
+/**
+ * The places a step pattern names, in the order written, from what the Inspector holds: `'1 2 3 4 3 4 2 3'` is `[1, 2, 3, 4, 3, 4, 2, 3]`. A place is the position of a variation among the children of its holder, counted from 1.
+ * Anything that is not a digit separates two of them, so spaces, commas and dashes all do, and a 0 names no variation and is left out. Nothing usable gives an empty list.
+ */
+export function parseStepPattern(text: string | undefined): number[] {
+  return (text ?? '').split(/[^0-9]+/).map(Number).filter(place => Number.isInteger(place) && place >= 1);
+}
+
+function exactly(sources: AudioSource[], variation: number): AudioSource | undefined {
+  if (!sources.length || !Number.isFinite(variation)) return undefined;
+  const index = ((Math.trunc(variation) % sources.length) + sources.length) % sources.length;
+  return sources[index];
 }
 
 function variationOf(holder: Entity, sources: AudioSource[], order: SoundOrder): AudioSource | undefined {

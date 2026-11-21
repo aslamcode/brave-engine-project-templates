@@ -74853,7 +74853,9 @@
           "landSound": {
             "$circular": "k970041"
           },
-          "bySurface": true
+          "bySurface": true,
+          "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
+          "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
         }
       ],
       "materials": [],
@@ -87925,7 +87927,9 @@
           "landSound": {
             "$circular": "k971041"
           },
-          "bySurface": true
+          "bySurface": true,
+          "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
+          "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
         }
       ],
       "materials": [],

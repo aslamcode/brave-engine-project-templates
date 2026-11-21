@@ -85,5 +85,89 @@
         "name": "Player"
       }
     ]
+  },
+  "surfaces": {
+    "entries": [
+      {
+        "id": "17fc1fca-3ae4-5f13-850a-bd121c96bd25",
+        "name": "Concrete"
+      },
+      {
+        "id": "bbfa24f1-6e77-542a-817c-d1204ce7d48d",
+        "name": "Metal"
+      },
+      {
+        "id": "edf3ff18-b349-58b0-8044-37556f60712e",
+        "name": "Wood"
+      },
+      {
+        "id": "a59ae170-9b05-5e48-a0a2-d4903370404e",
+        "name": "Glass"
+      },
+      {
+        "id": "20e485f9-cce4-507a-974c-38e98933c651",
+        "name": "Mud"
+      },
+      {
+        "id": "bb91b491-f310-5818-81db-43df3b5648e9",
+        "name": "Slosh"
+      },
+      {
+        "id": "a2878f0a-e579-5070-aa0e-148caef59265",
+        "name": "Wade"
+      },
+      {
+        "id": "24b04179-75a8-5c32-9618-5a67fd573557",
+        "name": "Dirt"
+      },
+      {
+        "id": "2568011f-7eea-5289-a828-7f67b1f355ab",
+        "name": "Grass"
+      },
+      {
+        "id": "e52b4e26-b04a-52bb-9c07-ac62fd9da4a2",
+        "name": "Gravel"
+      },
+      {
+        "id": "0a4bdb67-ba80-5ee1-aecf-6ecd2cdeb993",
+        "name": "Sand"
+      },
+      {
+        "id": "9e037551-a67b-55b1-be26-2a25a8ca5b96",
+        "name": "Tile"
+      },
+      {
+        "id": "f262247d-55aa-522c-93be-d8da1a2e20ed",
+        "name": "Cardboard"
+      },
+      {
+        "id": "31e62ff0-5c08-5100-9fb0-0927d7cc3ddf",
+        "name": "Chainlink"
+      },
+      {
+        "id": "5c6a7e68-dd06-5871-866a-afe85cd83579",
+        "name": "Metal Grate"
+      },
+      {
+        "id": "70db5f57-6368-5703-a8b5-c3fa5bc416bc",
+        "name": "Duct"
+      },
+      {
+        "id": "f5e9f6ec-c66a-5a2a-b998-284799b5ee02",
+        "name": "Plaster"
+      },
+      {
+        "id": "77e283cb-2797-5fc1-a326-f771806f7242",
+        "name": "Foliage"
+      },
+      {
+        "id": "aa95bf61-563f-5290-aa3a-8804fb27a7ef",
+        "name": "Flesh"
+      },
+      {
+        "id": "001786f5-89b7-5cd5-b636-20a192c7e276",
+        "name": "Ladder"
+      }
+    ]
   }
 }
