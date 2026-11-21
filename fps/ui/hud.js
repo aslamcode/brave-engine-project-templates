@@ -9,12 +9,14 @@ var hud = BraveUiBridge.remote('Hud');
 var T = BraveUiBridge.Translate;
 function tr(text) { return typeof text === 'string' && text.indexOf('{{') !== -1 ? T.resolve(text) : text; }
 function word(path, fallback, params) { return T.has(path) ? T.get(path, params) : fallback; }
+// A name that starts a line of its own (a notice of what was picked up) starts with a capital, in whatever language it was said: the game cannot capitalize it, it only has the key (`{{ items.key.name }}`).
+function capital(text) { var said = tr(text); return typeof said === 'string' ? said.charAt(0).toUpperCase() + said.slice(1) : said; }
 var redraw = [];   // what to draw again when the language changes (each part adds its own)
 T.onChange.on(function () { redraw.forEach(function (draw) { draw(); }); });
 
 var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), promptCaption = el('promptCaption'), promptTitle = el('promptTitle'), promptBody = el('promptBody'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
-var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), items = el('items'), weapons = el('weapons');
+var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), noticesEl = el('notices'), weapons = el('weapons');
 var staminaBox = el('stamina'), staminaFill = el('staminaFill'), staminaMark = el('staminaMark');
 var markersEl = el('markers'), markerNodes = {};
 var hitTimer, damageTimer, indicatorTimer, indicator = el('indicator');
@@ -68,39 +70,89 @@ function render(state) {
     weapons.appendChild(chip);
   });
 
-  renderItems(state);
+  renderNotices(state);
 }
 
-// What the player carries is not always on the screen: the list fades in when it changes (something was picked up, used or spent), stays `itemsSeconds` and fades out (0: it stays). What is new in it is lit. The
-// list that was there before the page came (a game that was loaded) does not show it, and an empty list is let go of with its last content, so that it fades out whole. The Journal has the whole list, under Items.
-var itemsTimer, lastItems = null;
-function renderItems(state) {
-  var names = state.items || [];
-  var signature = JSON.stringify(names);
-  var seconds = typeof state.itemsSeconds === 'number' ? state.itemsSeconds : 4;
+// What was picked up or spent: a notice at the corner for a few seconds (`+ Key`, `-2 Grenade`), one for each kind (a second key a moment later makes it `+2 Key`, in the same notice), three at most (a fourth
+// pushes the oldest out). The game says them in `state.notices`, each with a number that only grows: the page draws the ones after the last it drew, so none is lost between two readings and none is drawn twice.
+// The notices from before the page came are not news. What the player carries is not on the screen as a list (it grew with the game and ran under the weapons panel): the Journal has it, under Items. They
+// move like the lines of the subtitles: the one that comes fades in, the one that goes fades out alone, and the ones that stay glide to their new place.
+var NOTICE_MAX = 3, NOTICE_FADE_MS = 300, noticeNodes = [], lastNoticeSeq = null;
 
-  if (signature !== lastItems) {
-    var before = lastItems === null ? [] : JSON.parse(lastItems);
-    var first = lastItems === null;
-    lastItems = signature;
-    if (names.length > 0) {
-      items.innerHTML = '';
-      names.forEach(function (name) {
-        var chip = document.createElement('div');
-        chip.className = 'item' + (!first && before.indexOf(name) === -1 ? ' -new' : '');
-        chip.textContent = tr(name);
-        items.appendChild(chip);
-      });
-    }
-    clearTimeout(itemsTimer);
-    if (names.length === 0) {
-      items.classList.remove('-shown');
-    } else if (!first && seconds > 0) {
-      items.classList.add('-shown');
-      itemsTimer = setTimeout(function () { items.classList.remove('-shown'); }, seconds * 1000);
-    }
+function noticeText(node) {
+  var amount = Math.abs(node.delta);
+  return (node.delta > 0 ? '+' : '\u2212') + (amount > 1 ? amount + ' ' : ' ') + capital(node.name);
+}
+
+// Runs `change` (it adds, takes away or marks notices) and glides every notice that was there and is somewhere else now: from where it was seen to where it is.
+function glideNotices(change) {
+  var was = noticeNodes.map(function (node) { return { root: node.root, top: node.root.getBoundingClientRect().top }; });
+  was.forEach(function (line) { line.root.style.transition = 'none'; line.root.style.transform = ''; });
+  change();
+  var moving = [];
+  was.forEach(function (line) {
+    if (!line.root.parentNode) return;
+    var delta = line.top - line.root.getBoundingClientRect().top;
+    if (Math.abs(delta) < 0.5) { line.root.style.transition = ''; return; }
+    line.root.style.transform = 'translateY(' + delta + 'px)';
+    moving.push(line.root);
+  });
+  if (moving.length) {
+    void noticesEl.offsetHeight;
+    moving.forEach(function (root) { root.style.transition = ''; root.style.transform = ''; });
   }
-  if (seconds <= 0) items.classList.toggle('-shown', names.length > 0);
+}
+
+function dropNotice(node) {
+  clearTimeout(node.timer);
+  var place = noticeNodes.indexOf(node);
+  if (place >= 0) noticeNodes.splice(place, 1);
+  if (node.root.parentNode) noticesEl.removeChild(node.root);
+}
+
+// The notice goes: it fades where it is and is taken away when the fade is over (at once with reduced motion).
+function leaveNotice(node) {
+  if (node.leaving) return;
+  node.leaving = true;
+  clearTimeout(node.timer);
+  if (reducedMotion.matches) { glideNotices(function () { dropNotice(node); }); return; }
+  node.root.classList.add('-leaving');
+  node.timer = setTimeout(function () { glideNotices(function () { dropNotice(node); }); }, NOTICE_FADE_MS);
+}
+
+function showNotice(notice, seconds) {
+  var node = noticeNodes.filter(function (other) { return !other.leaving && other.id === notice.id && (other.delta > 0) === (notice.delta > 0); })[0];
+  glideNotices(function () {
+    if (node) {
+      node.delta += notice.delta;
+      node.name = notice.name;
+      node.root.textContent = noticeText(node);
+      node.root.classList.remove('-bump');
+      void node.root.offsetWidth;
+      node.root.classList.add('-bump');
+      return;
+    }
+
+    var root = document.createElement('div');
+    root.className = 'notice' + (notice.delta < 0 ? ' -spent' : '');
+    node = { root: root, id: notice.id, name: notice.name, delta: notice.delta, leaving: false, timer: 0 };
+    root.textContent = noticeText(node);
+    noticesEl.appendChild(root);
+    noticeNodes.push(node);
+    var staying = noticeNodes.filter(function (other) { return !other.leaving; });
+    while (staying.length > NOTICE_MAX) leaveNotice(staying.shift());
+  });
+  clearTimeout(node.timer);
+  if (seconds > 0) node.timer = setTimeout(function () { leaveNotice(node); }, seconds * 1000);
+}
+
+function renderNotices(state) {
+  var notices = state.notices || [], newest = notices.length ? notices[notices.length - 1].seq : 0;
+  var seconds = typeof state.itemsSeconds === 'number' ? state.itemsSeconds : 4;
+  if (lastNoticeSeq === null) { lastNoticeSeq = newest; return; }
+  if (newest < lastNoticeSeq) lastNoticeSeq = 0;
+  notices.filter(function (notice) { return notice.seq > lastNoticeSeq; }).forEach(function (notice) { showNotice(notice, seconds); });
+  lastNoticeSeq = Math.max(lastNoticeSeq, newest);
 }
 
 // The twin arcs, drawn for the right side (the left one is the same mirrored by the markup): one hairline arc at the radius of the cone, the edge of where the pellets may land. The path is set as the CSS
@@ -119,9 +171,8 @@ hud.state().then(render);
 hud.onChange.on(render, { sampleEvery: 50 });
 redraw.push(function () {
   if (lastState) render(lastState);
-  // The list of what is carried keeps its chips (what is new in it stays lit), so only the words are set again.
-  var names = lastItems === null ? [] : JSON.parse(lastItems);
-  [].slice.call(items.children).forEach(function (chip, index) { if (index < names.length) chip.textContent = tr(names[index]); });
+  // The notices on the screen keep their place, so only the words are set again.
+  noticeNodes.forEach(function (node) { node.root.textContent = noticeText(node); });
 });
 
 hud.onHit.on(function (hit) {
@@ -155,6 +206,36 @@ function makeMarker() {
   return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text'), peek: root.querySelector('.marker__peek'), caption: root.querySelector('.caption'), title: root.querySelector('.caption__title'), body: root.querySelector('.caption__body') };
 }
 
+// Where a marker is drawn is worked out on every frame the screen draws, not only when a reading arrives. A reading comes from the game through the Bridge on a timer of its own (16 ms), which is not the screen's
+// (60, 120, 144 Hz): a label put where the last reading says moves in uneven steps (two frames with the same place, then a double step) and trembles when the camera turns. The game stamps each reading with the time
+// of its frame (`at`), so the page knows how fast the marker moves (the last two readings) and carries it on from the last reading to the frame being drawn: `markerAt()`. The motion is only carried on for a few
+// frames (MARKER_LEAD_MAX) and fades if nothing new comes; a jump (a cut, a teleport) is not a motion.
+var MARKER_LEAD_MAX = 48, MARKER_STALE = 120, MARKER_JUMP = 0.25, markerLoop = 0;
+function clockNow() { return performance.timeOrigin + performance.now(); }
+
+function markerAt(node, now) {
+  var a = node.last, b = node.before;
+  if (!b) return a;
+  var span = a.at - b.at, dx = a.x - b.x, dy = a.y - b.y, ahead = now - a.at;
+  if (!(span > 0) || span > MARKER_STALE || !(ahead > 0) || Math.abs(dx) > MARKER_JUMP || Math.abs(dy) > MARKER_JUMP) return a;
+  var lead = Math.min(ahead, MARKER_LEAD_MAX) * (ahead < MARKER_STALE ? 1 : Math.max(0, 1 - (ahead - MARKER_STALE) / 150));
+  return { x: a.x + dx * lead / span, y: a.y + dy * lead / span };
+}
+
+function placeMarker(node, now) {
+  var at = markerAt(node, now);
+  node.root.style.transform = 'translate(' + (at.x * window.innerWidth).toFixed(1) + 'px,' + (at.y * window.innerHeight).toFixed(1) + 'px)';
+}
+
+function moveMarkers() {
+  markerLoop = 0;
+  var ids = Object.keys(markerNodes);
+  if (!ids.length) return;
+  var now = clockNow();
+  ids.forEach(function (id) { placeMarker(markerNodes[id], now); });
+  markerLoop = requestAnimationFrame(moveMarkers);
+}
+
 var lastMarkers = null;
 function renderMarkers(list) {
   lastMarkers = list;
@@ -163,7 +244,9 @@ function renderMarkers(list) {
     var node = markerNodes[m.id] || (markerNodes[m.id] = makeMarker());
     var x = m.x * width, y = m.y * height;
     seen[m.id] = true;
-    node.root.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+    var reading = { x: m.x, y: m.y, at: typeof m.at === 'number' ? m.at : clockNow() };
+    if (!node.last || reading.at > node.last.at) { node.before = node.last; node.last = reading; }
+    placeMarker(node, clockNow());
     node.root.classList.toggle('-focused', m.focused);
     node.root.classList.toggle('-line', m.focused && m.line);
     node.root.classList.toggle('-below', y < 150);
@@ -187,35 +270,148 @@ function renderMarkers(list) {
     delete markerNodes[id];
   });
   prompt.classList.toggle('-hidden', boxShown);
+  if (!markerLoop && Object.keys(markerNodes).length) markerLoop = requestAnimationFrame(moveMarkers);
 }
 
 hud.onMarkers.on(renderMarkers, { sampleEvery: 0 });
 redraw.push(function () { if (lastMarkers) renderMarkers(lastMarkers); });
 
 // The subtitles. The engine only says which lines show now ({ id, speaker, text }, already in the language in use and in time with the sound that plays: it follows the sound itself, so a pause, a skip or the
-// end of the clip is a change of the list) and the page draws them. One element for each id stays while its line stays, so a line does not flicker when another one comes or goes.
-var S = BraveUiBridge.Subtitles, subtitlesEl = el('subtitles'), subtitleNodes = {}, subtitlesToggle = el('subtitlesToggle');
-function renderSubtitles(lines) {
-  var seen = {};
-  lines.forEach(function (line) {
-    seen[line.id] = true;
-    var node = subtitleNodes[line.id];
-    if (!node) {
-      var root = document.createElement('div');
-      root.className = 'subtitle';
-      root.innerHTML = '<span class="subtitle__speaker"></span><span class="subtitle__text"></span>';
-      node = subtitleNodes[line.id] = { root: root, speaker: root.firstChild, text: root.lastChild };
-    }
-    if (node.speaker.textContent !== line.speaker) node.speaker.textContent = line.speaker;
-    node.speaker.hidden = line.speaker === '';
-    if (node.text.textContent !== line.text) node.text.textContent = line.text;
-    subtitlesEl.appendChild(node.root);
+// end of the clip is a change of the list) and the page draws them. One element for each id stays while its line stays and is never taken out of the page and put back (that restarts a CSS animation: the whole
+// list used to fade again whenever one line came or went). Each line moves like the item of a list: the one that comes fades in alone, the one that goes fades out alone (it keeps its place until it is gone,
+// and is taken away when its fade ends), and the lines that stay glide to their new place (`.subtitle` transition, 200 ms). The place is `.subtitle`, the fade is `.subtitle__box`, so that one never cuts the other.
+// When lines overlap, the player has to know which one to read first: the one that started last is shown whole and the others are dimmed (`-older`), so the eye goes to the newest and the rest are still readable.
+var S = BraveUiBridge.Subtitles, subtitlesEl = el('subtitles'), subtitleNodes = {}, subtitlesToggle = el('subtitlesToggle'), subtitleCount = 0;
+var SUBTITLE_FADE_MS = 200, SUBTITLE_EDGE = 56, reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+// Runs `change` (it adds, takes away or moves lines) and glides every line that was there before and is somewhere else now: it starts from the place it was seen in (a line still gliding is seen where it is) and
+// eases to the place it has. The place is read twice, before and after, with the line's own transform out of the way.
+function glideSubtitles(change) {
+  var was = [];
+  Object.keys(subtitleNodes).forEach(function (id) {
+    var root = subtitleNodes[id].root;
+    was.push({ root: root, top: root.getBoundingClientRect().top });
+    root.style.transition = 'none';
+    root.style.transform = '';
+  });
+  change();
+  var moving = [];
+  was.forEach(function (line) {
+    if (!line.root.parentNode) return;
+    var delta = line.top - line.root.getBoundingClientRect().top;
+    if (Math.abs(delta) < 0.5) { line.root.style.transition = ''; return; }
+    line.root.style.transform = 'translateY(' + delta + 'px)';
+    moving.push(line.root);
+  });
+  if (moving.length) {
+    void subtitlesEl.offsetHeight;
+    moving.forEach(function (root) { root.style.transition = ''; root.style.transform = ''; });
+  }
+}
+
+function createSubtitle(id) {
+  var root = document.createElement('div');
+  root.className = 'subtitle';
+  root.innerHTML = '<div class="subtitle__box"><span class="subtitle__speaker"></span><span class="subtitle__text"></span></div>';
+  var box = root.firstChild;
+  var node = subtitleNodes[id] = { root: root, speaker: box.firstChild, text: box.lastChild, leaving: false, timer: 0, order: ++subtitleCount };
+  box.addEventListener('transitionend', function (event) { if (event.propertyName === 'opacity') finishSubtitle(id); });
+  return node;
+}
+
+// The line is not said any more: it fades where it is, and goes when the fade is over (the end of the transition, or a little after it, in case there is none to end).
+function leaveSubtitle(id) {
+  var node = subtitleNodes[id];
+  if (node.leaving) return;
+  if (reducedMotion.matches) { removeSubtitle(id); return; }
+  node.leaving = true;
+  node.root.classList.add('-leaving');
+  node.timer = setTimeout(function () { finishSubtitle(id); }, SUBTITLE_FADE_MS + 80);
+}
+
+// A line that was fading out is said again (the same id): it stays.
+function stayingSubtitle(node) {
+  node.leaving = false;
+  clearTimeout(node.timer);
+  node.root.classList.remove('-leaving');
+}
+
+function finishSubtitle(id) {
+  var node = subtitleNodes[id];
+  if (node && node.leaving) { glideSubtitles(function () { removeSubtitle(id); }); fitSubtitles(); }
+}
+
+function removeSubtitle(id) {
+  var node = subtitleNodes[id];
+  clearTimeout(node.timer);
+  if (node.root.parentNode) subtitlesEl.removeChild(node.root);
+  delete subtitleNodes[id];
+}
+
+// The lines in the order the engine gives them, each right after the one before it. A line that is fading out stays where it is, so a line that comes goes after it and the ones that stay are never moved.
+function placeSubtitle(root, previous) {
+  var before = root.previousElementSibling;
+  while (before && before.classList.contains('-leaving')) before = before.previousElementSibling;
+  if (root.parentNode === subtitlesEl && before === previous) return;
+
+  var next = previous ? previous.nextElementSibling : subtitlesEl.firstElementChild;
+  while (next && next.classList.contains('-leaving')) next = next.nextElementSibling;
+  subtitlesEl.insertBefore(root, next);
+}
+
+// The newest line is the one the page saw first most recently (`order`; lines that come in one change count in the order the engine lists them), and a line that is fading out is not a candidate: when the newest
+// goes, the one before it is the newest again, and a line that is alone is never dimmed.
+function markNewestSubtitle() {
+  var newest = null;
+  Object.keys(subtitleNodes).forEach(function (id) {
+    var node = subtitleNodes[id];
+    if (!node.leaving && (!newest || node.order > newest.order)) newest = node;
   });
   Object.keys(subtitleNodes).forEach(function (id) {
-    if (seen[id]) return;
-    subtitlesEl.removeChild(subtitleNodes[id].root);
-    delete subtitleNodes[id];
+    var node = subtitleNodes[id];
+    node.root.classList.toggle('-older', node !== newest);
   });
+}
+
+// The lane has a height it never passes (see hud.css): when the lines are taller than it, the oldest are cut at the top edge, and the edge fades so that they go out instead of ending half a line. The newest is the
+// lowest and is never cut. Read from the layout (`offsetTop`), which a gliding line's transform does not change: the first line starts above the lane when it overflows.
+function fitSubtitles() {
+  var first = subtitlesEl.firstElementChild;
+  subtitlesEl.classList.toggle('-clipped', !!first && first.offsetTop < -1);
+  var clipped = subtitlesEl.classList.contains('-clipped');
+  Array.prototype.forEach.call(subtitlesEl.children, function (root) { fadeSubtitleEdge(root.firstChild, clipped ? root.offsetTop : SUBTITLE_EDGE); });
+}
+
+// The fade at the lane's top edge is on each BOX (a gradient from nothing at the edge to whole SUBTITLE_EDGE px below it, laid in the box's own coordinates from where it sits in the lane), never on the lane: a mask
+// or an opacity on an ancestor is the backdrop root of the glass (`backdrop-filter`), and the boxes would blur nothing, which is exactly when the lines are crowded.
+function fadeSubtitleEdge(box, top) {
+  var mask = '';
+  if (top < SUBTITLE_EDGE) mask = 'linear-gradient(to bottom, rgba(0, 0, 0, ' + Math.max(0, top) / SUBTITLE_EDGE + ') ' + Math.max(0, -top) + 'px, #000 ' + (SUBTITLE_EDGE - top) + 'px)';
+  box.style.webkitMaskImage = mask;
+  box.style.maskImage = mask;
+}
+// The lane's height is a share of the window's (hud.css): a window that changes size (the editor's viewport dragged, the fullscreen toggled) changes what fits, and the edge's fade must follow.
+window.addEventListener('resize', fitSubtitles);
+
+function renderSubtitles(lines) {
+  var seen = {};
+  lines.forEach(function (line) { seen[line.id] = true; });
+
+  glideSubtitles(function () {
+    Object.keys(subtitleNodes).forEach(function (id) { if (!seen[id]) leaveSubtitle(id); });
+    var previous = null;
+    lines.forEach(function (line) {
+      var node = subtitleNodes[line.id] || createSubtitle(line.id);
+      if (node.leaving) stayingSubtitle(node);
+      if (node.speaker.textContent !== line.speaker) node.speaker.textContent = line.speaker;
+      node.speaker.hidden = line.speaker === '';
+      if (node.text.textContent !== line.text) node.text.textContent = line.text;
+      placeSubtitle(node.root, previous);
+      previous = node.root;
+    });
+  });
+  markNewestSubtitle();
+  fitSubtitles();
   subtitlesToggle.checked = S.enabled;
 }
 S.onChange.on(renderSubtitles);
@@ -230,6 +426,10 @@ var shown = { sensitivity: function (v) { return Number(v).toFixed(2) + 'x'; }, 
 
 function renderMenu(state) {
   menu.classList.toggle('-open', !!state.open);
+  // The voices of a new language are being loaded: the list and Continue wait, and the row says so, so that the game is given back already speaking it.
+  el('language').disabled = !!state.languageBusy;
+  el('languageLoading').hidden = !state.languageBusy;
+  el('resume').disabled = !!state.languageBusy;
   menu.setAttribute('aria-hidden', state.open ? 'false' : 'true');
   Object.keys(sliders).forEach(function (key) {
     if (document.activeElement !== sliders[key]) sliders[key].value = state[key];

@@ -68,12 +68,26 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .prompt__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; }
 .prompt__text { font-size: 15px; letter-spacing: 0.01em; }
 
-/* The subtitles: the lines of what is being said, at the bottom centre between the two status panels, one over the other when two people talk. */
-.subtitles { position: fixed; left: 50%; bottom: 64px; transform: translateX(-50%); width: min(70vw, 760px); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
-.subtitle { max-width: 100%; padding: 7px 16px; border-radius: 8px; background: rgba(0, 0, 0, 0.62); text-align: center; font-size: 19px; line-height: 1.35; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); animation: subtitle-in 0.12s ease-out; }
-.subtitle__speaker { margin-right: 8px; font-weight: 700; color: var(--accent); }
+/* The subtitles: the lines of what is being said, at the bottom centre, between the two status panels, one over the other when two people talk. They have a lane of their own, a little off the bottom edge of the window (`--subtitle-bottom`, 6% of its height: text glued to the edge is hard to read and is cut off on some screens; the panels keep their 26 px) and with its top where it was (the room under the prompt does not change): as wide as the room between the
+   panels (`--subtitle-side` is what the ammo panel takes on each side, so the lane stays centred), never past the window, and never taller than the space under the prompt, so that a long text cannot cover the
+   panels or the middle of the screen. The newest line is the lowest and always whole: when the lines do not fit, the oldest ones fade out at the top edge (`-clipped` says so; hud.js gives each box its own mask,
+   never the lane: a mask on an ancestor makes it the backdrop root of the boxes' glass, which then blurs nothing). When lines overlap, the
+   one that started last is at full strength and the words of the others are quieter (`-older`, set by hud.js), so the player knows which to read first; a line that is alone is never dimmed. */
+.subtitles { --subtitle-side: 420px; --subtitle-bottom: clamp(48px, 6vh, 72px); position: fixed; left: 50%; bottom: var(--subtitle-bottom); transform: translateX(-50%); width: clamp(260px, calc(100vw - 2 * var(--subtitle-side)), 760px); max-height: calc(50vh - var(--subtitle-bottom) - 92px); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; pointer-events: none; }
+.subtitle { max-width: 100%; transition: transform 0.2s ease-out; }
+.subtitle__box { padding: 7px 16px; border-radius: 8px; background: rgba(0, 0, 0, 0.62); backdrop-filter: var(--glass); display: flex; align-items: baseline; gap: 8px; text-align: left; font-size: 19px; line-height: 1.35; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); animation: subtitle-in 0.12s ease-out; transition: opacity 0.2s ease-out; }
+/* An older line is quieter, not see-through: its panel stays whole (so the glass blurs as strongly and the words keep their ground) and only its words are dimmed. The box at half opacity gave 3.1:1 between the words and
+   the panel over a light floor, below the 4.5:1 that is the least for reading; this gives 6 to 8:1, against 19:1 for the newest line. */
+.subtitle__text, .subtitle__speaker { transition: opacity 0.2s ease-out; }
+.subtitle.-older .subtitle__text { opacity: 0.72; }
+.subtitle.-older .subtitle__speaker { opacity: 0.85; }
+.subtitle.-leaving .subtitle__box { opacity: 0; }
+.subtitle__speaker { flex: none; font-weight: 700; color: var(--accent); }
+.subtitle__text { flex: 1; min-width: 0; }   /* the words are a column of their own: a second line starts under the first word, not under the name */
+.subtitle__speaker::after { content: ':'; }   /* the name is only the name (the data holds "Guard"): the colon that sets it apart from the words is the page's */
 .subtitle__speaker[hidden] { display: none; }
-@keyframes subtitle-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes subtitle-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .subtitle, .subtitle__box, .subtitle__text, .subtitle__speaker { animation: none; transition: none; } }
 
 /* What the thing looked at says about itself, over what E does: a title and a text under it. Only there when the thing has something to say (the page hides the empty one); the text wraps, the prompt does not. */
 .caption { display: none; max-width: 300px; padding: 2px 4px 4px 6px; white-space: normal; }
@@ -117,12 +131,16 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .weapons__chip { color: var(--muted); }
 .weapons__chip.-current { color: var(--accent); }
 
-/* What the player carries. */
-/* What the player carries: only on the screen for a moment after it changes (`-shown`, for the game's Items Seconds), fading in and out. The whole list is in the Journal, under Items. */
-.items { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 10px); display: flex; gap: 8px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; }
-.items.-shown { opacity: 1; transform: translate(-50%, 0); }
-.item { padding: 7px 13px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); border: 1px solid rgba(255, 180, 84, 0.45); font-size: 13px; letter-spacing: 0.04em; }
-.item.-new { border-color: var(--accent); }
+/* What was picked up or spent: a notice for each (`+ Key`, `-2 Grenade`) at the corner, over the health panel (the bottom centre belongs to the subtitles, and what the player carries is not a row that grows with
+   the game: the Journal has the list), three at most, each for the game's Notice Seconds. The page puts it before the subtitles, so that if they ever meet (a narrow window) the subtitles are over it. */
+.notices { position: fixed; left: 26px; bottom: 112px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: min(300px, calc(50vw - 40px)); pointer-events: none; }
+.notice { max-width: 100%; box-sizing: border-box; padding: 7px 13px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); border: 1px solid var(--accent); font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: transform 0.2s ease-out, opacity 0.3s ease-out; animation: notice-in 0.2s ease-out; }
+.notice.-spent { border-color: rgba(255, 255, 255, 0.28); }
+.notice.-bump { animation: notice-bump 0.25s ease-out; }
+.notice.-leaving { opacity: 0; }
+@keyframes notice-in { from { opacity: 0; } }
+@keyframes notice-bump { 50% { background: rgba(255, 180, 84, 0.22); } }
+@media (prefers-reduced-motion: reduce) { .notice { animation: none; transition: none; } }
 
 /* Markers: what can be used, over it on the screen. The one looked at is a glass box with what E does (the page behind it blurred, its colours pushed), tied to the thing by a line; the others are a small mark. */
 .markers { position: fixed; inset: 0; overflow: hidden; }
@@ -156,7 +174,13 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .menu__value { text-align: right; font-variant-numeric: tabular-nums; color: rgba(244, 246, 248, 0.7); }
 .menu__row[hidden] { display: none; }
 .menu__check { justify-self: start; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-.menu__select { grid-column: 2 / 4; padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.08); color: inherit; font: inherit; cursor: pointer; }
+.menu__control { grid-column: 2 / 4; display: flex; align-items: center; gap: 10px; }
+.menu__loading { font-size: 13px; color: var(--accent); white-space: nowrap; }
+.menu__loading[hidden] { display: none; }
+.menu__button:disabled { opacity: 0.45; cursor: default; }
+.menu__select:disabled { opacity: 0.6; cursor: default; }
+/* The arrow is drawn here and not by the system: the system's sits at the edge of the control and ignores its padding. It is inset as far from the right as the text is from the left. */
+.menu__select { flex: 1; appearance: none; -webkit-appearance: none; padding: 6px 34px 6px 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23f4f6f8' stroke-opacity='.75' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center / 12px 12px; color: inherit; font: inherit; cursor: pointer; }
 .menu__select option { color: #111; }
 .menu__slider { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .menu__button { padding: 9px 0; border: 1.5px solid var(--accent); border-radius: 6px; background: transparent; color: var(--accent); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; }

@@ -16,10 +16,12 @@ export interface IHudState {
     stance: string;
     /** A line shown for a few seconds ("The door is locked"), or empty. */
     message: string;
-    /** What the player carries, one name for each item. The page shows the list when it changes, not all the time. */
+    /** What the player carries, one name for each item. The page does not draw it any more (the Journal has the list; what changes is `notices`): it is here for a page of a game that wants it. */
     items: string[];
-    /** How long the list stays on the screen after it changed: 0, it is always there. */
+    /** How long a notice of something picked up or spent stays on the screen: 0, it stays until newer ones push it out. */
     itemsSeconds: number;
+    /** The last few things picked up or spent, oldest first, each with a number (`seq`) that only grows: a page remembers the last one it drew and draws the ones after it. */
+    notices: IHudNotice[];
     /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
     target: boolean;
     /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (a ring of four arcs round a dot) or 'twin-arcs' (two arcs, one each side of a dot, the shotgun's). */
@@ -38,6 +40,18 @@ export interface IHudState {
     staminaExhausted: boolean;
     staminaResume: number;
 }
+/** Something picked up (`delta` above 0) or spent (below 0): what the page says in a notice at the corner of the screen, `+ Key`, `-2 Grenade`. */
+export interface IHudNotice {
+    /** Counts the notices of the game: the same number is never given twice. */
+    seq: number;
+    /** Which kind of item, so that two of the same kind close together are one notice (`+2 Key`). */
+    id: string;
+    /** The name to show: a text, or a `{{ key }}` of the language files that the page reads. */
+    name: string;
+    /** How many were added (positive) or taken (negative), and how many there are now. */
+    delta: number;
+    total: number;
+}
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
 export interface IHudMarker {
     /** Which thing: the id of its entity, so the page keeps the same element for it from frame to frame. */
@@ -55,6 +69,8 @@ export interface IHudMarker {
     focused: boolean;
     /** A focused marker with a line down to the thing, or without (a box on it). */
     line: boolean;
+    /** When the frame this position was worked out in was, in milliseconds since 1970 (`performance.timeOrigin + performance.now()`, the same clock in the page): with two of them the page places the marker where it is NOW, between readings, so that it moves with the camera on every frame the screen draws and not only on the ones a reading arrives. Filled by `Hud.setMarkers()`. */
+    at?: number;
 }
 export declare class Hud {
     state: IHudState;
@@ -73,7 +89,9 @@ export declare class Hud {
     /** The things the player can use that are on the screen now, every frame they move. The page's markers. */
     onMarkers: Signal<IHudMarker[]>;
     private messageTimer?;
+    private noticeSeq;
     private markersKey;
+    private markersStill;
     setPrompt(text: string): void;
     /** The caption of what the player looks at, over the prompt. */
     setCaption(title: string, body: string): void;
@@ -89,10 +107,15 @@ export declare class Hud {
     /** The stamina bar. The value is rounded to half a percent (a pixel of the bar): a change smaller than that is not sent. */
     setStamina(shown: boolean, stamina: number, exhausted: boolean, resume: number): void;
     setTarget(target: boolean): void;
-    /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
+    /**
+     * The markers on the screen, every frame they are worked out. The page hears when they changed, and once more when they stop (the same list again: a page that places a marker by its motion has to learn that it
+     * is standing still); a list that is still is not sent over and over. Each marker carries the time of the frame (`at`).
+     */
     setMarkers(markers: IHudMarker[]): void;
     setItems(items: string[]): void;
-    /** How long the list of what the player carries stays after it changed (0: always). */
+    /** Something was picked up (`delta` above 0) or spent (below 0): a notice for the page. Only the last few are kept; the page draws the ones it has not drawn (by `seq`) and keeps at most three on the screen. */
+    notify(id: string, name: string, delta: number, total: number): void;
+    /** How long a notice of something picked up or spent stays on the screen (0: until newer ones push it out). */
     setItemsSeconds(seconds: number): void;
     /** A line for `seconds` of game time (an engine timer: it stops with Pause). */
     showMessage(text: string, seconds?: number): void;

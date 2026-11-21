@@ -45,8 +45,11 @@ export declare class Inventory {
     private readonly started;
     /** Says what a kind of item is. A kind that has a `start` is given that many, once per game. Defining again changes what is given (the limit), never the count. */
     define(id: string, definition?: IItemDefinition): void;
-    /** Adds `count` of an item, up to its limit. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. */
-    add(id: string, name?: string, count?: number): number;
+    /**
+     * Adds `count` of an item, up to its limit. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. The HUD tells the player
+     * (`+ Key`) unless the kind is hidden or `quiet` is true (what a game gives at the start, or brings back from a save, is not news).
+     */
+    add(id: string, name?: string, count?: number, quiet?: boolean): number;
     /** Takes `count` of an item away. Returns whether there were that many (when there were not, nothing is taken). */
     remove(id: string, count?: number): boolean;
     /** Makes the count of an item exactly `count`, up to its limit (a respawn gives the starting rounds back; nothing is added to what there was). */
@@ -84,5 +87,6 @@ export declare class Inventory {
         started?: string[];
     }): void;
     private kind;
+    private announce;
     private changed;
 }

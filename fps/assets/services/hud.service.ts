@@ -17,10 +17,12 @@ export interface IHudState {
   stance: string;
   /** A line shown for a few seconds ("The door is locked"), or empty. */
   message: string;
-  /** What the player carries, one name for each item. The page shows the list when it changes, not all the time. */
+  /** What the player carries, one name for each item. The page does not draw it any more (the Journal has the list; what changes is `notices`): it is here for a page of a game that wants it. */
   items: string[];
-  /** How long the list stays on the screen after it changed: 0, it is always there. */
+  /** How long a notice of something picked up or spent stays on the screen: 0, it stays until newer ones push it out. */
   itemsSeconds: number;
+  /** The last few things picked up or spent, oldest first, each with a number (`seq`) that only grows: a page remembers the last one it drew and draws the ones after it. */
+  notices: IHudNotice[];
   /** The crosshair is over something a shot would hurt: alive, with a `Health`, in the weapon's range, nothing in the way. The page turns the crosshair red. */
   target: boolean;
   /** Which crosshair the weapon in hand has: 'dot' (a centre and four ticks) or 'arcs' (a ring of four arcs round a dot) or 'twin-arcs' (two arcs, one each side of a dot, the shotgun's). */
@@ -40,6 +42,19 @@ export interface IHudState {
   staminaResume: number;
 }
 
+/** Something picked up (`delta` above 0) or spent (below 0): what the page says in a notice at the corner of the screen, `+ Key`, `-2 Grenade`. */
+export interface IHudNotice {
+  /** Counts the notices of the game: the same number is never given twice. */
+  seq: number;
+  /** Which kind of item, so that two of the same kind close together are one notice (`+2 Key`). */
+  id: string;
+  /** The name to show: a text, or a `{{ key }}` of the language files that the page reads. */
+  name: string;
+  /** How many were added (positive) or taken (negative), and how many there are now. */
+  delta: number;
+  total: number;
+}
+
 /** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
 export interface IHudMarker {
   /** Which thing: the id of its entity, so the page keeps the same element for it from frame to frame. */
@@ -57,11 +72,13 @@ export interface IHudMarker {
   focused: boolean;
   /** A focused marker with a line down to the thing, or without (a box on it). */
   line: boolean;
+  /** When the frame this position was worked out in was, in milliseconds since 1970 (`performance.timeOrigin + performance.now()`, the same clock in the page): with two of them the page places the marker where it is NOW, between readings, so that it moves with the camera on every frame the screen draws and not only on the ones a reading arrives. Filled by `Hud.setMarkers()`. */
+  at?: number;
 }
 
 @Service()
 export class Hud {
-  state: IHudState = { prompt: '', captionTitle: '', captionBody: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false, stamina: 1, staminaShown: false, staminaExhausted: false, staminaResume: 0.3 };
+  state: IHudState = { prompt: '', captionTitle: '', captionBody: '', ammo: 0, magazine: 0, reserve: 0, health: 100, maxHealth: 100, stance: 'relaxed', message: '', items: [], itemsSeconds: 4, notices: [], target: false, crosshair: 'dot', spread: 0, weapons: [], weapon: 0, aiming: false, stamina: 1, staminaShown: false, staminaExhausted: false, staminaResume: 0.3 };
 
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<IHudState>();
@@ -73,7 +90,9 @@ export class Hud {
   onMarkers = new Signal<IHudMarker[]>();
 
   private messageTimer?: number;
+  private noticeSeq = 0;
   private markersKey = '[]';
+  private markersStill = true;
 
   setPrompt(text: string): void {
     if (this.state.prompt === text) return;
@@ -147,12 +166,22 @@ export class Hud {
     this.changed();
   }
 
-  /** The markers on the screen. The page hears only when they changed: the same list (positions to a thousandth of the screen) is not sent again. */
+  /**
+   * The markers on the screen, every frame they are worked out. The page hears when they changed, and once more when they stop (the same list again: a page that places a marker by its motion has to learn that it
+   * is standing still); a list that is still is not sent over and over. Each marker carries the time of the frame (`at`).
+   */
   setMarkers(markers: IHudMarker[]): void {
     const key = JSON.stringify(markers);
-    if (key === this.markersKey) return;
-    this.markersKey = key;
-    this.onMarkers.emit(markers);
+    if (key === this.markersKey) {
+      if (this.markersStill) return;
+      this.markersStill = true;
+    } else {
+      this.markersKey = key;
+      this.markersStill = false;
+    }
+
+    const at = performance.timeOrigin + performance.now();
+    this.onMarkers.emit(markers.map(marker => ({ ...marker, at })));
   }
 
   setItems(items: string[]): void {
@@ -160,7 +189,16 @@ export class Hud {
     this.changed();
   }
 
-  /** How long the list of what the player carries stays after it changed (0: always). */
+  /** Something was picked up (`delta` above 0) or spent (below 0): a notice for the page. Only the last few are kept; the page draws the ones it has not drawn (by `seq`) and keeps at most three on the screen. */
+  notify(id: string, name: string, delta: number, total: number): void {
+    if (!id || !delta) return;
+
+    this.noticeSeq++;
+    this.state.notices = [...this.state.notices, { seq: this.noticeSeq, id, name, delta, total }].slice(-NOTICES_KEPT);
+    this.changed();
+  }
+
+  /** How long a notice of something picked up or spent stays on the screen (0: until newer ones push it out). */
   setItemsSeconds(seconds: number): void {
     const wanted = Number.isFinite(seconds) ? Math.max(seconds, 0) : 4;
     if (this.state.itemsSeconds === wanted) return;
@@ -185,6 +223,9 @@ export class Hud {
   }
 
   private changed(): void {
-    this.onChange.emit({ ...this.state, items: [...this.state.items], weapons: [...this.state.weapons] });
+    this.onChange.emit({ ...this.state, items: [...this.state.items], notices: [...this.state.notices], weapons: [...this.state.weapons] });
   }
 }
+
+// How many notices the state keeps: more than the page shows at once, so that the ones that came between two of its readings are all there.
+const NOTICES_KEPT = 8;

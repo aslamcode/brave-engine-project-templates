@@ -79,12 +79,20 @@ import { Subtitles } from '@brave/ui-bridge';
 Subtitles.onChange.on(lines => { box.textContent = lines.map(line => (line.speaker ? line.speaker + ': ' : '') + line.text).join('\n'); });
 ```
 
+## Voices in each language
+Put a voice in a folder per language, named like its language file, with the same file name in each: `assets/audio/voice/en/guard-01.wav` and `assets/audio/voice/pt-BR/guard-01.wav`.
+In the scene, point the Audio Source at ONE of them (the default language's). The game plays the file of the language the player is in: the same path with the language folder swapped.
+A language with no file of that line plays the base language's (pt-BR, then pt, then the default); a sound outside a language folder plays as it is. The subtitles keep the clip's file name, so one track serves every folder.
+If the language changes while a line is being said (the pause menu), the line goes on in the new language at the same time when both takes are as long as each other (within 0.1 s), else at the start of the sentence when both languages' subtitles have the same number of cues, else it finishes in the old one and the new one starts at the next play.
+After `Translate.language = ...`, `await AudioSource.whenLanguageReady()` before the game goes on, so the first line after the change does not wait for a file.
+Limits: the folder must be named exactly like the language code (`pt-BR`, not `pt_br`) to be found; a language added after the build brings texts but not voices; music and ambience (Audio Player) are not dubbed; Project Settings > Languages > Voices lists what a language lacks.
+
 ## Adding a language after the build
 A built game has a folder `data/translations/` with an empty `index.json` and a note. A browser cannot list a folder, so a language is there when the list says so: copy the `.lang` into that folder and add its name, `["es.lang"]`. A language the game already has is **laid over**: what the new file says wins, what it leaves out stays, a `null` leaves it. A broken file or a wrong name is said in the console and left out; the rest still loads. The game reads it at the next start.
 
 ## Limits
 - The Text system is left to right with no shaping; Arabic, Hebrew and Indic scripts do not draw in the scene (the UI is HTML and the browser does them). The baked font atlas holds Latin, Greek and Cyrillic well; CJK does not fit (use the UI for it).
 - A text that comes from the player (a name) goes into a text through `{name}` or `Translate.escape()`, never concatenated into one that has `{{ }}`.
-- Dubbing and localized textures are not part of this: a language changes words, not assets.
+- Localized textures are not part of this: a language changes words and voices, not pictures (use a Text of the scene for a sign).
 
 Types: `brave/core/static/translate/{translate,subtitles}.d.ts`, `brave/core/util/translate/`, `brave/core/component/audio-source.d.ts`

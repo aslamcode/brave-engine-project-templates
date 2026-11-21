@@ -259,7 +259,7 @@ export class Interactor extends ScriptComponent {
         const names = peeking === undefined && !isFocused && item.near <= 1;
         if (names) peeking = item.thing.entity.id;
         const caption = isFocused ? item.thing.caption : undefined;
-        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * 1000) / 1000, y: Math.round(item.y * 1000) / 1000, prompt: isFocused ? item.thing.promptFor(this) : '', title: caption?.title ?? '', body: caption?.body ?? '', peek: names ? item.thing.peekName : '', focused: isFocused, line: item.thing.marker === 'line' });
+        markers.push({ id: item.thing.entity.id, x: Math.round(item.x * MARKER_PRECISION) / MARKER_PRECISION, y: Math.round(item.y * MARKER_PRECISION) / MARKER_PRECISION, prompt: isFocused ? item.thing.promptFor(this) : '', title: caption?.title ?? '', body: caption?.body ?? '', peek: names ? item.thing.peekName : '', focused: isFocused, line: item.thing.marker === 'line' });
       }
     }
 
@@ -362,6 +362,10 @@ const HELD_RADIUS = 1.5;
 
 // The same for the marker that is saying its name now.
 const PEEK_HELD = 1.3;
+
+// The marker's place on the screen goes to the page in parts of the window (a hundred thousandth: a tenth of a pixel at 4K). It was a thousandth, which is 1.3 px on a 1280 window and 3.8 px on a 4K one: a label that
+// moves 3 px a frame moved in steps of 2.6 and 3.8 px and trembled, more on a bigger screen.
+const MARKER_PRECISION = 100000;
 
 // How far a thing's model may sit from its entity's origin, metres: a thing whose origin is farther than the reach and its radius by more than this is not measured at all.
 const MODEL_OFFSET = 1;

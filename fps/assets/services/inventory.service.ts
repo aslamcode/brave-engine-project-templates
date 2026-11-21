@@ -72,14 +72,17 @@ export class Inventory {
 
     if ((definition.start ?? 0) > 0 && !this.started.has(id)) {
       this.started.add(id);
-      this.add(id, '', definition.start);
+      this.add(id, '', definition.start, true);
     } else {
       this.changed();
     }
   }
 
-  /** Adds `count` of an item, up to its limit. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. */
-  add(id: string, name = '', count = 1): number {
+  /**
+   * Adds `count` of an item, up to its limit. `name` is what the player reads (the id when none is given); the last name given for an id is kept. Returns how many there are now. The HUD tells the player
+   * (`+ Key`) unless the kind is hidden or `quiet` is true (what a game gives at the start, or brings back from a save, is not news).
+   */
+  add(id: string, name = '', count = 1, quiet = false): number {
     if (!id || count <= 0) return this.count(id);
 
     const added = Math.min(Math.floor(count), this.room(id));
@@ -90,6 +93,7 @@ export class Inventory {
     entry.count += added;
     this.entries.set(id, entry);
     this.changed();
+    if (!quiet) this.announce(id, added, entry.count);
     return entry.count;
   }
 
@@ -101,6 +105,7 @@ export class Inventory {
     entry.count -= count;
     if (entry.count <= 0) this.entries.delete(id);
     this.changed();
+    this.announce(id, -count, Math.max(entry.count, 0));
     return true;
   }
 
@@ -183,6 +188,13 @@ export class Inventory {
     let kind = this.kinds.get(id);
     if (!kind) this.kinds.set(id, kind = { name: '', description: '', limit: 0, hidden: false });
     return kind;
+  }
+
+  // The player is told what was picked up or spent, but not about a kind that is hidden from the lists (rounds: the ammo counter says them).
+  private announce(id: string, delta: number, total: number): void {
+    if (this.kinds.get(id)?.hidden) return;
+
+    this.hud.notify(id, this.nameOf(id), delta, total);
   }
 
   private changed(): void {

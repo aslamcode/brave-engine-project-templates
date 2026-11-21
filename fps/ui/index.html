@@ -30,6 +30,9 @@
   <div id="prompt" class="prompt"><div id="promptCaption" class="caption"><div id="promptTitle" class="caption__title"></div><div id="promptBody" class="caption__body"></div></div><div class="prompt__row"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div></div>
   <div id="message" class="message"></div>
 
+  <!-- What was picked up or spent, a notice each, at the corner over the health panel: filled by hud.js from the `Hud` service's notices. It comes BEFORE the subtitles on purpose: elements that are not given a z-index paint in the order of the page, so the subtitles are always over it. -->
+  <div id="notices" class="notices"></div>
+
   <!-- The subtitles of what is being said: filled by hud.js from the engine's `Subtitles` (the lines of the clips that play now, in the language in use). Nothing here is clickable. -->
   <div id="subtitles" class="subtitles" aria-live="polite"></div>
 
@@ -45,8 +48,6 @@
     <div id="healthText" class="status__value">100</div>
   </div>
 
-  <div id="items" class="items"></div>
-
   <div class="status -ammo">
     <div id="weapons" class="weapons"></div>
     <div id="stance" class="status__label">Relaxed</div>
@@ -61,7 +62,7 @@
       <label class="menu__row"><span class="menu__label" data-translate="menu.fieldOfView">Field of View</span><input id="fieldOfView" class="menu__slider" type="range" min="50" max="110" step="1"><span id="fieldOfViewValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label" data-translate="menu.volume">Volume</span><input id="volume" class="menu__slider" type="range" min="0" max="1" step="0.01"><span id="volumeValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label" data-translate="menu.subtitles">Subtitles</span><input id="subtitlesToggle" class="menu__check" type="checkbox"></label>
-      <label id="languageRow" class="menu__row" hidden><span class="menu__label" data-translate="menu.language">Language</span><select id="language" class="menu__select"></select></label>
+      <label id="languageRow" class="menu__row" hidden><span class="menu__label" data-translate="menu.language">Language</span><span class="menu__control"><select id="language" class="menu__select"></select><span id="languageLoading" class="menu__loading" data-translate="menu.loading" hidden>Loading…</span></span></label>
       <div class="menu__title" data-translate="menu.saves">Saves</div>
       <div id="saves" class="saves"></div>
       <div id="savesNote" class="menu__note"></div>
