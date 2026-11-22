@@ -25,13 +25,16 @@ var lastState = null;
 function render(state) {
   lastState = state;
   // The text stays while the prompt fades out, so that the key chip is never left alone on the screen. What the thing looked at says about itself (its title and its text) is over the line and stays with it.
-  if (state.prompt !== '') {
+  // A thing that only describes itself (a painting: no prompt, a caption) is the same card without the line of E (`-caption-only`; it is set where the text is, so that it does not change while the card fades out).
+  var captioned = !!(state.captionTitle || state.captionBody);
+  if (state.prompt !== '' || captioned) {
     promptText.textContent = tr(state.prompt);
     promptTitle.textContent = tr(state.captionTitle || '');
     promptBody.textContent = tr(state.captionBody || '');
-    promptCaption.classList.toggle('-show', !!(state.captionTitle || state.captionBody));
+    promptCaption.classList.toggle('-show', captioned);
+    prompt.classList.toggle('-caption-only', state.prompt === '');
   }
-  prompt.classList.toggle('-show', state.prompt !== '');
+  prompt.classList.toggle('-show', state.prompt !== '' || captioned);
   message.textContent = tr(state.message);
   message.classList.toggle('-show', state.message !== '');
 

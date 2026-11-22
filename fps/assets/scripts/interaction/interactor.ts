@@ -31,6 +31,7 @@ import { Interactable } from './interactable';
 export class Interactor extends ScriptComponent {
 
   @Float({ header: 'Reach', label: 'Reach', suffix: 'm', tooltip: 'How far from the eyes the player can use things.' }) reach = 2.5;
+  @Float({ label: 'Look Distance', suffix: 'm', tooltip: 'How far from the eyes a thing that only describes itself (a Caption: a painting, a sign) is read: its title and text show over the crosshair. Things are used within Reach only.' }) lookDistance = 6;
   @Ref(Entity, { label: 'Body', tooltip: 'The player\'s own entity: the ray goes through it and everything under it. Empty: the top of the hierarchy this entity is in.' }) body?: IEntity;
 
   @Float({ header: 'Aim', label: 'Aim Hold', suffix: 's', tooltip: 'How long a thing that helps the aim (its Aim Radius) stays looked at after the aim left it, so that a shaking hand does not make its box blink. 0: it goes at once.' }) aimHold = 0.2;
@@ -134,9 +135,10 @@ export class Interactor extends ScriptComponent {
     this.origin.set(matrix[12], matrix[13], matrix[14]);
     this.direction.set(-matrix[8] / length, -matrix[9] / length, -matrix[10] / length);
 
-    const hit = PhysicsSystem.raycast(this.origin, this.direction, this.reach, { ignore: this.body ?? this.root() });
+    // The ray goes as far as the farthest thing that is looked at (a painting is read from further away than a door is used), and what it meets beyond Reach counts only when it only describes itself.
+    const hit = PhysicsSystem.raycast(this.origin, this.direction, Math.max(this.reach, this.lookDistance), { ignore: this.body ?? this.root() });
     const under = hit && this.interactableAbove(hit.entity);
-    if (under) return this.hold(under);
+    if (under && (hit.distance <= this.reach || under.describesOnly)) return this.hold(under);
 
     const helped = this.helped();
     if (helped) {
@@ -234,7 +236,7 @@ export class Interactor extends ScriptComponent {
       const found: { thing: Interactable; distance: number; x: number; y: number; point: Vector3; near: number }[] = [];
       this.candidates.forEach(candidate => {
         const thing = candidate.thing;
-        if (!thing.activeInHierarchy || !thing.usable || thing.marker === 'none') return;
+        if (!thing.activeInHierarchy || !thing.usable || thing.marker === 'none' || thing.describesOnly) return;
 
         const point = this.anchorOf(candidate);
         const distance = Vector3.distance(point, this.origin);

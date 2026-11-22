@@ -182,6 +182,10 @@
     "chip": {
       "prompt": "Pegar {{ items.chip.name }}",
       "message": "{{ items.chip.name }} guardado"
+    },
+    "case": {
+      "title": "Maleta lacrada",
+      "text": "Trancada com firmeza e mais pesada do que parece. Ninguém aqui tem a chave."
     }
   },
   "subtitles": {

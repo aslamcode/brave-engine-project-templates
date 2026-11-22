@@ -46,6 +46,11 @@ export declare class Interactable extends ScriptComponent {
     promptFor(_interactor: Interactor): string;
     /** What it says about itself when looked at, under the prompt's box on the HUD. Both empty (the default): it says only what E does. A kind answers with what it knows (a pickup: its item). */
     get caption(): IInteractableCaption;
+    /**
+     * Whether it only says what it is: no prompt (nothing for E to do) and a caption to read (a painting, a sign: the `Caption` script). The HUD shows its caption alone, with no key and no marker over it, and the
+     * `Interactor` reads it from further away than it uses things (`Look Distance`).
+     */
+    get describesOnly(): boolean;
     /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
     get peekName(): string;
     /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */

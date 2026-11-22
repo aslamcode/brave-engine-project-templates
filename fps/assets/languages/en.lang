@@ -182,6 +182,10 @@
     "chip": {
       "prompt": "Take {{ items.chip.name }}",
       "message": "Picked up {{ items.chip.name }}"
+    },
+    "case": {
+      "title": "Sealed case",
+      "text": "Locked tight, and heavier than it looks. Nobody here has the key."
     }
   },
   "subtitles": {

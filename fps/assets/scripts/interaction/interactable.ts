@@ -66,6 +66,15 @@ export class Interactable extends ScriptComponent {
     return { title: this.captionTitle, body: this.captionText };
   }
 
+  /**
+   * Whether it only says what it is: no prompt (nothing for E to do) and a caption to read (a painting, a sign: the `Caption` script). The HUD shows its caption alone, with no key and no marker over it, and the
+   * `Interactor` reads it from further away than it uses things (`Look Distance`).
+   */
+  get describesOnly(): boolean {
+    const caption = this.caption;
+    return this.currentPrompt === '' && !!(caption.title || caption.body);
+  }
+
   /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
   get peekName(): string {
     return '';

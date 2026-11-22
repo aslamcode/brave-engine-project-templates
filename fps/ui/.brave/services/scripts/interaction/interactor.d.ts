@@ -26,6 +26,7 @@ import { Interactable } from './interactable';
  */
 export declare class Interactor extends ScriptComponent {
     reach: number;
+    lookDistance: number;
     body?: IEntity;
     aimHold: number;
     audio?: AudioSource;
