@@ -86,7 +86,7 @@ export class Progress extends ScriptComponent {
 - Not saved: static or module-level variables, `Input` listeners, `Invoke` timers, `Signal` listeners, native handles, functions, instances of unregistered classes, references between entities of different scenes.
 
 ```ts
-import { Class, Input, JsonIgnore, Saved, Script, ScriptComponent } from '@brave/core';
+import { Class, EventListner, Input, JsonIgnore, Saved, Script, ScriptComponent } from '@brave/core';
 
 @Class()
 export class Note {
@@ -98,14 +98,14 @@ export class Note {
 export class Door extends ScriptComponent {
   @JsonIgnore() @Saved() openedAt = 0;
   notes = new Map<string, Note>();
-  @JsonIgnore() private listener?: ReturnType<typeof Input.keyboard.keyE.down>;
+  @JsonIgnore() private listener?: EventListner;
 
   onStart() { this.listen(); }
   onRestore() { this.listen(); }
   onDestroy() { if (this.listener) Input.removeListner(this.listener); }
 
   private listen() {
-    this.listener = Input.keyboard.keyE.down(() => { this.openedAt = Date.now(); });
+    this.listener = Input.action('open-door').down(() => { this.openedAt = Date.now(); });
   }
 }
 ```

@@ -15,7 +15,7 @@ This is a **Brave Engine** game project: a 3D game made with the Brave Editor, T
 | Open it for | File |
 |---|---|
 | Writing a script: lifecycle, Inspector fields, events, timers, spawning | `docs/scripts.md` |
-| Keyboard, mouse, pointer lock | `docs/input.md` |
+| Actions (keys, mouse, gamepad, rebinding), pointer lock | `docs/input.md` |
 | Scenes, loading scenes from code, prefabs, asset types, sidecars, `project.json`, who edits what | `docs/scenes-and-assets.md` |
 | The editor's panels, shortcuts, how to give editor steps | `docs/editor.md` |
 | Characters, character cameras, animation, 2D sprite animation | `docs/characters-and-animation.md` |

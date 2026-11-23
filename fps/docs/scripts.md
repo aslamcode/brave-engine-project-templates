@@ -70,17 +70,17 @@ export class Proximity extends ScriptComponent {
 ```
 - Events for scripts are **`Signal`**: `signal.on(callback, this)` (the target is held weakly, so a script that is gone is dropped on the next `emit`), `signal.emit(data)`. Never expose an RxJS `Subject`.
 - Timers: use **`Invoke.setTimeout` / `setInterval`** (and the `Unscaled` variants), not the browser's: they freeze on Pause and are cancelled on Stop. A native timer survives Stop and keeps running.
-- Input is callback-based; there is no polling (`input.md`). Register in `onStart()`, remove in `onDestroy()`:
+- Input is callback-based; there is no polling (`input.md`). Ask for an action, not a key (declare it in Project Settings > Input), register in `onStart()`, remove in `onDestroy()`:
 ```ts
-import { Entity, Input, JsonIgnore, Ref, Script, ScriptComponent } from '@brave/core';
+import { Entity, EventListner, Input, JsonIgnore, Ref, Script, ScriptComponent } from '@brave/core';
 
 @Script()
 export class Flashlight extends ScriptComponent {
   @Ref(Entity) lamp!: Entity;
-  @JsonIgnore() private listener?: ReturnType<typeof Input.keyboard.keyF.down>;
+  @JsonIgnore() private listener?: EventListner;
 
   onStart() {
-    this.listener = Input.keyboard.keyF.down(() => { this.lamp.active = !this.lamp.active; });
+    this.listener = Input.action('flashlight').down(() => { this.lamp.active = !this.lamp.active; });
   }
 
   onDestroy() {
