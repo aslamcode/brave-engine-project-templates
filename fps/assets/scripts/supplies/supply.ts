@@ -7,7 +7,7 @@ import { playSound } from '../shared/sound';
 
 /**
  * Something the player takes: a box on the ground that gives something (`AmmoSupply`, `HealthSupply`) and is gone, or back after a while. It is an `Interactable`, so the player sees it as the rest of what can be used
- * (the glass box with E and what it gives, tied to it by a line, when it is looked at) and takes it with E. The entity has the drawing as children, `Visual` pointing at them (hidden while it is used up), a solid
+ * (the glass box with the interact key and what it gives, tied to it by a line, when it is looked at) and takes it with `interact`. The entity has the drawing as children, `Visual` pointing at them (hidden while it is used up), a solid
  * Collider on the `Visual` for the player to look at (a ray goes through triggers), and its own sound (an Audio Source on this entity, Auto Play off) heard when it is taken. `Walk Over` also lets the player take it
  * by walking into the trigger Collider of this entity.
  *
@@ -29,7 +29,7 @@ export class Supply extends Interactable {
   @Float({ label: 'Respawn After', suffix: 's', tooltip: 'Seconds until it is there again after it was taken. 0: it is taken for good.' }) respawnSeconds = 30;
   @String({ label: 'Message', tooltip: 'A line on the screen when it is taken. {amount} stands for what it gave. Empty: none.', completion: StringCompletionEnum.TranslationKeys }) message = '';
   @String({ label: 'Full Message', tooltip: 'A line on the screen when the player uses it and has no use for it (full health, ammo at the limit). Empty: none, only the click.', completion: StringCompletionEnum.TranslationKeys }) fullMessage = '';
-  @Bool({ label: 'Walk Over', tooltip: 'On: it is also taken by walking into the trigger Collider of this entity, with no need to look at it and press E.' }) walkOver = false;
+  @Bool({ label: 'Walk Over', tooltip: 'On: it is also taken by walking into the trigger Collider of this entity, with no need to look at it and use it.' }) walkOver = false;
 
   @Inject(Hud) hud!: Hud;
 
@@ -44,17 +44,17 @@ export class Supply extends Interactable {
     this.bind();
   }
 
-  /** What E does: the prompt, with {amount} for what it gives. */
+  /** What `interact` does: the prompt, with {amount} for what it gives. */
   get currentPrompt(): string {
     return fillText(this.prompt, { amount: Math.round(this.promptAmount()) });
   }
 
-  /** It can be used until it is taken (a used up supply is not marked, and E does nothing on it). */
+  /** It can be used until it is taken (a used up supply is not marked, and `interact` does nothing on it). */
   get usable(): boolean {
     return !this.isTaken;
   }
 
-  /** E: the player takes it, or is told it has no use for it. */
+  /** `interact`: the player takes it, or is told it has no use for it. */
   interact(interactor: Interactor): boolean {
     if (!this.activeInHierarchy || !this.usable) return false;
 

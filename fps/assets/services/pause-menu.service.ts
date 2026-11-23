@@ -1,4 +1,4 @@
-import { AudioMixerSystem, AudioSource, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, PlayerMovement, Project, Screen, Service, Signal, Store, Subtitles, Translate, UISystem } from '@brave/core';
+import { AudioMixerSystem, AudioSource, BraveEngine, BraveEngineModeEnum, Camera, Cursor, Entity, FirstPersonCamera, Input, InputDeviceEnum, PlayerMovement, Project, Screen, Service, Signal, Store, Subtitles, Translate, UISystem } from '@brave/core';
 
 /** What the menu page shows: whether it is open, the three settings the player can change, and whether the game can be closed from here. */
 export interface IPauseMenuState {
@@ -21,13 +21,16 @@ const VOLUME_SILENCE_DECIBELS = -80;
 // A pointer let go within this many milliseconds of being taken is not the player pausing: it is the browser dropping a lock it had only just given (the Esc that closed a menu, still being handled as the key that lets
 // go of the pointer: `Cursor.lockAfterEscape()` asks again once it is done), and the menu must not open for it.
 const BLINK_MS = 400;
-// An Esc that comes twice at once (the page of the menu forwards it and the window hears it) is one.
-const ESCAPE_DEBOUNCE_MS = 200;
+// A pause that comes twice at once (the page of the menu forwards the Esc and the window hears it) is one.
+const PAUSE_DEBOUNCE_MS = 200;
 
 /**
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
  * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
+ * Esc is the default of the `pause` action (the pad's Start too): the player can give it another key in the page's Controls screen, and the menu then opens and closes by that one (the browser's own Esc still lets go of the pointer, which opens it).
+ * A pad never holds the pointer, so nothing is let go for the menu to hear of: its Start opens the menu by itself (`openFromPad()`), once the game runs and no other menu has the screen.
+ * A rebinding that waits for a key silences the actions, so the Esc that cancels it does not close the menu; and one still waiting when the menu closes is ended with it (`close()`).
  * That hand-back is for a build (`holdPointer()`). In the editor's Play closing the menu leaves the pointer free (a screenshot, a look at the editor, with the game running and no menu): the next click on the game holds it.
  * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
@@ -64,10 +67,12 @@ export class PauseMenu {
   private armed = false;
   private pausedByMenu = false;
   private releaseExpected = false;
+  private otherMenuOpen = false;
+  private otherMenuClosedAt = -Infinity;
   private lockedAt = -Infinity;
-  private lastEscape = -Infinity;
+  private lastPause = -Infinity;
   private listener = () => this.onLockChange();
-  private escapeListener?: Parameters<typeof Input.removeListner>[0];
+  private pauseListener?: Parameters<typeof Input.removeListner>[0];
 
   onStart() {
     this.state.sensitivity = this.savedSensitivity ?? SENSITIVITY.start;
@@ -81,23 +86,30 @@ export class PauseMenu {
     if (language) Translate.language = language;
     Subtitles.enabled = this.savedSubtitles ?? true;
     document.addEventListener('pointerlockchange', this.listener);
-    // Esc while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
-    this.escapeListener = Input.keyboard.escape.down(() => this.onEscape());
+    // The `pause` action (Esc by default) while the menu is open closes it. The Esc that opened it was the browser's (it let the pointer go and the key never reached the page), and a key held down repeats without being a new press (`down` skips those).
+    this.pauseListener = Input.action('pause').down(event => this.onPause(event.device));
     UISystem.interactive = false;
     this.changed();
   }
 
   onDestroy() {
     document.removeEventListener('pointerlockchange', this.listener);
-    if (this.escapeListener) Input.removeListner(this.escapeListener);
-    this.escapeListener = undefined;
+    if (this.pauseListener) Input.removeListner(this.pauseListener);
+    this.pauseListener = undefined;
     this.pausedByMenu = false;
     UISystem.interactive = true;
   }
 
-  /** Another menu (the journal) has the screen: this one does not open when the pointer is let go (that is the other menu's doing, not the player's Esc) until the pointer is held again. It stays so for as many events as the browser sends, not for one. */
+  /** Another menu (the journal) has the screen: this one does not open when the pointer is let go (that is the other menu's doing, not the player's Esc) until the pointer is held again. It stays so for as many events as the browser sends, not for one. A pad's Start does not wait for the pointer (a pad may never hold it): it waits for `otherMenuClosed()`. */
   expectRelease(): void {
     this.releaseExpected = true;
+    this.otherMenuOpen = true;
+  }
+
+  /** The other menu (the journal) gave the screen back. The Start that closed it is still being heard by this menu too, whichever of the two hears it first: it does not open for it (`PAUSE_DEBOUNCE_MS`). */
+  otherMenuClosed(): void {
+    this.otherMenuOpen = false;
+    this.otherMenuClosedAt = performance.now();
   }
 
   /** Opens the menu (and pauses the game, when `pausesGame`). */
@@ -208,6 +220,8 @@ export class PauseMenu {
 
   private close(): void {
     if (!this.state.open) return;
+    // A control that was waiting for a key is not carried out of the menu: nothing it hears from now on is the player's choice there.
+    Input.actions.cancelRebind();
     this.state.open = false;
     UISystem.interactive = false;
     if (this.pausedByMenu && BraveEngine.mode === BraveEngineModeEnum.Paused) BraveEngine.play();
@@ -215,28 +229,44 @@ export class PauseMenu {
     this.changed();
   }
 
-  // Esc. With the browser keeping it the menu opens by the pointer being let go (`onLockChange`), and this only closes it. With the game keeping it (fullscreen) the pointer is still held when the key arrives, and
-  // opening the menu is the game's to do: it lets go of the pointer itself. And a game that runs with the pointer free (the browser would not give it back after a menu) opens the menu on Esc as well: there is no
-  // lock for the browser to let go of, so the key reaches the page. Not while the editor has the mouse (a Shift+Esc in the editor's Play: an Esc typed into a field of the editor is not the player pausing).
-  private onEscape(): void {
+  // The `pause` action. With the browser keeping Esc the menu opens by the pointer being let go (`onLockChange`), and this only closes it. With the pointer still held when the control arrives (the game keeping Esc
+  // in fullscreen, a pad's Start, a key the player gave to Pause) opening the menu is the game's to do: it lets go of the pointer itself. And a game that runs with the pointer free (the browser would not give it
+  // back after a menu) opens the menu as well: there is no lock for the browser to let go of, so the key reaches the page. Not while the editor has the mouse (a Shift+Esc in the editor's Play: an Esc typed into a
+  // field of the editor is not the player pausing). A pad never held the pointer, so it was never "armed" and nothing is let go for it: its press opens the menu on its own (`openFromPad()`).
+  private onPause(device: InputDeviceEnum): void {
     const now = performance.now();
-    if (now - this.lastEscape < ESCAPE_DEBOUNCE_MS) return;
-    this.lastEscape = now;
+    if (now - this.lastPause < PAUSE_DEBOUNCE_MS) return;
+    this.lastPause = now;
 
     if (this.state.open) {
       this.leave();
       return;
     }
-    if (Cursor.escapeIsOurs && Cursor.isLocked) {
+    if (Cursor.isLocked) {
       this.armed = true;
       Cursor.unlock();
       this.open();
+      return;
+    }
+    if (device === InputDeviceEnum.Gamepad) {
+      this.openFromPad();
       return;
     }
     if (this.armed && !Cursor.isLocked && !this.releaseExpected && !Cursor.releasedForEditor && !BraveEngine.priorityCamera && BraveEngine.mode === BraveEngineModeEnum.Running) {
       Cursor.unlock();
       this.open();
     }
+  }
+
+  // A pad's Start with the pointer free (a pad player never held it). The Journal being open (or just closed by this very press: both menus hear it) is not a pause, nor is a game that is not running, or the
+  // editor's own camera showing the view. `releaseExpected` is not asked: it waits for a pointer that a pad never takes.
+  private openFromPad(): void {
+    if (this.otherMenuOpen || performance.now() - this.otherMenuClosedAt < PAUSE_DEBOUNCE_MS) return;
+    if (BraveEngine.priorityCamera || BraveEngine.mode !== BraveEngineModeEnum.Running) return;
+
+    this.armed = true;
+    Cursor.unlock();
+    this.open();
   }
 
   // The pointer taken away by the player, after it was held, opens the menu; held again, it closes it. Not while the editor's own camera shows the view (a Play looked at through it): the pointer is the editor's then (it

@@ -3,10 +3,10 @@ import { Hud } from '../../services/hud.service';
 
 /**
  * A limit to the run, on the character that has the `Player Movement`: running spends the stamina, anything else gives it back. It is optional the way every component is: a character
- * without it, or with it unticked, runs for as long as Shift is held.
+ * without it, or with it unticked, runs for as long as the `run` control is held.
  *
  * It spends `1 / Run Seconds` of the stamina each second the character is sprinting (the run on, the keys moving the body, not crouched) and gives back `1 / Recover Seconds` each second it is not, in game
- * time (slow motion slows it, a pause holds it). When it runs out the character stops running and cannot run again until the stamina has got back to `Resume At`, and then Shift is pressed again:
+ * time (slow motion slows it, a pause holds it). When it runs out the character stops running and cannot run again until the stamina has got back to `Resume At`, and then `run` is pressed again:
  * a held key does not start a run by itself, or the character would run and walk by turns for as long as it is held. A character that stops by itself before it runs out can run again at once, with
  * whatever is left. The way the run is taken away is the Player Movement's own `canRun`.
  *
@@ -23,7 +23,7 @@ export class Stamina extends ScriptComponent {
 
   @SaveIgnore() @Float({ header: 'Stamina', label: 'Run Seconds', suffix: 's', tooltip: 'How long the character can run, from full to nothing.' }) runSeconds = 10;
   @SaveIgnore() @Float({ label: 'Recover Seconds', suffix: 's', tooltip: 'How long it takes to fill up again from nothing, while the character is not running.' }) recoverSeconds = 7;
-  @SaveIgnore() @Float({ label: 'Resume At', suffix: '%', tooltip: 'After the stamina ran out the character can run again only from this share of it, with Shift pressed again. A character that stopped before it ran out can run at once.' }) resumeAt = 30;
+  @SaveIgnore() @Float({ label: 'Resume At', suffix: '%', tooltip: 'After the stamina ran out the character can run again only from this share of it, with Run pressed again. A character that stopped before it ran out can run at once.' }) resumeAt = 30;
   @Bool({ label: 'Show Bar', tooltip: 'The HUD shows the stamina bar from the moment the character starts to run until it is full again.' }) showBar = true;
 
   @Inject(Hud) hud!: Hud;

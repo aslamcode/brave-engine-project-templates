@@ -6,8 +6,8 @@ import { Interactable } from './interactable';
 
 /**
  * The player's side of interaction: put it on the player's eyes (the camera). Every frame a ray goes from the eyes along the look, `Reach` metres, ignoring the player's own body and everything
- * under it, and stops at the nearest thing it meets. From the collider it hit it walks up through the parents to the first entity that has an `Interactable`, and tells the `Hud` what E does
- * on it (`hud.setPrompt`), or an empty line when there is nothing. E (`Input.keyboard.keyE`) uses it.
+ * under it, and stops at the nearest thing it meets. From the collider it hit it walks up through the parents to the first entity that has an `Interactable`, and tells the `Hud` what `interact` does
+ * on it (`hud.setPrompt`), or an empty line when there is nothing. The `interact` action (E by default, the pad's Y: the player can move it) uses it.
  *
  * Aiming at a small thing does not have to be exact. Three rules, in this order, and the first one is what keeps the aim precise:
  * 1. What the crosshair is on wins. A ray that lands on something that can be used is that thing, whatever else is near.
@@ -15,10 +15,10 @@ import { Interactable } from './interactable';
  *    in wins when two are in reach of it. A thing behind a wall is never looked at this way.
  * 3. A thing looked at through its `Aim Radius` stays looked at for `Aim Hold` seconds after the aim left it, so that a shaking hand does not make its box blink. It stays while the aim is within one and a half times
  *    its radius, and only a thing that has an `Aim Radius` is held at all.
- * E uses what is looked at, so the box that is shown is what E does: nothing is used that the box does not say.
+ * `interact` uses what is looked at, so the box that is shown is what it does: nothing is used that the box does not say.
  *
  * It also tells the `Hud` which things that can be used are near and in sight (`Marker Range`, at most `Max Markers`, the nearest first), where on the screen, so the page can mark them: the one looked at gets a
- * glass box with what E does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The mark nearest to where the player looks, within `Peek Angle`, says its
+ * glass box with what `interact` does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The mark nearest to where the player looks, within `Peek Angle`, says its
  * name next to it (what a thing is can be learned without aiming at it exactly; a door has no name to give, a pickup has its item's). The point on the screen comes from the camera on this entity (the eyes)
  * and the anchor of each thing (the centre of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked.
  *
@@ -51,7 +51,7 @@ export class Interactor extends ScriptComponent {
   /** The target changed: the new one, or undefined when the player looks at nothing that can be used. */
   @JsonIgnore() onTargetChange = new Signal<Interactable | undefined>();
 
-  @JsonIgnore() private key?: ReturnType<typeof Input.keyboard.keyE.down>;
+  @JsonIgnore() private key?: ReturnType<ReturnType<typeof Input.action>['down']>;
   @JsonIgnore() private readonly origin = new Vector3();
   @JsonIgnore() private readonly direction = new Vector3();
   @JsonIgnore() private readonly toward = new Vector3();
@@ -104,7 +104,7 @@ export class Interactor extends ScriptComponent {
     this.forget();
   }
 
-  /** E: uses what the player looks at. Returns whether anything was used. */
+  /** The `interact` action: uses what the player looks at. Returns whether anything was used. */
   use(): boolean {
     if (!this.running) return false;
 
@@ -125,10 +125,10 @@ export class Interactor extends ScriptComponent {
 
   private listen(): void {
     if (this.key) Input.removeListner(this.key);
-    this.key = Input.keyboard.keyE.down(() => { this.use(); });
+    this.key = Input.action('interact').down(() => { this.use(); });
   }
 
-  // What the player is looking at: see the rules above. `elapsed` is the time since the last look (0 for the look E makes, which does not run the hold's clock).
+  // What the player is looking at: see the rules above. `elapsed` is the time since the last look (0 for the look `interact` makes, which does not run the hold's clock).
   private aim(elapsed: number): Interactable | undefined {
     const matrix = this.entity.transform.worldMatrix;
     const length = Math.hypot(matrix[8], matrix[9], matrix[10]) || 1;

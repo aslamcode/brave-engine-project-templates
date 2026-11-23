@@ -42,7 +42,7 @@ export class WeaponStance extends ScriptComponent {
   @Ref(Entity, { label: 'Eyes', tooltip: 'The camera: its heading says which way is forward.' }) eyes!: Entity;
 
   @SaveIgnore() @Float({ header: 'Stance', label: 'Alert Seconds', suffix: 's', tooltip: 'How long the character stays alert after the last shot, reload or change of weapon.' }) alertSeconds = 15;
-  @SaveIgnore() @Bool({ label: 'Lower When Running', tooltip: 'The rifle goes down while Shift is held and the body moves, like a sprint.' }) lowerWhenRunning = true;
+  @SaveIgnore() @Bool({ label: 'Lower When Running', tooltip: 'The rifle goes down while Run is held and the body moves, like a sprint.' }) lowerWhenRunning = true;
   @SaveIgnore() @Float({ label: 'Raise Time', suffix: 's', tooltip: 'How long the rifle takes to come up to the shoulder.' }) raiseTime = 0.2;
   @SaveIgnore() @Float({ label: 'Lower Time', suffix: 's', tooltip: 'How long it takes to go down to the hip.' }) lowerTime = 0.5;
 

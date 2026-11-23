@@ -11,7 +11,7 @@ import { Gear } from './gear';
  * `Pickup` of that id gives more, up to the `Limit`). Letting go of the button, taking another gear or dying stops it, and nothing is spent. It does nothing
  * for a player at full health (it says so).
  *
- * It is the same medicine as a `HealthSupply` on the ground, carried: the supply heals on the spot with E, this is for later.
+ * It is the same medicine as a `HealthSupply` on the ground, carried: the supply heals on the spot with `interact`, this is for later.
  */
 @Script({ inheritProperties: true })
 export class Medkit extends Gear {

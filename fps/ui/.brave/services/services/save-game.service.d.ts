@@ -23,7 +23,7 @@ export interface ISaveGameState {
     canRestart: boolean;
 }
 /**
- * Saving the game and loading it back: F5 saves to the quick slot and F9 loads it, and the pause menu has three slots more, each with the time it was saved and what the game said of itself then. The engine's
+ * Saving the game and loading it back: the `quick-save` action (F5 by default) saves to the quick slot and `quick-load` (F9) loads it, and the pause menu has three slots more, each with the time it was saved and what the game said of itself then. The engine's
  * `SaveSystem` does the work (a print of the whole game: the scenes, the services that keep state, the Director); this is the player's side of it. What this game keeps in a save is whatever its scripts keep in fields
  * (`@Saved()` for what a scene file should not hold) and its services (`Inventory`, `Journal`).
  *
@@ -40,10 +40,11 @@ export declare class SaveGame {
     state: ISaveGameState;
     /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
     onChange: Signal<ISaveGameState>;
-    /** The slot F5 saves to and F9 loads from. */
+    /** The slot `quick-save` saves to and `quick-load` loads from. */
     quickSlot: string;
     private saveKey?;
     private loadKey?;
+    private reloadGuard;
     private start;
     onStart(): void;
     onDestroy(): void;

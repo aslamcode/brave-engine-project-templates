@@ -1,15 +1,19 @@
-import { BraveEngine, BraveEngineModeEnum, Bool, Cursor, Entity, IEntity, Inject, Input, JsonIgnore, Ref, Saved, Script, ScriptComponent, Signal, TwoBoneIK } from '@brave/core';
+import { BraveEngine, BraveEngineModeEnum, Bool, Cursor, Entity, IEntity, Inject, Input, InputDeviceEnum, JsonIgnore, Ref, Saved, Script, ScriptComponent, Signal, TwoBoneIK } from '@brave/core';
 import { Hud } from '../../services/hud.service';
+import { Journal } from '../../services/journal.service';
+import { PauseMenu } from '../../services/pause-menu.service';
 import { Health } from '../health/health';
 import { FirstPersonArms } from '../player/first-person-arms';
 import { Gear } from './gear';
 
 /**
- * What the first person player carries in hand: the gear under the entity in the right hand (`Gear`, one on each child), which one is in hand, and the keys that change it. The keys 1 to 9 and the mouse
- * wheel take a gear in hand, the key of the gear in hand puts it away, and the mouse and R are passed on to the gear in hand (its hooks, and the signals below for everything else that listens: the `Weapon`
- * fires a `Firearm` from them). It lives on the `Player` entity, next to the `FirstPersonArms` that holds the gear and the `Health` it asks whether the player is alive; it only reads them.
+ * What the first person player carries in hand: the gear under the entity in the right hand (`Gear`, one on each child), which one is in hand, and the controls that change it. They are actions of the
+ * project (`project.json`, Project Settings > Input), so the player can move them: `slot-1` to `slot-9` (the keys 1 to 9, and the D-pad for the first four) take a gear in hand, `next-weapon` and
+ * `previous-weapon` (the mouse wheel, the shoulder buttons) go through them, the control of the gear in hand puts it away, and `fire`, `aim` and `reload` are passed on to the gear in hand (its hooks, and
+ * the signals below for everything else that listens: the `Weapon` fires a `Firearm` from them). It lives on the `Player` entity, next to the `FirstPersonArms` that holds the gear and the `Health` it asks
+ * whether the player is alive; it only reads them.
  *
- * A key takes a gear in hand: the arms go back to the body, the model changes, and the arms come out again (`Equip Time` twice); the key of the gear in hand puts it away. The HUD is told the list of
+ * A slot takes a gear in hand: the arms go back to the body, the model changes, and the arms come out again (`Equip Time` twice); the slot of the gear in hand puts it away. The HUD is told the list of
  * what is carried and which is in hand; what each gear shows of itself (its crosshair, its count) is its own `showHud()`.
  */
 @Script()
@@ -17,24 +21,26 @@ export class Loadout extends ScriptComponent {
 
   @Ref(Entity, { header: 'Parts', label: 'Gear', tooltip: 'The entity in the right hand that has the gear as its children: each child has a Gear (a Firearm, a Throwable, a Medkit...).' }) holder!: Entity;
 
-  @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the first gear is in hand when the game starts. Off: it starts put away, and its key brings it up.' }) startEquipped = true;
+  @Bool({ header: 'Start', label: 'Start Equipped', tooltip: 'On: the first gear is in hand when the game starts. Off: it starts put away, and its slot control brings it up.' }) startEquipped = true;
 
-  @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game uses the mouse buttons only while it holds the pointer (the click that locks it is not a shot). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
+  @Bool({ header: 'Testing', label: 'Fire Without Pointer Lock', tooltip: 'The game uses the mouse buttons only while it holds the pointer (the click that locks it is not a shot; a pad never needed the pointer). A test, where the browser refuses the lock, turns this on.' }) fireWithoutLock = false;
 
   @Inject(Hud) hud!: Hud;
+  @Inject(Journal) journal!: Journal;
+  @Inject(PauseMenu) pauseMenu!: PauseMenu;
 
   /** The slot of the gear in hand, or of the one being raised: 0 until the first is taken. */
   @JsonIgnore() @Saved() slot = 0;
 
   /** A gear was brought out: the one the player now holds, or is raising. */
   onSwitch = new Signal<Gear>();
-  /** The left mouse button went down while the gear in hand could be used. */
+  /** The `fire` action went down while the gear in hand could be used. */
   onPrimaryDown = new Signal();
   onPrimaryUp = new Signal();
-  /** The right mouse button went down with the pointer held (the gear is not asked whether it is ready: a button held while the arms come up still counts). */
+  /** The `aim` action went down with the pointer held (the gear is not asked whether it is ready: a button held while the arms come up still counts). */
   onSecondaryDown = new Signal();
   onSecondaryUp = new Signal();
-  /** R was pressed while the gear in hand could be used. */
+  /** The `reload` action was pressed while the gear in hand could be used. */
   onReload = new Signal();
   /** The player is back from the dead: every gear was refilled. */
   onRefill = new Signal();
@@ -151,6 +157,15 @@ export class Loadout extends ScriptComponent {
     this.showHud();
   }
 
+  /**
+   * Whether the controls of the mouse count: the game holds the pointer (the click that locks it is not a shot), or the player is on a pad, which never needed it (a pause menu closed from the pad has
+   * no click to give the pointer back) while the game runs with no menu in front: the unlocked pointer is what keeps a mouse's shots out of a menu, and a menu that does not pause the game (`pausesGame` off)
+   * has to keep a pad's out as well. `device` is the family of the control that was pressed; without one, the one the player used last.
+   */
+  holdsPointer(device?: InputDeviceEnum): boolean {
+    return this.fireWithoutLock || Cursor.isLocked || ((device ?? Input.actions.lastDevice()) === InputDeviceEnum.Gamepad && this.isPlaying());
+  }
+
   /** Every gear holds its full amount again (the player is back from the dead), and the gear in hand tells the HUD. */
   refill(): void {
     this.gear.forEach(gear => gear.refill());
@@ -160,7 +175,12 @@ export class Loadout extends ScriptComponent {
   //#endregion Public
 
   //#region Switching
-  // The owner is on, alive and the game runs: a key does nothing otherwise (a character that is off still hears the keyboard).
+  // The game runs and no menu has the screen (a menu that does not pause the game leaves the mode at Running).
+  private isPlaying(): boolean {
+    return BraveEngine.mode === BraveEngineModeEnum.Running && !this.pauseMenu.state.open && !this.journal.state.open;
+  }
+
+  // The owner is on, alive and the game runs: a control does nothing otherwise (a character that is off still hears the keyboard).
   private canChange(): boolean {
     return this.entity.activeInHierarchy && !this.health?.isDead && BraveEngine.mode === BraveEngineModeEnum.Running;
   }
@@ -226,8 +246,8 @@ export class Loadout extends ScriptComponent {
 
   //#region Input
   // The click that locks the pointer arrives here too, before the lock: with no lock yet it is not a shot.
-  private pressPrimary() {
-    if (!this.hasPointer() || !this.isReady()) return;
+  private pressPrimary(device: InputDeviceEnum) {
+    if (!this.holdsPointer(device) || !this.isReady()) return;
     this.onPrimaryDown.emit();
     this.current?.onPrimaryDown();
   }
@@ -237,8 +257,8 @@ export class Loadout extends ScriptComponent {
     this.current?.onPrimaryUp();
   }
 
-  private pressSecondary() {
-    if (!this.hasPointer()) return;
+  private pressSecondary(device: InputDeviceEnum) {
+    if (!this.holdsPointer(device)) return;
     this.onSecondaryDown.emit();
     this.current?.onSecondaryDown();
   }
@@ -253,13 +273,9 @@ export class Loadout extends ScriptComponent {
     this.onReload.emit();
     this.current?.onReload();
   }
-
-  private hasPointer(): boolean {
-    return this.fireWithoutLock || Cursor.isLocked;
-  }
   //#endregion Input
 
-  // The arms reset themselves in their own `onStart()`, which may run after this one: the gear is taken in hand on the first frame, once (unless it starts put away). After that its key puts it away and brings it back.
+  // The arms reset themselves in their own `onStart()`, which may run after this one: the gear is taken in hand on the first frame, once (unless it starts put away). After that its slot puts it away and brings it back.
   private takeInHand() {
     if (this.tookInHand || !this.arms) return;
     this.tookInHand = true;
@@ -289,17 +305,18 @@ export class Loadout extends ScriptComponent {
     return false;
   }
 
+  // The actions are the project's (`project.json`): which key, button or wheel turn is each is the player's to change.
   private listen() {
-    const digits = [Input.keyboard.digit1, Input.keyboard.digit2, Input.keyboard.digit3, Input.keyboard.digit4, Input.keyboard.digit5, Input.keyboard.digit6, Input.keyboard.digit7, Input.keyboard.digit8, Input.keyboard.digit9];
+    const slots = Array.from({ length: 9 }, (_, index) => Input.action(`slot-${index + 1}`));
     this.listeners.push(
-      Input.mouse.left.down(() => this.pressPrimary()),
-      Input.mouse.left.up(() => this.releasePrimary()),
-      Input.mouse.right.down(() => this.pressSecondary()),
-      Input.mouse.right.up(() => this.releaseSecondary()),
-      Input.mouse.wheel.down(() => { this.cycle(1); }),
-      Input.mouse.wheel.up(() => { this.cycle(-1); }),
-      Input.keyboard.keyR.down(() => this.pressReload()),
-      ...digits.map((key, index) => key.down(() => { this.select(index + 1); })),
+      Input.action('fire').down(event => this.pressPrimary(event.device)),
+      Input.action('fire').up(() => this.releasePrimary()),
+      Input.action('aim').down(event => this.pressSecondary(event.device)),
+      Input.action('aim').up(() => this.releaseSecondary()),
+      Input.action('next-weapon').down(() => { this.cycle(1); }),
+      Input.action('previous-weapon').down(() => { this.cycle(-1); }),
+      Input.action('reload').down(() => this.pressReload()),
+      ...slots.map((slot, index) => slot.down(() => { this.select(index + 1); })),
     );
   }
 

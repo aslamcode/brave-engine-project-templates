@@ -27,7 +27,7 @@
     <span id="hitmarker" class="hitmarker"><i></i><i></i><i></i><i></i></span>
   </div>
 
-  <div id="prompt" class="prompt"><div id="promptCaption" class="caption"><div id="promptTitle" class="caption__title"></div><div id="promptBody" class="caption__body"></div></div><div class="prompt__row"><span class="prompt__key">E</span><span id="promptText" class="prompt__text"></span></div></div>
+  <div id="prompt" class="prompt"><div id="promptCaption" class="caption"><div id="promptTitle" class="caption__title"></div><div id="promptBody" class="caption__body"></div></div><div class="prompt__row"><span class="prompt__key" data-input-action="interact">&ndash;</span><span id="promptText" class="prompt__text"></span></div></div>
   <div id="message" class="message"></div>
 
   <!-- What was picked up or spent, a notice each, at the corner over the health panel: filled by hud.js from the `Hud` service's notices. It comes BEFORE the subtitles on purpose: elements that are not given a z-index paint in the order of the page, so the subtitles are always over it. -->
@@ -54,15 +54,19 @@
     <div class="ammo"><span id="ammo" class="ammo__loaded">0</span><span class="ammo__slash">/</span><span id="reserve" class="ammo__reserve">0</span></div>
   </div>
 
-  <!-- The pause menu: shown by the `PauseMenu` service (assets/services/pause-menu.service.ts) when the game lets go of the pointer (Esc). Its controls are the only clickable things of the page. -->
+  <!-- The pause menu: shown by the `PauseMenu` service (assets/services/pause-menu.service.ts) when the game lets go of the pointer (the `pause` action: Esc, or Start on a pad). Its controls are the only clickable things of the page.
+       It has two screens, one at a time: the menu itself and the Controls (the player's own keys and buttons: the engine's `Input.actions`, drawn by hud.js). -->
   <div id="menu" class="menu" aria-hidden="true">
-    <div class="menu__panel">
+    <!-- Under the panels: while the Controls screen waits for a key it takes the clicks that would reach the game (hud.js, `controlsScreen`). -->
+    <div id="controlsCatcher" class="controls__catcher"></div>
+    <div id="menuMain" class="menu__panel">
       <div class="menu__title" data-translate="menu.paused">Paused</div>
       <label class="menu__row"><span class="menu__label" data-translate="menu.mouseSensitivity">Mouse Sensitivity</span><input id="sensitivity" class="menu__slider" type="range" min="0.2" max="3" step="0.05"><span id="sensitivityValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label" data-translate="menu.fieldOfView">Field of View</span><input id="fieldOfView" class="menu__slider" type="range" min="50" max="110" step="1"><span id="fieldOfViewValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label" data-translate="menu.volume">Volume</span><input id="volume" class="menu__slider" type="range" min="0" max="1" step="0.01"><span id="volumeValue" class="menu__value"></span></label>
       <label class="menu__row"><span class="menu__label" data-translate="menu.subtitles">Subtitles</span><input id="subtitlesToggle" class="menu__check" type="checkbox"></label>
       <label id="languageRow" class="menu__row" hidden><span class="menu__label" data-translate="menu.language">Language</span><span class="menu__control"><select id="language" class="menu__select"></select><span id="languageLoading" class="menu__loading" data-translate="menu.loading" hidden>Loading…</span></span></label>
+      <button id="controlsOpen" class="menu__button -quiet" type="button" data-translate="menu.controls">Controls</button>
       <div class="menu__title" data-translate="menu.saves">Saves</div>
       <div id="saves" class="saves"></div>
       <div id="savesNote" class="menu__note"></div>
@@ -71,17 +75,34 @@
         <button id="restart" class="menu__button -quiet" type="button" data-translate="menu.restart" disabled>Restart</button>
         <button id="quit" class="menu__button -quiet" type="button" data-translate="menu.quit" hidden>Quit</button>
       </div>
-      <div class="menu__hint" data-translate="menu.hint">Esc, or click anywhere on the game &middot; F5 quick save &middot; F9 quick load</div>
+      <!-- The keys in it are the player's own (the `pause`, `quick-save` and `quick-load` actions): hud.js writes the line. -->
+      <div id="menuHint" class="menu__hint"></div>
+    </div>
+
+    <!-- The Controls screen: one row for each action, two places for the keyboard and the mouse or for a pad (the tabs). Drawn by hud.js from `Input.actions`; a click on a place waits for the next key or button. -->
+    <div id="menuControls" class="menu__panel -controls">
+      <div class="menu__title" data-translate="controls.title">Controls</div>
+      <div class="controls__tabs" role="tablist">
+        <button id="controlsTabKeyboard" class="controls__tab" type="button" role="tab" data-family="keyboardMouse" data-translate="controls.keyboardMouse">Keyboard &amp; Mouse</button>
+        <button id="controlsTabGamepad" class="controls__tab" type="button" role="tab" data-family="gamepad" data-translate="controls.gamepad">Gamepad</button>
+      </div>
+      <div id="controlsList" class="controls__list"></div>
+      <div id="controlsNote" class="menu__note"></div>
+      <div class="menu__actions">
+        <button id="controlsReset" class="menu__button -quiet" type="button" data-translate="controls.reset">Reset to defaults</button>
+        <button id="controlsBack" class="menu__button -quiet" type="button" data-translate="controls.back">Back</button>
+      </div>
+      <div id="controlsHint" class="menu__hint"></div>
     </div>
   </div>
 
-  <!-- The Journal (Datapad, its name comes from the game): what the player has found out, opened with Tab. Shown by the `Journal` service on the game side. Its controls are the only clickable things of the panel. -->
+  <!-- The Journal (Datapad, its name comes from the game): what the player has found out, opened with the `journal` action (Tab by default). Shown by the `Journal` service on the game side. Its controls are the only clickable things of the panel. -->
   <div id="journal" class="journal" aria-hidden="true">
     <div class="journal__frame">
       <nav class="journal__side">
         <div id="journalTitle" class="journal__heading"></div>
         <ul id="journalCategories" class="journal__categories"></ul>
-        <div class="journal__hint" data-translate="journal.closeHint">Tab or Esc to close</div>
+        <div id="journalCloseHint" class="journal__hint"></div>
       </nav>
       <section class="journal__stage">
         <div id="journalObject" class="journal__object"></div>
@@ -99,7 +120,7 @@
   </div>
 
   <!-- The chip that says the Journal can be opened, and whether something new is in it. Not clickable; hidden while the Journal is open. -->
-  <div id="journalHint" class="journal-hint"><span class="journal-hint__key">Tab</span><span id="journalHintTitle"></span><i class="journal-hint__dot"></i></div>
+  <div id="journalHint" class="journal-hint"><span class="journal-hint__key" data-input-action="journal">&ndash;</span><span id="journalHintTitle"></span><i class="journal-hint__dot"></i></div>
 
   <script src="vendor/ui-bridge.global.js"></script>
   <script src="hud.js"></script>

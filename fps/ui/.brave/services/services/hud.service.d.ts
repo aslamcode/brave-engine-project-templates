@@ -1,9 +1,9 @@
 import { Signal } from '@brave/core';
 /** What the HUD (the web page in `ui/`) shows. Everything in the game that wants something on the screen says it here; the page only reads. */
 export interface IHudState {
-    /** The line under the crosshair: what E does on what the player looks at, or empty. */
+    /** The line under the crosshair: what `interact` does on what the player looks at, or empty. */
     prompt: string;
-    /** What the thing looked at says about itself, over that line: a title and a text. Both empty for a thing that says nothing but what E does. */
+    /** What the thing looked at says about itself, over that line: a title and a text. Both empty for a thing that says nothing but what `interact` does. */
     captionTitle: string;
     captionBody: string;
     /** Rounds in the magazine, the size of the magazine and the rounds in reserve. */
@@ -52,15 +52,15 @@ export interface IHudNotice {
     delta: number;
     total: number;
 }
-/** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what E does on it, and which way to draw it. */
+/** A thing the player can use, drawn on the screen over it: where its anchor is on the screen (0 to 1 of the width and of the height, y down), what `interact` does on it, and which way to draw it. */
 export interface IHudMarker {
     /** Which thing: the id of its entity, so the page keeps the same element for it from frame to frame. */
     id: string;
     x: number;
     y: number;
-    /** What E does, shown in the box of the marker the player looks at. */
+    /** What `interact` does, shown in the box of the marker the player looks at. */
     prompt: string;
-    /** The title and the text of the one looked at, over what E does in its box (empty for every other marker, and for a thing that says nothing). */
+    /** The title and the text of the one looked at, over what `interact` does in its box (empty for every other marker, and for a thing that says nothing). */
     title: string;
     body: string;
     /** The name of the thing, shown beside the small mark that is nearest to where the player looks (empty for every other one, and for the one looked at, which has its box). */

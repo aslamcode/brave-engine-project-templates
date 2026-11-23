@@ -1,4 +1,4 @@
-import { Bool, Camera, CharacterController, Cursor, DecalSystem, Entity, FirstPersonCamera, Inject, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
+import { Bool, Camera, CharacterController, DecalSystem, Entity, FirstPersonCamera, Inject, IRaycastHit, JsonIgnore, PhysicsSystem, PlayerMovement, Ref, Saved, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Gear } from '../gear/gear';
@@ -411,7 +411,7 @@ export class Weapon extends ScriptComponent {
   //#region Frame
   private pullTrigger() {
     if (!this.triggerHeld) return;
-    if (!this.loadout?.fireWithoutLock && !Cursor.isLocked) this.triggerHeld = false;
+    if (!this.loadout?.holdsPointer()) this.triggerHeld = false;
     else if (this.current?.automatic) this.fire();
   }
 

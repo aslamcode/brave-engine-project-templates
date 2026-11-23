@@ -26,7 +26,7 @@ export interface ISaveGameState {
   canRestart: boolean;
 }
 
-// The places a game is saved to: the quick one (F5 saves, F9 loads) and three the player chooses in the pause menu. The ids are the names the engine keeps them under; the names (and every line this service says)
+// The places a game is saved to: the quick one (the `quick-save` and `quick-load` actions: F5 and F9 by default) and three the player chooses in the pause menu. The ids are the names the engine keeps them under; the names (and every line this service says)
 // are the language files' (`saves.*`), with these English words when there is no entry.
 const SLOTS = [
   { id: 'quick', name: 'Quick' },
@@ -36,7 +36,7 @@ const SLOTS = [
 ];
 
 /**
- * Saving the game and loading it back: F5 saves to the quick slot and F9 loads it, and the pause menu has three slots more, each with the time it was saved and what the game said of itself then. The engine's
+ * Saving the game and loading it back: the `quick-save` action (F5 by default) saves to the quick slot and `quick-load` (F9) loads it, and the pause menu has three slots more, each with the time it was saved and what the game said of itself then. The engine's
  * `SaveSystem` does the work (a print of the whole game: the scenes, the services that keep state, the Director); this is the player's side of it. What this game keeps in a save is whatever its scripts keep in fields
  * (`@Saved()` for what a scene file should not hold) and its services (`Inventory`, `Journal`).
  *
@@ -58,21 +58,24 @@ export class SaveGame {
   /** The whole state, a new object each time (the Bridge only sends what is not `===` the last). */
   onChange = new Signal<ISaveGameState>();
 
-  /** The slot F5 saves to and F9 loads from. */
+  /** The slot `quick-save` saves to and `quick-load` loads from. */
   quickSlot = 'quick';
 
   private saveKey?: Parameters<typeof Input.removeListner>[0];
   private loadKey?: Parameters<typeof Input.removeListner>[0];
+  // The browser's own reload is not an action: the player may move quick save off F5, and F5 must still never reload the game.
+  private reloadGuard = (event: KeyboardEvent) => { if (event.code === 'F5') event.preventDefault(); };
   // Set to undefined by hand, not only declared: a hot reload during Play removes the own properties a new instance does not have, and the kept start would go with it.
   private start: IGameSnapshot | undefined = undefined;
 
   onStart() {
-    // The keys are the browser's own for a reload (F5): the game keeps them.
-    this.saveKey = Input.keyboard.f5.down((event: KeyboardEvent) => {
+    // F5 is the browser's own key for a reload: the game keeps it, wherever quick save is bound (`preventDefault()` is the callback's to ask, and does nothing for a pad).
+    window.addEventListener('keydown', this.reloadGuard);
+    this.saveKey = Input.action('quick-save').down(event => {
       event.preventDefault();
       if (BraveEngine.mode === BraveEngineModeEnum.Running) void this.save(this.quickSlot);
     });
-    this.loadKey = Input.keyboard.f9.down((event: KeyboardEvent) => {
+    this.loadKey = Input.action('quick-load').down(event => {
       event.preventDefault();
       if (BraveEngine.mode === BraveEngineModeEnum.Running) void this.load(this.quickSlot);
     });
@@ -84,6 +87,7 @@ export class SaveGame {
   }
 
   onDestroy() {
+    window.removeEventListener('keydown', this.reloadGuard);
     if (this.saveKey) Input.removeListner(this.saveKey);
     if (this.loadKey) Input.removeListner(this.loadKey);
     this.saveKey = this.loadKey = undefined;

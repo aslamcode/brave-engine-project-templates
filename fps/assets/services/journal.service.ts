@@ -75,7 +75,7 @@ const NEWEST_FIRST = ['objectives'];
  * list the HUD shows for a moment when it changes, always there to look at. That category is only a view of the Inventory (an item the Journal has an entry for, such as an access, stays in its own category, and
  * the ones the Inventory hides, the ammo, the grenades, are not listed): nothing is written into it, so it needs nothing from the pickups but the name and the description they gave the Inventory.
  *
- * Tab opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
+ * The `journal` action (Tab by default, the pad's Back; the player can move it) opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
  * audio log. The pointer is let go while it is open and held again when it closes. The game stands still behind it (`pausesGame`; off, it goes on). The menu has a name that only the game cares about
  * (`title`: Journal here, Datapad or Notebook in another game): a `JournalMenu` in the scene sets it.
  *
@@ -115,8 +115,8 @@ export class Journal {
   private playing = '';
   private source?: AudioBufferSourceNode;
   private readonly buffers = new Map<string, AudioBuffer>();
-  private tabListener?: Parameters<typeof Input.removeListner>[0];
-  private escapeListener?: Parameters<typeof Input.removeListner>[0];
+  private journalListener?: Parameters<typeof Input.removeListner>[0];
+  private pauseListener?: Parameters<typeof Input.removeListner>[0];
   // The Inventory is a service that is not registered yet while this one is being made (its first `state` is built then): it is read from the start on.
   private started = false;
 
@@ -127,12 +127,13 @@ export class Journal {
     this.inventory.onChange.on(() => this.changed(), this);
     // The names of the categories are words: said again when the language changes.
     Translate.onChange.on(() => this.changed(), this);
-    this.tabListener = Input.keyboard.tab.down((event: KeyboardEvent) => {
+    // Tab moves the focus of a page: the callback asks the browser not to.
+    this.journalListener = Input.action('journal').down(event => {
       event.preventDefault();
       this.toggle();
     });
-    // Esc closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page). The pointer is asked for after that key, not inside it (`PauseMenu.holdPointer(true)`).
-    this.escapeListener = Input.keyboard.escape.down(() => {
+    // The `pause` action (Esc by default) closes it too (the pointer is already let go while it is open, so the browser keeps the key for the page). The pointer is asked for after that, not inside it (`PauseMenu.holdPointer(true)`).
+    this.pauseListener = Input.action('pause').down(() => {
       if (!this.isOpen) return;
       this.close(false);
       this.pauseMenu.holdPointer(true);
@@ -141,11 +142,12 @@ export class Journal {
 
   onDestroy() {
     this.started = false;
-    if (this.tabListener) Input.removeListner(this.tabListener);
-    this.tabListener = undefined;
-    if (this.escapeListener) Input.removeListner(this.escapeListener);
-    this.escapeListener = undefined;
+    if (this.journalListener) Input.removeListner(this.journalListener);
+    this.journalListener = undefined;
+    if (this.pauseListener) Input.removeListner(this.pauseListener);
+    this.pauseListener = undefined;
     this.stop();
+    if (this.isOpen) this.pauseMenu.otherMenuClosed();
     this.isOpen = false;
     this.pausedByJournal = false;
   }
@@ -243,6 +245,8 @@ export class Journal {
     if (!this.isOpen) return;
 
     this.isOpen = false;
+    // The pause menu hears the control that closed this one too (a pad's Start): it must know this is the one that closed it.
+    this.pauseMenu.otherMenuClosed();
     // The page lets go of the keyboard: a button of the menu that was clicked would keep it, and the player could not walk.
     UISystem.interactive = false;
     this.stop();

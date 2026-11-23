@@ -4,7 +4,7 @@ import { Interactable } from '../interaction/interactable';
 import type { Interactor } from '../interaction/interactor';
 /**
  * Something the player takes: a box on the ground that gives something (`AmmoSupply`, `HealthSupply`) and is gone, or back after a while. It is an `Interactable`, so the player sees it as the rest of what can be used
- * (the glass box with E and what it gives, tied to it by a line, when it is looked at) and takes it with E. The entity has the drawing as children, `Visual` pointing at them (hidden while it is used up), a solid
+ * (the glass box with the interact key and what it gives, tied to it by a line, when it is looked at) and takes it with `interact`. The entity has the drawing as children, `Visual` pointing at them (hidden while it is used up), a solid
  * Collider on the `Visual` for the player to look at (a ray goes through triggers), and its own sound (an Audio Source on this entity, Auto Play off) heard when it is taken. `Walk Over` also lets the player take it
  * by walking into the trigger Collider of this entity.
  *
@@ -33,11 +33,11 @@ export declare class Supply extends Interactable {
     /** Seconds until it respawns. A count in the frame, not a timer, so that a save made while it is gone brings it back. */
     private respawnLeft;
     onStart(): void;
-    /** What E does: the prompt, with {amount} for what it gives. */
+    /** What `interact` does: the prompt, with {amount} for what it gives. */
     get currentPrompt(): string;
-    /** It can be used until it is taken (a used up supply is not marked, and E does nothing on it). */
+    /** It can be used until it is taken (a used up supply is not marked, and `interact` does nothing on it). */
     get usable(): boolean;
-    /** E: the player takes it, or is told it has no use for it. */
+    /** `interact`: the player takes it, or is told it has no use for it. */
     interact(interactor: Interactor): boolean;
     onUpdate(): void;
     onRestore(): void;

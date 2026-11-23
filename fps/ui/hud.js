@@ -14,6 +14,24 @@ function capital(text) { var said = tr(text); return typeof said === 'string' ? 
 var redraw = [];   // what to draw again when the language changes (each part adds its own)
 T.onChange.on(function () { redraw.forEach(function (draw) { draw(); }); });
 
+// The controls. A key or a button named on this page is the player's own, never a letter written here: the engine's `Input.actions` says what each action is bound to now (the keys the player moved, the pad they
+// picked up), and a chip with `data-input-action="interact"` is written by the library itself (`data-input-showing`, `data-input-button` and `data-input-style` tell the CSS what it shows, for the round chip of a pad).
+// A text that names a control fills `{key}` from `controlText()` and is drawn again when the controls change, as it is when the language does.
+var I = BraveUiBridge.Input.actions;
+var redrawControls = [];
+function controlText(action, family) { var label = I.labelOf(action, family ? { device: family } : {}); return label ? label.text : ''; }
+// An entry of the language files with `{name}` filled from `params`; the English line written in this page when the files have none (the fill is the page's own then).
+function say(path, fallback, params) {
+  if (T.has(path)) return T.get(path, params);
+  return fallback.replace(/\{(\w+)\}/g, function (all, name) { return params && name in params ? params[name] : all; });
+}
+// The device the player is using now (the keyboard and the mouse, or a pad), for the CSS that shows one thing and hides the other.
+function renderDevice() { document.body.setAttribute('data-device', I.device); }
+function drawControls() { renderDevice(); redrawControls.forEach(function (draw) { draw(); }); }
+I.onChange.on(drawControls);
+I.ready.then(drawControls);
+redraw.push(function () { redrawControls.forEach(function (draw) { draw(); }); });
+
 var el = function (id) { return document.getElementById(id); };
 var crosshair = el('crosshair'), prompt = el('prompt'), promptText = el('promptText'), promptCaption = el('promptCaption'), promptTitle = el('promptTitle'), promptBody = el('promptBody'), message = el('message'), damage = el('damage'), hitmarker = el('hitmarker');
 var healthFill = el('healthFill'), healthText = el('healthText'), ammo = el('ammo'), reserve = el('reserve'), stance = el('stance'), noticesEl = el('notices'), weapons = el('weapons');
@@ -64,12 +82,16 @@ function render(state) {
   crosshair.style.setProperty('--spread', (state.spread * window.innerHeight / 2).toFixed(1) + 'px');
   if (state.crosshair === 'twin-arcs') drawTwinArcs(Math.min(90, Math.max(18, state.spread * window.innerHeight / 2)));
 
-  // The weapons the player carries: the number of the key and the name, the one in hand lit.
+  // The weapons the player carries: the key (or button) of its slot, as the player has it, and the name, the one in hand lit. A slot with no control on the device in use (the pad has four of the nine) shows no chip: the library gives it the other device's key, and the CSS hides that (`body[data-device]`).
   weapons.innerHTML = '';
   (state.weapons || []).forEach(function (name, index) {
     var chip = document.createElement('span');
     chip.className = 'weapons__chip' + (index === state.weapon ? ' -current' : '');
-    chip.textContent = (index + 1) + ' ' + tr(name);
+    var key = document.createElement('i');
+    key.className = 'weapons__key';
+    key.setAttribute('data-input-action', 'slot-' + (index + 1));
+    chip.appendChild(key);
+    chip.appendChild(document.createTextNode(tr(name)));
     weapons.appendChild(chip);
   });
 
@@ -204,7 +226,7 @@ hud.onDamaged.on(function (event) {
 function makeMarker() {
   var root = document.createElement('div');
   root.className = 'marker';
-  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><div class="caption"><div class="caption__title"></div><div class="caption__body"></div></div><div class="marker__row"><span class="marker__key">E</span><span class="marker__text"></span></div></div><div class="marker__dot"></div><div class="marker__peek"></div>';
+  root.innerHTML = '<div class="marker__line"></div><div class="marker__box"><div class="caption"><div class="caption__title"></div><div class="caption__body"></div></div><div class="marker__row"><span class="marker__key" data-input-action="interact">&ndash;</span><span class="marker__text"></span></div></div><div class="marker__dot"></div><div class="marker__peek"></div>';
   markersEl.appendChild(root);
   return { root: root, box: root.querySelector('.marker__box'), text: root.querySelector('.marker__text'), peek: root.querySelector('.marker__peek'), caption: root.querySelector('.caption'), title: root.querySelector('.caption__title'), body: root.querySelector('.caption__body') };
 }
@@ -428,6 +450,7 @@ var menu = el('menu'), sliders = { sensitivity: el('sensitivity'), fieldOfView: 
 var shown = { sensitivity: function (v) { return Number(v).toFixed(2) + 'x'; }, fieldOfView: function (v) { return Math.round(v) + '\u00b0'; }, volume: function (v) { return Math.round(v * 100) + '%'; } };
 
 function renderMenu(state) {
+  menuIsOpen = !!state.open;
   menu.classList.toggle('-open', !!state.open);
   // The voices of a new language are being loaded: the list and Continue wait, and the row says so, so that the game is given back already speaking it.
   el('language').disabled = !!state.languageBusy;
@@ -447,6 +470,27 @@ el('resume').addEventListener('click', function () { pause.resume(); });
 
 pause.state().then(renderMenu);
 pause.onChange.on(renderMenu, { sampleEvery: 0 });
+
+// The line under the pause menu, and the one under the Journal's list: they name the player's own keys. Quick save and quick load are keys the pad has none of, so a pad's line does not offer them.
+var menuHint = el('menuHint'), journalCloseHint = el('journalCloseHint');
+function renderHints() {
+  // A control of the player's may be on nothing at all (both families cleared): the line then names no key, never a comma and a gap where it was.
+  var pauseKey = controlText('pause'), journalKey = controlText('journal');
+  var parts = [pauseKey ? say('menu.hintPause', '{key}, or click anywhere on the game', { key: pauseKey }) : say('menu.hintClick', 'Click anywhere on the game to resume')];
+  [['quick-save', 'menu.hintSave', '{key} quick save'], ['quick-load', 'menu.hintLoad', '{key} quick load']].forEach(function (entry) {
+    var key = controlText(entry[0], I.device);
+    if (key) parts.push(say(entry[1], entry[2], { key: key }));
+  });
+  menuHint.textContent = parts.join(' \u00b7 ');
+  // The Journal's close line: both keys, or the one it has; with none the button in the corner is the way out, and the line is empty.
+  journalCloseHint.textContent = journalKey && pauseKey && journalKey !== pauseKey ? say('journal.closeHint', '{journal} or {pause} to close', { journal: journalKey, pause: pauseKey })
+    : journalKey || pauseKey ? say('journal.closeHintOne', '{key} to close', { key: journalKey || pauseKey }) : '';
+}
+redrawControls.push(renderHints);
+
+// The keys the page hears while it holds the keyboard (a menu is open and something in it was clicked). The game hears none of them but Esc, which the Bridge forwards: so the page asks the engine whether a key it
+// heard is the player's Journal or Pause now (`Input.actions.matches()`, which follows the controls as they change) and does by it what the game would. No key is written in this page.
+var menuIsOpen = false;
 
 // The language of the game: the row is there when the game has two or more, with each in its own words. The choice is the `PauseMenu` service's to keep (the next start begins with it) and to apply to the engine; the
 // page then hears of it like everyone else, through `Translate`. The service is asked, never the engine's `Translate` directly, so that what the player chose is also what is saved.
@@ -515,9 +559,233 @@ renderLanguages();
   redraw.push(function () { drawn = ''; if (lastSaves) renderSaves(lastSaves); });
 })();
 
+// The Controls screen of the pause menu: what the player can press for each action, and the place to change it. The engine's `Input.actions` is the whole of it (what each action is bound to in words, the waiting for a key,
+// the swap of two controls that meet, what is kept for the next time the game opens), so this only draws and asks. One row for each action, two places for the keyboard and the mouse or for a pad (the tabs); a click on a
+// place waits for the next key, wheel turn or pad button (never a mouse button: the page forwards a click on its empty space to the game as a mouse press, and "click away to give up" would bind the left button), and Esc
+// ends the wait (the engine's: the game takes the keyboard back for it and silences the actions, so that Esc closes nothing). A click anywhere else ends it too: while it waits, a catcher lies under the panel and takes
+// the clicks that would reach the game (a click on the game holds the pointer, which closes the menu).
+// What is drawn: the actions that are buttons or a compass (`move`: its four directions are four places). What is a change (`delta`: the look, the zoom) has no key to give, and a stick is shown but not changed.
+var controlsScreen = (function () {
+  // The order and the names of the groups; an action the game adds that is in none of them goes to the last, "Other".
+  var GROUPS = [
+    { id: 'movement', name: 'Movement', actions: ['move', 'jump', 'run', 'crouch'] },
+    { id: 'combat', name: 'Combat', actions: ['fire', 'aim', 'reload', 'next-weapon', 'previous-weapon'] },
+    { id: 'gear', name: 'Gear', actions: ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5', 'slot-6', 'slot-7', 'slot-8', 'slot-9'] },
+    { id: 'world', name: 'World and menus', actions: ['interact', 'journal', 'pause', 'quick-save', 'quick-load'] },
+    { id: 'other', name: 'Other', actions: [] }
+  ];
+  var PART_NAMES = { up: 'Up', down: 'Down', left: 'Left', right: 'Right', negative: 'Less', positive: 'More' };
+  var PART_ORDER = ['up', 'left', 'down', 'right', 'negative', 'positive'];   // the order a person reads a compass in (W A S D)
+  var PLACES = 2;   // the places a family shows for an action (more when the player has put a third)
+  var menu = el('menu'), list = el('controlsList'), note = el('controlsNote'), hint = el('controlsHint'), catcher = el('controlsCatcher');
+  var tabs = [el('controlsTabKeyboard'), el('controlsTabGamepad')];
+  var family = 'keyboardMouse', waiting = null, noteTimer = 0;
+
+  // The wait is what the catcher is for: it takes the clicks only while one is under way.
+  function setWaiting(wait) {
+    waiting = wait;
+    menu.classList.toggle('-waiting', !!wait);
+  }
+
+  // The name of an action in the language in use, read here from the language files (`input.actions.<name>`, the entry the engine reads too, but it only says it again when something else makes it send the controls).
+  function actionName(view) { var path = 'input.actions.' + view.name; return T.has(path) ? T.get(path) : view.label; }
+
+  function make(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // The words of a control, and what it is for the CSS to draw a pad's button round (the same attributes the library writes on a `data-input-action` chip).
+  function dress(node, label) {
+    node.textContent = label.text;
+    node.setAttribute('data-input-showing', label.device);
+    if (label.button) node.setAttribute('data-input-button', label.button); else node.removeAttribute('data-input-button');
+    if (label.style) node.setAttribute('data-input-style', label.style); else node.removeAttribute('data-input-style');
+  }
+
+  // A place shows a pad's button as the chip the HUD uses (round, with the button's name) and a key as plain words.
+  function showControl(button, label) {
+    if (!label.button) { button.textContent = label.text; return; }
+    button.textContent = '';
+    var chip = make('span', 'controls__chip');
+    dress(chip, label);
+    button.appendChild(chip);
+  }
+
+  function isWaiting(action, index, part) {
+    return !!waiting && waiting.action === action && waiting.family === family && waiting.slot === index && waiting.part === part;
+  }
+
+  // One place: the control that is there (or a dash), or "Press a key..." while it waits for one.
+  function placeOf(view, index, part, label, changed) {
+    var button = make('button', 'controls__slot');
+    button.type = 'button';
+    if (isWaiting(view.name, index, part)) {
+      button.classList.add('-waiting');
+      button.textContent = say(family === 'gamepad' ? 'controls.pressButton' : 'controls.pressKey', family === 'gamepad' ? 'Press a button…' : 'Press a key…');
+    } else if (label) {
+      showControl(button, label);
+      button.classList.toggle('-changed', !!changed);
+    } else {
+      button.classList.add('-empty');
+      button.textContent = '–';
+    }
+    button.addEventListener('click', function () { start({ action: view.name, family: family, slot: index, part: part }, label); });
+    return button;
+  }
+
+  function rowOf(view) {
+    var row = make('div', 'controls__row');
+    row.appendChild(make('span', 'controls__name', actionName(view)));
+    var places = make('div', 'controls__slots');
+    var slots = (view.slots[family] || []).slice();
+    var first = slots[0];
+
+    if (first && first.parts) {
+      // A compass (WASD): its four directions are four places, each with its name.
+      row.classList.add('-compass');
+      Object.keys(first.parts).sort(function (a, b) { return PART_ORDER.indexOf(a) - PART_ORDER.indexOf(b); }).forEach(function (part) {
+        var cell = make('div', 'controls__part');
+        cell.appendChild(make('span', 'controls__part-name', say('controls.part.' + part, PART_NAMES[part] || part)));
+        cell.appendChild(placeOf(view, 0, part, first.parts[part], first.changed));
+        places.appendChild(cell);
+      });
+    } else if (view.type !== 'button') {
+      // A stick, a trigger as an axis: shown, never changed (a key cannot be given to it).
+      slots.forEach(function (slot) { if (slot.label) { var fixed = make('span', 'controls__slot -fixed'); dress(fixed, slot.label); places.appendChild(fixed); } });
+      if (!places.firstChild) places.appendChild(make('span', 'controls__slot -fixed -empty', '–'));
+    } else {
+      while (slots.length < PLACES) slots.push({ changed: false });
+      slots.forEach(function (slot, index) { places.appendChild(placeOf(view, index, undefined, slot.label, slot.changed)); });
+    }
+    row.appendChild(places);
+    return row;
+  }
+
+  function groupsOf(views) {
+    var seen = {};
+    var groups = GROUPS.map(function (group) {
+      var inside = group.actions.map(function (name) { return views.filter(function (view) { return view.name === name; })[0]; }).filter(function (view) { return !!view; });
+      inside.forEach(function (view) { seen[view.name] = true; });
+      return { id: group.id, name: group.name, views: inside };
+    });
+    groups[groups.length - 1].views = views.filter(function (view) { return !seen[view.name]; });
+    return groups.filter(function (group) { return group.views.length > 0; });
+  }
+
+  function draw() {
+    if (!menu.classList.contains('-controls')) return;
+    tabs.forEach(function (tab) { tab.classList.toggle('-current', tab.getAttribute('data-family') === family); });
+    var scroll = list.scrollTop;
+    list.textContent = '';
+    groupsOf(I.all.filter(function (view) { return !view.delta; })).forEach(function (group) {
+      list.appendChild(make('div', 'controls__group', say('controls.group.' + group.id, group.name)));
+      group.views.forEach(function (view) { list.appendChild(rowOf(view)); });
+    });
+    list.scrollTop = scroll;
+    hint.textContent = family === 'gamepad' ? say('controls.hintGamepad', 'Click a control, then press the button you want on the pad. Esc or a click elsewhere cancels.') : say('controls.hintKeyboard', 'Click a control, then press the key you want, or turn the wheel. Esc or a click elsewhere cancels.');
+  }
+
+  function tell(text) {
+    clearTimeout(noteTimer);
+    note.textContent = text;
+  }
+
+  // What the player is told when the control they picked was on something else. The engine swaps the two places (the other one gets what this one had), or leaves the other empty when this one had nothing.
+  // The words wait a moment for the controls to come back from the game with the new key in them.
+  function explain(address, before, conflict) {
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () {
+      var view = I.viewOf(address.action), other = I.viewOf(conflict.action), slot = view && view.slots[address.family][address.slot];
+      var now = slot && (address.part ? slot.parts && slot.parts[address.part] : slot.label);
+      if (!now || !other) return;
+      var params = { control: now.text, action: actionName(other), previous: before ? before.text : '' };
+      note.textContent = before ? say('controls.swapped', '{control} was on “{action}”. The two swapped places: “{action}” now uses {previous}.', params) : say('controls.taken', '{control} was on “{action}”, which has nothing there now.', params);
+    }, 150);
+  }
+
+  // `gaveUp`: the player ended the wait (Esc, or a click elsewhere), not a click on another place nor the screen changing under it.
+  function conclude(result, address, before, gaveUp) {
+    tell('');
+    if (!result || result.status === 'cancelled') {
+      if (gaveUp) tell(say('controls.nothingChanged', 'Nothing was changed.'));
+      return;
+    }
+    if (result.status === 'refused' || (result.change && !result.change.applied)) { tell(say('controls.cannot', 'That control cannot go there.')); return; }
+    var conflicts = (result.change && result.change.conflicts) || [];
+    if (conflicts.length) explain(address, before, conflicts[0]);
+  }
+
+  // Asks the game for the next control and waits. A second click while it waits is another request, which the engine answers by ending the first as cancelled: only the newest wait is the page's.
+  function start(address, before) {
+    var mine = { action: address.action, family: address.family, slot: address.slot, part: address.part, gaveUp: false };
+    setWaiting(mine);
+    tell('');
+    draw();
+    I.rebind({ action: address.action, family: address.family, slot: address.slot, part: address.part, mouse: false }).then(function (result) {
+      // Still the newest wait when it ends: the player ended it (Esc). Not the newest: another place was clicked, or the screen changed, and that is not giving up.
+      var gaveUp = mine.gaveUp || waiting === mine;
+      if (waiting === mine) setWaiting(null);
+      conclude(result, address, before, gaveUp);
+      draw();
+    }, function () {
+      if (waiting === mine) setWaiting(null);
+      draw();
+    });
+  }
+
+  function cancelWait() {
+    if (!waiting) return;
+    setWaiting(null);
+    I.cancelRebind();
+  }
+
+  // A click that is none of the controls ends the wait and changes nothing. The catcher is under the panel, so the panel's own text and padding (which take no clicks) fall through to it, as does the dimmed
+  // space around; the list takes clicks of its own (it scrolls), so the gaps between its rows are its.
+  function giveUp() {
+    if (!waiting) return;
+    waiting.gaveUp = true;
+    cancelWait();
+  }
+  catcher.addEventListener('click', giveUp);
+  list.addEventListener('click', function (event) { if (event.target === list) giveUp(); });
+  // A turn of the wheel is a control the keyboard family can take, and the page only forwards it to the game over what it does not draw: the catcher steps aside for the turn, so that it is forwarded.
+  catcher.addEventListener('wheel', function () {
+    catcher.classList.add('-through');
+    setTimeout(function () { catcher.classList.remove('-through'); }, 0);
+  }, { passive: true });
+
+  function show(on) {
+    if (on === menu.classList.contains('-controls')) return;
+    menu.classList.toggle('-controls', on);
+    cancelWait();
+    tell('');
+    if (on) family = I.device;
+    draw();
+  }
+
+  tabs.forEach(function (tab) { tab.addEventListener('click', function () { family = tab.getAttribute('data-family'); cancelWait(); tell(''); draw(); }); });
+  el('controlsOpen').addEventListener('click', function () { show(true); });
+  el('controlsBack').addEventListener('click', function () { show(false); });
+  redrawControls.push(draw);
+
+  return {
+    // Every control back to what the game gave it (the engine keeps only what the player changed, so this is the end of the changes).
+    reset: function () {
+      cancelWait();
+      I.resetBindings();
+      tell(say('controls.resetDone', 'Controls back to their defaults.'));
+    },
+    // The menu closed, or the game took the screen: a wait that was under way ends, and it starts at the menu again next time.
+    hide: function () { cancelWait(); show(false); }
+  };
+})();
+
 // Restart and Quit ask twice: the first click turns the button into "Click again to confirm" for three seconds and the second does it; the time running out, a click anywhere else, the other button and the menu
 // closing put it back. Restart is the `SaveGame` service's (the game as it was on its first frame), Quit the `PauseMenu`'s (what it does depends on where the game runs, and the service says whether it can: a browser
-// tab cannot close itself, so the button is not there).
+// tab cannot close itself, so the button is not there). Resetting the controls asks twice as well: it undoes everything the player changed.
 (function () {
   var CONFIRM_MS = 3000, saves = BraveUiBridge.remote('SaveGame');
   var restart = el('restart'), quit = el('quit'), armed = null;
@@ -548,13 +816,14 @@ renderLanguages();
 
   confirmable(restart, function () { saves.restart(); });
   confirmable(quit, function () { pause.quit(); });
+  confirmable(el('controlsReset'), function () { controlsScreen.reset(); });
 
   // A press on anything but the armed button (the page's other controls and the empty space, which the game gets) takes the question back.
   document.addEventListener('mousedown', function (event) { if (armed && event.target !== armed.button) disarm(); }, true);
 
   function renderQuit(state) {
     quit.hidden = !state.canQuit;
-    if (!state.open) disarm();
+    if (!state.open) { disarm(); controlsScreen.hide(); }
   }
   pause.state().then(renderQuit);
   pause.onChange.on(renderQuit, { sampleEvery: 0 });
@@ -564,7 +833,7 @@ renderLanguages();
   saves.onChange.on(renderRestart, { sampleEvery: 0 });
 })();
 
-// The Journal (Datapad, Journal... its name comes from the game, never from this page): the `Journal` service says what is shown; the page draws it and sends the choices back. Tab opens and closes it;
+// The Journal (Datapad, Journal... its name comes from the game, never from this page): the `Journal` service says what is shown; the page draws it and sends the choices back. The `journal` action opens and closes it;
 // while it is open the arrows move through the entries (up and down) and the categories (left and right). The lists are rebuilt only when their content changes, so a state sent again does not flicker.
 (function () {
   var journal = BraveUiBridge.remote('Journal');
@@ -730,12 +999,21 @@ renderLanguages();
   }
 
   document.addEventListener('keydown', function (event) {
-    if (event.code === 'Tab') {
+    // The player's Journal key opens and closes it, here as in the game (a key such as Tab would also move the focus of the page: the browser is asked not to). Esc is forwarded to the game by the Bridge, so the page
+    // leaves it to the game whichever of the two menus has it (a swap can hand it to the Journal: the page's toggle on top of the game's would open it and close it at once). For any other key the player gave to
+    // Pause, the menu is closed from here (never while the Journal is open: it has its own way out).
+    if (!event.repeat && event.code !== 'Escape' && BraveUiBridge.Input.actions.matches('journal', event)) {
       event.preventDefault();
       journal.toggle();
       return;
     }
+    if (!event.repeat && event.code !== 'Escape' && menuIsOpen && !current.open && BraveUiBridge.Input.actions.matches('pause', event)) {
+      event.preventDefault();
+      pause.leave();
+      return;
+    }
     if (!current.open) return;
+    // The arrows move through the lists: the menu's own navigation, not a control of the game.
     var direction = { ArrowUp: -1, ArrowDown: 1, ArrowLeft: -1, ArrowRight: 1 }[event.code];
     if (!direction) return;
     event.preventDefault();

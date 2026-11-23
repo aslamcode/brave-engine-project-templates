@@ -2,7 +2,7 @@ import { Bool, Camera, CharacterController, Entity, Float, IEntity, Input, Int, 
 
 /**
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
- * (key `1`), the slot of the mesh that has the arms goes to the layer of the arms camera, with the view model (the weapon and the points the arms reach for), and the arms stop being the body's: each
+ * (the `slot-1` action: key 1 by default), the slot of the mesh that has the arms goes to the layer of the arms camera, with the view model (the weapon and the points the arms reach for), and the arms stop being the body's: each
  * shoulder goes to a point of the view model and each hand to a grip of the weapon, so the weapon can be where it looks right on the screen whatever the length of the body's own arms. Unarmed
  * again, the arms go back to the body and only then does the slot return to the world camera, which is why neither swap shows: while the arms are the body's the arms camera has the world's own position, rotation and
  * field of view, and it moves to its own place as the arms reach the weapon (see below).
@@ -60,7 +60,7 @@ export class FirstPersonArms extends ScriptComponent {
   @Float({ label: 'Armed Lean', tooltip: 'The same while armed.' }) armedLean = 1;
   @String({ label: 'Lean Bone', tooltip: 'Which Look At leans: the one whose Bone is this (the chest). Empty: every Look At of the character, which is wrong for one that turns the head and must stay on.' }) leanBone = '';
   @Float({ header: 'Equip', label: 'Equip Time', suffix: 's', tooltip: 'How long the arms take to go to the weapon and to come back.' }) equipTime = 0.3;
-  @Bool({ label: 'Equip Key', tooltip: 'On: key 1 takes the weapon in hand and puts it away. Off when a Loadout handles the keys (1 to 9 choose a gear): it calls equip() and unequip() itself.' }) equipKey = true;
+  @Bool({ label: 'Equip Key', tooltip: 'On: the Slot 1 control (the key 1) takes the weapon in hand and puts it away. Off when a Loadout handles the slots (1 to 9 choose a gear): it calls equip() and unequip() itself.' }) equipKey = true;
   @Bool({ header: 'Arms Camera', label: 'Camera On Chest', tooltip: 'On: the position of the arms camera rides the chest (the Lean Bone) instead of the head, so the arms and the weapon look the same whatever the pitch: looking up, the camera is never inside the arms. The camera still looks where the player looks. Needs Arms Camera and Lean Bone. Off: it hangs from the eyes. Read when the game starts.' }) armsCameraOnChest = true;
 
   /** Whether the character holds the weapon (or is raising it). */
@@ -86,11 +86,11 @@ export class FirstPersonArms extends ScriptComponent {
     this.leans.forEach(lean => { lean.weight = this.unarmedLean; });
     if (this.eyesFollow) this.eyesFollow.weight = 1;
     this.show(false);
-    // A character that is off (the other one of two, say) does not hold anything: its key would equip a weapon nobody sees and leave it armed when it comes back.
-    this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
+    // A character that is off (the other one of two, say) does not hold anything: its control would equip a weapon nobody sees and leave it armed when it comes back.
+    this.key = Input.action('slot-1').down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
-  // A load builds the component as it was, started: the constraints it moves and the key are not there. What the arms hold is not touched (the `Loadout` brings it back and says it with `equip()`).
+  // A load builds the component as it was, started: the constraints it moves and the listener are not there. What the arms hold is not touched (the `Loadout` brings it back and says it with `equip()`).
   onRestore() {
     if (!this.started) return;
     if (this.key) Input.removeListner(this.key);
@@ -99,7 +99,7 @@ export class FirstPersonArms extends ScriptComponent {
     this.collect(this.entity);
     this.followChest();
     if (this.eyesFollow) this.eyesFollow.weight = 1 - FirstPersonArms.ease(this.reach);
-    this.key = Input.keyboard.digit1.down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
+    this.key = Input.action('slot-1').down(() => { if (this.equipKey && this.entity.activeInHierarchy) this.toggle(); });
   }
 
   onUpdate() {
@@ -117,13 +117,13 @@ export class FirstPersonArms extends ScriptComponent {
     if (!this.equipped && this.reach === 0) this.show(false);
   }
 
-  // What a script registers it gives back: the key would go on calling a script that is gone.
+  // What a script registers it gives back: the listener would go on calling a script that is gone.
   onDestroy() {
     if (this.key) Input.removeListner(this.key);
     this.key = undefined;
   }
 
-  // The copy holds the original's handle and its list: it makes its own when it starts, and must never remove the original's key.
+  // The copy holds the original's handle and its list: it makes its own when it starts, and must never remove the original's listener.
   onAfterClone() {
     this.key = undefined;
     this.constraints = [];

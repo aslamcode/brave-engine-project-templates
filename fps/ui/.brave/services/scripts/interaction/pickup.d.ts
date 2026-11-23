@@ -5,7 +5,7 @@ import { Journal } from '../../services/journal.service';
 import { IInteractableCaption, Interactable } from './interactable';
 import type { Interactor } from './interactor';
 /**
- * An item the player collects with E: it goes into the `Inventory` under `Item Id` (what a locked `Door` or a `Socket` asks for), the `Hud` says so, a sound is heard, and its entity is switched
+ * An item the player collects with `interact`: it goes into the `Inventory` under `Item Id` (what a locked `Door` or a `Socket` asks for), the `Hud` says so, a sound is heard, and its entity is switched
  * off, with nothing in between: no animation, it is simply gone. (A script that wants one listens to `onPickedUp`.) The entity needs a collider for the player to look at; the model can be
  * its children.
  *

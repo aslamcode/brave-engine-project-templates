@@ -10,7 +10,7 @@ export type DoorEasing = 'linear' | 'smooth' | 'ease-in' | 'ease-out';
 export type DoorSides = 'fixed' | 'both' | 'front';
 /**
  * A door, or anything that moves out of the way and back: a hinged door TURNS about an axis, a drawer, a shutter or a gate SLIDES along one. One script for both: `Mode` says which, `Axis` the
- * line it turns about or the way it slides, `Amount` how far (degrees or metres), `Duration` how long, `Easing` how it speeds up and slows down. E toggles it, and a door in the middle of a swing
+ * line it turns about or the way it slides, `Amount` how far (degrees or metres), `Duration` how long, `Easing` how it speeds up and slows down. `interact` toggles it, and a door in the middle of a swing
  * goes back from where it is.
  *
  * ```
@@ -27,7 +27,7 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  * from the side it swings away from; the other side is refused, a door to a room that is entered from one side). Which side the player is on is measured from the hinge and the place of the panel (the
  * biggest thing the leaf is drawn with), so the leaf needs a mesh for the last two. A door that is open is closed from either side, and a script (`open()`, a Socket, a Director) opens it whatever the side.
  *
- * Locked: a locked door refuses E (the locked sound, `Locked Message`, `onLocked`) unless the player carries `Key Item` (then the bolt slides: the unlock sound, `onUnlocked`, and a moment later
+ * Locked: a locked door refuses `interact` (the locked sound, `Locked Message`, `onLocked`) unless the player carries `Key Item` (then the bolt slides: the unlock sound, `onUnlocked`, and a moment later
  * the door opens; the key is taken out of the inventory unless `Use Up Key` is off: the Journal still lists it, as used). The prompt says what is missing (`Needs Prompt`: "Needs key"), and a lock that
  * asks for several things (`piece-1, piece-2, piece-3`, or `fuse x3`) says how far the player is ("Needs piece 3 (2 of 3)"). With no `Key Item` only a script unlocks it: `unlock()`, which a `Socket` or a Director calls.
  *

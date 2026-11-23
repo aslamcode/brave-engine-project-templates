@@ -14,6 +14,7 @@
     "fieldOfView": "Field of View",
     "volume": "Volume",
     "language": "Language",
+    "controls": "Controls",
     "loading": "Loading…",
     "subtitles": "Subtitles",
     "saves": "Saves",
@@ -23,10 +24,14 @@
     "restart": "Restart",
     "quit": "Quit",
     "confirm": "Click again to confirm",
-    "hint": "Esc, or click anywhere on the game · F5 quick save · F9 quick load"
+    "hintPause": "{key}, or click anywhere on the game",
+    "hintClick": "Click anywhere on the game to resume",
+    "hintSave": "{key} quick save",
+    "hintLoad": "{key} quick load"
   },
   "journal": {
-    "closeHint": "Tab or Esc to close",
+    "closeHint": "{journal} or {pause} to close",
+    "closeHintOne": "{key} to close",
     "close": "Close",
     "play": "Play",
     "stop": "Stop",
@@ -173,7 +178,7 @@
   },
   "demo": {
     "title": "Language lab",
-    "hint": "Press E on the radio. Pick up the chip. Esc opens the menu.",
+    "hint": "Use the radio. Pick up the chip. The pause menu has the language.",
     "radio": {
       "prompt": "Listen",
       "name": "Old radio",
@@ -186,6 +191,66 @@
     "case": {
       "title": "Sealed case",
       "text": "Locked tight, and heavier than it looks. Nobody here has the key."
+    }
+  },
+  "controls": {
+    "title": "Controls",
+    "keyboardMouse": "Keyboard & Mouse",
+    "gamepad": "Gamepad",
+    "reset": "Reset to defaults",
+    "back": "Back",
+    "resetDone": "Controls back to their defaults.",
+    "pressKey": "Press a key…",
+    "pressButton": "Press a button…",
+    "hintKeyboard": "Click a control, then press the key you want, or turn the wheel. Esc or a click elsewhere cancels.",
+    "hintGamepad": "Click a control, then press the button you want on the pad. Esc or a click elsewhere cancels.",
+    "nothingChanged": "Nothing was changed.",
+    "cannot": "That control cannot go there.",
+    "swapped": "{control} was on “{action}”. The two swapped places: “{action}” now uses {previous}.",
+    "taken": "{control} was on “{action}”, which has nothing there now.",
+    "group": {
+      "movement": "Movement",
+      "combat": "Combat",
+      "gear": "Gear",
+      "world": "World and menus",
+      "other": "Other"
+    },
+    "part": {
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right",
+      "negative": "Less",
+      "positive": "More"
+    }
+  },
+  "input": {
+    "actions": {
+      "move": "Move",
+      "look": "Look",
+      "jump": "Jump",
+      "run": "Run",
+      "crouch": "Crouch",
+      "zoom": "Zoom",
+      "interact": "Interact",
+      "fire": "Fire",
+      "aim": "Aim",
+      "reload": "Reload",
+      "next-weapon": "Next weapon",
+      "previous-weapon": "Previous weapon",
+      "slot-1": "Gear 1",
+      "slot-2": "Gear 2",
+      "slot-3": "Gear 3",
+      "slot-4": "Gear 4",
+      "slot-5": "Gear 5",
+      "slot-6": "Gear 6",
+      "slot-7": "Gear 7",
+      "slot-8": "Gear 8",
+      "slot-9": "Gear 9",
+      "pause": "Pause",
+      "journal": "Journal",
+      "quick-save": "Quick save",
+      "quick-load": "Quick load"
     }
   },
   "subtitles": {

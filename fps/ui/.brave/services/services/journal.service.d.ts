@@ -55,7 +55,7 @@ export interface IJournalEntryInput {
  * list the HUD shows for a moment when it changes, always there to look at. That category is only a view of the Inventory (an item the Journal has an entry for, such as an access, stays in its own category, and
  * the ones the Inventory hides, the ammo, the grenades, are not listed): nothing is written into it, so it needs nothing from the pickups but the name and the description they gave the Inventory.
  *
- * Tab opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
+ * The `journal` action (Tab by default, the pad's Back; the player can move it) opens it (and closes it): a menu page of `ui/` with the categories on the left, the entries of one in the middle, and the one chosen on the right, which is the text of a note, or the play button of an
  * audio log. The pointer is let go while it is open and held again when it closes. The game stands still behind it (`pausesGame`; off, it goes on). The menu has a name that only the game cares about
  * (`title`: Journal here, Datapad or Notebook in another game): a `JournalMenu` in the scene sets it.
  *
@@ -88,8 +88,8 @@ export declare class Journal {
     private playing;
     private source?;
     private readonly buffers;
-    private tabListener?;
-    private escapeListener?;
+    private journalListener?;
+    private pauseListener?;
     private started;
     state: IJournalState;
     onStart(): void;

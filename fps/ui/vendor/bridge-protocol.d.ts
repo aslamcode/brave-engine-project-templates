@@ -60,5 +60,6 @@ export type BridgeMessage = {
 };
 export declare const TRANSLATE_CHANNEL = "Translate";
 export declare const SUBTITLES_CHANNEL = "Subtitles";
+export declare const INPUT_CHANNEL = "Input";
 export declare const RESERVED_LIFECYCLE_KEYS: readonly ["active", "onLoad", "onEnable", "onDisable", "onAwake", "onStart", "onUpdate", "onRenderUpdate", "onFixedUpdate", "onDrawSceneMask", "onDrawGizmos", "onDestroy", "onHotReload", "onAfterClone", "onSave", "onRestore"];
 export type ReservedLifecycleKey = typeof RESERVED_LIFECYCLE_KEYS[number];

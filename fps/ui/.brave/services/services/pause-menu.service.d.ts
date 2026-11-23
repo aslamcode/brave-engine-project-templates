@@ -17,6 +17,9 @@ export interface IPauseMenuState {
  * The pause menu and the player's settings. The game holds the pointer while it is played, and the browser takes it back when the player presses Esc: that is when the menu opens (once the pointer has been
  * held at least once, so that it does not open before the first click), the game pauses, and the page in `ui/` shows the three settings and a Resume button. Clicking anywhere outside the panel holds the pointer
  * again, which closes it; so does the button, and so does Esc again (the browser does not count Esc as a gesture, and is still handling that key when the game asks, so the pointer is asked for after it: see `leave()`). The page only reads `state` and calls the methods.
+ * Esc is the default of the `pause` action (the pad's Start too): the player can give it another key in the page's Controls screen, and the menu then opens and closes by that one (the browser's own Esc still lets go of the pointer, which opens it).
+ * A pad never holds the pointer, so nothing is let go for the menu to hear of: its Start opens the menu by itself (`openFromPad()`), once the game runs and no other menu has the screen.
+ * A rebinding that waits for a key silences the actions, so the Esc that cancels it does not close the menu; and one still waiting when the menu closes is ended with it (`close()`).
  * That hand-back is for a build (`holdPointer()`). In the editor's Play closing the menu leaves the pointer free (a screenshot, a look at the editor, with the game running and no menu): the next click on the game holds it.
  * In the editor's Play (a window) Shift+Esc is the developer asking for the mouse, not the player pausing: the menu does not open and the game goes on (`Cursor.releasedForEditor`).
  *
@@ -46,14 +49,18 @@ export declare class PauseMenu {
     private armed;
     private pausedByMenu;
     private releaseExpected;
+    private otherMenuOpen;
+    private otherMenuClosedAt;
     private lockedAt;
-    private lastEscape;
+    private lastPause;
     private listener;
-    private escapeListener?;
+    private pauseListener?;
     onStart(): void;
     onDestroy(): void;
-    /** Another menu (the journal) has the screen: this one does not open when the pointer is let go (that is the other menu's doing, not the player's Esc) until the pointer is held again. It stays so for as many events as the browser sends, not for one. */
+    /** Another menu (the journal) has the screen: this one does not open when the pointer is let go (that is the other menu's doing, not the player's Esc) until the pointer is held again. It stays so for as many events as the browser sends, not for one. A pad's Start does not wait for the pointer (a pad may never hold it): it waits for `otherMenuClosed()`. */
     expectRelease(): void;
+    /** The other menu (the journal) gave the screen back. The Start that closed it is still being heard by this menu too, whichever of the two hears it first: it does not open for it (`PAUSE_DEBOUNCE_MS`). */
+    otherMenuClosed(): void;
     /** Opens the menu (and pauses the game, when `pausesGame`). */
     open(): void;
     /**
@@ -86,7 +93,8 @@ export declare class PauseMenu {
     setFieldOfView(degrees: number): void;
     setVolume(value: number): void;
     private close;
-    private onEscape;
+    private onPause;
+    private openFromPad;
     private onLockChange;
     private apply;
     private eyes;

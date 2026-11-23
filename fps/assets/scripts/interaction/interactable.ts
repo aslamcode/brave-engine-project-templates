@@ -9,11 +9,11 @@ export interface IInteractableCaption {
   body: string;
 }
 
-/** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what E does when it is looked at). */
+/** How the player is shown it is there to be used: a box with a line down to it, a simple mark, or nothing (the line under the crosshair still says what `interact` does when it is looked at). */
 export type InteractableMarker = 'line' | 'simple' | 'none';
 
 /**
- * Something the player can use with E: what it says when the player looks at it (`currentPrompt`), whether it can be used now (`usable`), and what happens when it is (`onUse`).
+ * Something the player can use with `interact`: what it says when the player looks at it (`currentPrompt`), whether it can be used now (`usable`), and what happens when it is (`onUse`).
  *
  * It is the base the other interactables build on (`Door`, `Pickup`, `Socket`), and it works on its own as a button: put it on an entity with a collider, write the prompt, and listen to
  * `onUsed` from another script, or from a Director (a `Signal` is a trigger there). To make your own kind, extend it and override what changes:
@@ -28,12 +28,12 @@ export type InteractableMarker = 'line' | 'simple' | 'none';
  * ```
  *
  * The player's side is the `Interactor`: it finds the nearest thing its ray meets, walks up from the collider that was hit to the first entity that has an Interactable, shows its
- * `currentPrompt`, and calls `interact()` on E. The collider can be on this entity or on any child of it (the leaf of a door), so no layer or trigger is needed.
+ * `currentPrompt`, and calls `interact()` when the player uses it. The collider can be on this entity or on any child of it (the leaf of a door), so no layer or trigger is needed.
  */
 @Script()
 export class Interactable extends ScriptComponent {
 
-  @String({ header: 'Prompt', label: 'Prompt', tooltip: 'What E does on this, shown under the crosshair while the player looks at it and it can be used. {item} stands for the name of its item, where it has one.', completion: StringCompletionEnum.TranslationKeys }) prompt = 'Use';
+  @String({ header: 'Prompt', label: 'Prompt', tooltip: 'What Interact does on this, shown under the crosshair while the player looks at it and it can be used. {item} stands for the name of its item, where it has one.', completion: StringCompletionEnum.TranslationKeys }) prompt = 'Use';
 
   @String({ header: 'Caption', label: 'Caption Title', tooltip: 'The name the player reads over the prompt while looking at it: "Terminal", "Power cell". It may hold {{ key }}, an entry of the language files, so that it follows the language. A Pickup gives its item\'s name when this is empty and it has something to say.', completion: StringCompletionEnum.TranslationKeys }) captionTitle = '';
   @String({ label: 'Caption Text', rows: 3, tooltip: 'A line or two under the title: what it is, what it is for. It may hold {{ key }} too. A Pickup says its Description when this is empty.', completion: StringCompletionEnum.TranslationKeys }) captionText = '';
@@ -51,23 +51,23 @@ export class Interactable extends ScriptComponent {
   /** The player used it. Emitted after what it does, with the Interactor that used it. */
   @JsonIgnore() onUsed = new Signal<Interactor>();
 
-  /** What the player is told E does now. A kind with states (a door: open, close, locked) answers for the state it is in. */
+  /** What the player is told `interact` does now. A kind with states (a door: open, close, locked) answers for the state it is in. */
   get currentPrompt(): string {
     return this.prompt;
   }
 
-  /** What E does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
+  /** What `interact` does now as `interactor` sees it, for a kind whose answer depends on who looks (the side of a door the player stands on). It is `currentPrompt` unless a kind says otherwise. */
   promptFor(_interactor: Interactor): string {
     return this.currentPrompt;
   }
 
-  /** What it says about itself when looked at, under the prompt's box on the HUD. Both empty (the default): it says only what E does. A kind answers with what it knows (a pickup: its item). */
+  /** What it says about itself when looked at, under the prompt's box on the HUD. Both empty (the default): it says only what `interact` does. A kind answers with what it knows (a pickup: its item). */
   get caption(): IInteractableCaption {
     return { title: this.captionTitle, body: this.captionText };
   }
 
   /**
-   * Whether it only says what it is: no prompt (nothing for E to do) and a caption to read (a painting, a sign: the `Caption` script). The HUD shows its caption alone, with no key and no marker over it, and the
+   * Whether it only says what it is: no prompt (nothing for `interact` to do) and a caption to read (a painting, a sign: the `Caption` script). The HUD shows its caption alone, with no key and no marker over it, and the
    * `Interactor` reads it from further away than it uses things (`Look Distance`).
    */
   get describesOnly(): boolean {
@@ -80,12 +80,12 @@ export class Interactable extends ScriptComponent {
     return '';
   }
 
-  /** Whether the player may use it now: when not, nothing is shown and E does nothing. (A locked door IS usable: E on it is how the player finds out.) */
+  /** Whether the player may use it now: when not, nothing is shown and `interact` does nothing. (A locked door IS usable: `interact` on it is how the player finds out.) */
   get usable(): boolean {
     return true;
   }
 
-  /** What E does. Returns whether it did anything. */
+  /** What `interact` does. Returns whether it did anything. */
   interact(interactor: Interactor): boolean {
     if (!this.activeInHierarchy || !this.usable) return false;
 

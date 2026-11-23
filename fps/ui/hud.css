@@ -60,13 +60,13 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .hitmarker.-kill i { background: var(--danger); }
 .hitmarker { transition: opacity 0.25s ease-out; }
 
-/* What E does on what the player looks at. */
+/* What the interact control (E, a pad's Y: the player's own) does on what the player looks at. */
 .prompt { position: fixed; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 7px 14px 7px 8px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); opacity: 0; transition: opacity 0.12s; }
 .prompt.-show { opacity: 1; }
 .prompt.-caption-only .prompt__row { display: none; }   /* a thing that only describes itself: the card, with no key */
-.prompt.-hidden { opacity: 0; }   /* a marker's box says what E does */
+.prompt.-hidden { opacity: 0; }   /* a marker's box says what the interact control does */
 .prompt__row { display: flex; align-items: center; gap: 10px; }
-.prompt__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; }
+.prompt__key { display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 5px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; white-space: nowrap; }
 .prompt__text { font-size: 15px; letter-spacing: 0.01em; }
 
 /* The subtitles: the lines of what is being said, at the bottom centre, between the two status panels, one over the other when two people talk. They have a lane of their own, a little off the bottom edge of the window (`--subtitle-bottom`, 6% of its height: text glued to the edge is hard to read and is cut off on some screens; the panels keep their 26 px) and with its top where it was (the room under the prompt does not change): as wide as the room between the
@@ -127,10 +127,13 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .ammo__reserve { font-size: 24px; color: var(--muted); }
 .ammo.-single .ammo__slash, .ammo.-single .ammo__reserve { display: none; }
 
-/* The weapons carried, over the ammo: the key and the name, the one in hand lit. */
+/* The weapons carried, over the ammo: the key (or pad button) of its slot, as the player has it, and the name, the one in hand lit. A slot with no control on the device in use has no chip (the page asks the library, which gives the
+   other device's key; `body[data-device]` says which is in use, and the chip says what it shows). */
 .weapons { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 6px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-.weapons__chip { color: var(--muted); }
+.weapons__chip { display: flex; align-items: center; gap: 6px; color: var(--muted); }
 .weapons__chip.-current { color: var(--accent); }
+.weapons__key { display: grid; place-items: center; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 4px; border: 1px solid currentColor; font-style: normal; font-size: 10px; letter-spacing: 0.02em; white-space: nowrap; }
+.weapons__key:empty, body[data-device="gamepad"] .weapons__key[data-input-showing="keyboardMouse"], body[data-device="keyboardMouse"] .weapons__key[data-input-showing="gamepad"] { display: none; }
 
 /* What was picked up or spent: a notice for each (`+ Key`, `-2 Grenade`) at the corner, over the health panel (the bottom centre belongs to the subtitles, and what the player carries is not a row that grows with
    the game: the Journal has the list), three at most, each for the game's Notice Seconds. The page puts it before the subtitles, so that if they ever meet (a narrow window) the subtitles are over it. */
@@ -143,7 +146,7 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 @keyframes notice-bump { 50% { background: rgba(255, 180, 84, 0.22); } }
 @media (prefers-reduced-motion: reduce) { .notice { animation: none; transition: none; } }
 
-/* Markers: what can be used, over it on the screen. The one looked at is a glass box with what E does (the page behind it blurred, its colours pushed), tied to the thing by a line; the others are a small mark. */
+/* Markers: what can be used, over it on the screen. The one looked at is a glass box with what the interact control does (the page behind it blurred, its colours pushed), tied to the thing by a line; the others are a small mark. */
 .markers { position: fixed; inset: 0; overflow: hidden; }
 .marker { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; animation: marker-in 0.18s ease-out; }
 .marker__dot { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); border: 1.5px solid rgba(255, 255, 255, 0.85); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); }
@@ -158,7 +161,7 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .marker__row { display: flex; align-items: center; gap: 10px; }
 /* The marker is a box of no width, so a text that wraps would wrap at its narrowest word: it takes the width it wants, up to 260 px. */
 .marker__box .caption { width: max-content; max-width: 260px; }
-.marker__key { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; background: rgba(0, 0, 0, 0.18); }
+.marker__key { display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 6px; border: 1.5px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; white-space: nowrap; background: rgba(0, 0, 0, 0.18); }
 .marker__text { font-size: 15px; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); }
 .marker__peek { display: none; }
 .marker.-peek .marker__dot { left: -6px; top: -6px; width: 12px; height: 12px; background: rgba(255, 255, 255, 0.3); }
@@ -203,7 +206,7 @@ html, body { margin: 0; height: 100%; background: transparent; color: var(--ink)
 .save__button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .save__button:disabled { opacity: 0.35; cursor: default; }
 
-/* The Journal: what the player has found out, opened with Tab. Three columns: the categories, the entries of the chosen one with a drawing over them, and the chosen entry's text. The lists and the body take the wheel, so they are pointer-enabled too. */
+/* The Journal: what the player has found out, opened with its own control (Tab, a pad's Back). Three columns: the categories, the entries of the chosen one with a drawing over them, and the chosen entry's text. The lists and the body take the wheel, so they are pointer-enabled too. */
 .journal { --journal-side: clamp(240px, 19vw, 340px); --journal-detail: clamp(360px, 30vw, 560px); position: fixed; inset: 0; z-index: 10; background: rgba(8, 10, 14, 0.58); backdrop-filter: var(--glass); visibility: hidden; opacity: 0; pointer-events: none; transition: opacity 0.12s, visibility 0.12s; }
 .journal.-open { visibility: visible; opacity: 1; pointer-events: auto; }
 /* The Journal has the whole screen, and the game shows through it (the game is still behind it, paused): what else the page draws (the crosshair, the ammo, the health, the pause menu whatever its state is) is not seen under it. */
@@ -243,7 +246,47 @@ body.-journal > :not(.journal) { visibility: hidden; }
 /* The chip at the top right (the bottom has the health, the items and the ammo): the key, the Journal's name, and a dot while something new is in it. It is only there when something new went in (`-shown`, for the game's Hint Seconds), fading in and out. */
 .journal-hint { position: fixed; right: 26px; top: 22px; display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 6px; border-radius: 8px; background: var(--panel); backdrop-filter: var(--glass); font-size: 12px; letter-spacing: 0.02em; opacity: 0; transform: translateY(-10px); transition: opacity 0.4s ease, transform 0.4s ease; }
 .journal-hint.-shown { opacity: 1; transform: none; }
-.journal-hint__key { display: grid; place-items: center; min-width: 22px; height: 20px; padding: 0 5px; border-radius: 5px; border: 1px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 11px; }
+.journal-hint__key { display: grid; place-items: center; min-width: 22px; height: 20px; padding: 0 5px; border-radius: 5px; border: 1px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 11px; white-space: nowrap; }
 .journal-hint__dot { display: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .journal-hint.-new .journal-hint__dot { display: block; }
 
+/* A control of a pad, wherever the page shows one (a chip of the library, `data-input-action`, or a place of the Controls screen): a round chip with the button's own name (A, X, LB, RT), as the pad in the player's hands
+   calls it. The library says what it shows (`data-input-showing`, `data-input-button`, `data-input-style`); no icon is drawn, only the name in a round chip, tinted for the four face buttons of an Xbox-like pad. */
+[data-input-showing="gamepad"] { border-radius: 999px; border-color: var(--pad, var(--accent)); color: var(--pad, var(--accent)); }
+[data-input-style="xbox"][data-input-button="south"], [data-input-style="generic"][data-input-button="south"] { --pad: #7ee0a1; }
+[data-input-style="xbox"][data-input-button="east"], [data-input-style="generic"][data-input-button="east"] { --pad: #ff7468; }
+[data-input-style="xbox"][data-input-button="west"], [data-input-style="generic"][data-input-button="west"] { --pad: #6cb4ff; }
+[data-input-style="xbox"][data-input-button="north"], [data-input-style="generic"][data-input-button="north"] { --pad: #ffd45a; }
+.weapons__key[data-input-showing="gamepad"] { border-color: currentColor; color: inherit; }
+.journal-hint__key[data-input-showing="gamepad"] { min-width: 22px; }
+
+/* The Controls screen of the pause menu: a second panel in the same dimmed screen, one of the two shown at a time (`.menu.-controls`). Tabs for the keyboard and the mouse or a pad, then a row for each action with its two
+   places; the list scrolls (it takes the wheel), the buttons are the menu's own. While a place waits for a control (`.menu.-waiting`) the catcher, a whole-screen layer under the panels, takes the clicks that would
+   otherwise be forwarded to the game as mouse presses (a click on the game holds the pointer and closes the menu); a turn of the wheel steps through it (`-through`), it is a control the keyboard can take. */
+.controls__catcher { position: fixed; inset: 0; z-index: -1; }
+.menu.-waiting .controls__catcher { pointer-events: auto; }
+.menu.-waiting .controls__catcher.-through { pointer-events: none; }
+.menu__panel.-controls { display: none; width: min(680px, calc(100vw - 40px)); }
+.menu.-controls .menu__panel { display: none; }
+.menu.-controls .menu__panel.-controls { display: grid; }
+.controls__tabs { display: flex; gap: 8px; }
+.controls__tab { flex: 1; padding: 8px 0; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 6px; background: transparent; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; cursor: pointer; }
+.controls__tab:hover { border-color: var(--accent); }
+.controls__tab.-current { border-color: var(--accent); background: rgba(255, 180, 84, 0.12); color: var(--accent); }
+.controls__list { display: flex; flex-direction: column; gap: 4px; max-height: min(50vh, 440px); padding-right: 8px; overflow-y: auto; pointer-events: auto; }
+.controls__list > * { flex: none; }
+.controls__group { margin-top: 10px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244, 246, 248, 0.45); }
+.controls__group:first-child { margin-top: 0; }
+.controls__row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; min-height: 34px; font-size: 14px; }
+.controls__slots { display: flex; gap: 6px; }
+.controls__part { display: grid; justify-items: center; gap: 3px; }
+.controls__part-name { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(244, 246, 248, 0.45); }
+.controls__row.-compass { padding: 4px 0; }
+.controls__row.-compass .controls__slot { min-width: 60px; }
+.controls__slot { min-width: 124px; min-height: 28px; padding: 4px 12px; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: var(--ink); font-size: 13px; white-space: nowrap; cursor: pointer; }
+.controls__slot:hover { border-color: var(--accent); }
+.controls__slot.-empty { color: rgba(244, 246, 248, 0.4); }
+.controls__slot.-changed { border-color: rgba(255, 180, 84, 0.6); }
+.controls__slot.-waiting { border-color: var(--accent); background: rgba(255, 180, 84, 0.16); color: var(--accent); }
+.controls__slot.-fixed { display: inline-grid; place-items: center; border-color: transparent; background: none; color: var(--muted); cursor: default; }
+.controls__chip { display: inline-grid; place-items: center; min-width: 24px; height: 20px; padding: 0 7px; border-width: 1.5px; border-style: solid; font-size: 12px; font-weight: 700; line-height: 1; }

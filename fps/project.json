@@ -170,5 +170,253 @@
       }
     ]
   },
-  "language": {}
+  "language": {},
+  "input": {
+    "actions": [
+      {
+        "name": "zoom",
+        "type": "axis",
+        "delta": true,
+        "bindings": []
+      },
+      {
+        "name": "interact",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "KeyE"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "north"
+          }
+        ]
+      },
+      {
+        "name": "fire",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "mouseButton",
+            "button": 0
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "rightTrigger"
+          }
+        ]
+      },
+      {
+        "name": "aim",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "mouseButton",
+            "button": 2
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "leftTrigger"
+          }
+        ]
+      },
+      {
+        "name": "reload",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "KeyR"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "west"
+          }
+        ]
+      },
+      {
+        "name": "next-weapon",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "wheel",
+            "direction": "down"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "rightShoulder"
+          }
+        ]
+      },
+      {
+        "name": "previous-weapon",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "wheel",
+            "direction": "up"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "leftShoulder"
+          }
+        ]
+      },
+      {
+        "name": "slot-1",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit1"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "dpadUp"
+          }
+        ]
+      },
+      {
+        "name": "slot-2",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit2"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "dpadRight"
+          }
+        ]
+      },
+      {
+        "name": "slot-3",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit3"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "dpadDown"
+          }
+        ]
+      },
+      {
+        "name": "slot-4",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit4"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "dpadLeft"
+          }
+        ]
+      },
+      {
+        "name": "slot-5",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit5"
+          }
+        ]
+      },
+      {
+        "name": "slot-6",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit6"
+          }
+        ]
+      },
+      {
+        "name": "slot-7",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit7"
+          }
+        ]
+      },
+      {
+        "name": "slot-8",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit8"
+          }
+        ]
+      },
+      {
+        "name": "slot-9",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Digit9"
+          }
+        ]
+      },
+      {
+        "name": "pause",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Escape"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "start"
+          }
+        ]
+      },
+      {
+        "name": "journal",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "Tab"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "back"
+          }
+        ]
+      },
+      {
+        "name": "quick-save",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "F5"
+          }
+        ]
+      },
+      {
+        "name": "quick-load",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "F9"
+          }
+        ]
+      }
+    ]
+  }
 }

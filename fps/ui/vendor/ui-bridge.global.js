@@ -22,6 +22,8 @@ var BraveUiBridge = (() => {
   // libs/core/src/module/bridge/remote-entry.ts
   var remote_entry_exports = {};
   __export(remote_entry_exports, {
+    INPUT_CHANNEL: () => INPUT_CHANNEL,
+    Input: () => Input,
     RESERVED_LIFECYCLE_KEYS: () => RESERVED_LIFECYCLE_KEYS,
     SUBTITLES_CHANNEL: () => SUBTITLES_CHANNEL,
     Subtitles: () => Subtitles,
@@ -34,6 +36,7 @@ var BraveUiBridge = (() => {
   // libs/core/src/module/bridge/bridge-protocol.ts
   var TRANSLATE_CHANNEL = "Translate";
   var SUBTITLES_CHANNEL = "Subtitles";
+  var INPUT_CHANNEL = "Input";
   var RESERVED_LIFECYCLE_KEYS = [
     "active",
     "onLoad",
@@ -603,5 +606,209 @@ var BraveUiBridge = (() => {
   __publicField(_Subtitles, "current");
   __publicField(_Subtitles, "connection");
   var Subtitles = _Subtitles;
+
+  // libs/core/src/module/bridge/input-dom.ts
+  var INPUT_ACTION_ATTRIBUTE = "data-input-action";
+  var INPUT_SLOT_ATTRIBUTE = "data-input-slot";
+  var INPUT_DEVICE_ATTRIBUTE = "data-input-device";
+  var INPUT_SELECTOR = `[${INPUT_ACTION_ATTRIBUTE}]`;
+  var WATCHED_ATTRIBUTES2 = [INPUT_ACTION_ATTRIBUTE, INPUT_SLOT_ATTRIBUTE, INPUT_DEVICE_ATTRIBUTE];
+  function labelElement(element, source) {
+    const action = element.getAttribute(INPUT_ACTION_ATTRIBUTE);
+    if (!action) return;
+    const slotText = element.getAttribute(INPUT_SLOT_ATTRIBUTE);
+    const slot = slotText !== null && /^\d+$/.test(slotText) ? Number(slotText) : void 0;
+    const wanted = element.getAttribute(INPUT_DEVICE_ATTRIBUTE);
+    const device = wanted === "keyboardMouse" || wanted === "gamepad" ? wanted : void 0;
+    const label = source.labelOf(action, { device, slot });
+    if (!label) return;
+    if (element.textContent !== label.text) element.textContent = label.text;
+    setOrRemove(element, "data-input-showing", label.device);
+    setOrRemove(element, "data-input-button", label.button);
+    setOrRemove(element, "data-input-style", label.style);
+  }
+  function labelTree(root, source) {
+    if ("matches" in root && root.matches(INPUT_SELECTOR)) labelElement(root, source);
+    root.querySelectorAll(INPUT_SELECTOR).forEach((element) => labelElement(element, source));
+  }
+  function watchInputLabels(document2, Observer, watched) {
+    const all = () => labelTree(document2, watched);
+    watched.onChange.on(all);
+    const start = () => {
+      if (document2.querySelector(INPUT_SELECTOR)) watched.connect();
+      all();
+      if (!Observer) return;
+      new Observer((records) => {
+        let asked = false;
+        records.forEach((record) => {
+          if (record.type === "attributes") {
+            asked = true;
+            labelElement(record.target, watched);
+            return;
+          }
+          record.addedNodes.forEach((node) => {
+            if (node.nodeType !== 1) return;
+            const element = node;
+            if (element.matches(INPUT_SELECTOR) || element.querySelector(INPUT_SELECTOR)) {
+              asked = true;
+              labelTree(element, watched);
+            }
+          });
+        });
+        if (asked) watched.connect();
+      }).observe(document2, { childList: true, subtree: true, attributes: true, attributeFilter: WATCHED_ATTRIBUTES2 });
+    };
+    if (document2.readyState === "loading") document2.addEventListener("DOMContentLoaded", start, { once: true });
+    else start();
+  }
+  function setOrRemove(element, name, value) {
+    if (value === void 0) {
+      if (element.hasAttribute(name)) element.removeAttribute(name);
+    } else if (element.getAttribute(name) !== value) {
+      element.setAttribute(name, value);
+    }
+  }
+
+  // libs/core/src/module/bridge/input-client.ts
+  var InputActions = class {
+    constructor() {
+      /** Tells every time anything the page draws changes (the controls, the device in use, a rebinding waiting): draw again. */
+      __publicField(this, "onChange", {
+        on: (listener) => {
+          this.listeners.add(listener);
+          void this.connect();
+          return { off: () => {
+            this.listeners.delete(listener);
+          } };
+        }
+      });
+      __publicField(this, "host", remote(INPUT_CHANNEL));
+      __publicField(this, "listeners", /* @__PURE__ */ new Set());
+      __publicField(this, "current");
+      __publicField(this, "connection");
+    }
+    /** A listener that does not connect the page: the `data-input-action` watcher is there in every page that loads the package, and only the elements that ask connect it. */
+    hear(listener) {
+      this.listeners.add(listener);
+      return { off: () => {
+        this.listeners.delete(listener);
+      } };
+    }
+    //#region Getters
+    /** Resolves when the host has answered for the first time: wait for it before the first draw so that no prompt is drawn empty. */
+    get ready() {
+      return this.connect();
+    }
+    /** The family the player used last: what a prompt shows. The keyboard until the host has answered. */
+    get device() {
+      this.connect();
+      return this.current?.device ?? "keyboardMouse";
+    }
+    /** The family of pad the pad's labels are for. */
+    get style() {
+      this.connect();
+      return this.current?.style ?? "generic";
+    }
+    /** A rebinding is waiting for the player to press something. */
+    get isRebinding() {
+      this.connect();
+      return this.current?.rebinding ?? false;
+    }
+    /** Every action, with what it is bound to: a rebinding menu's rows. Empty until the host has answered. */
+    get all() {
+      this.connect();
+      return this.current?.actions ?? [];
+    }
+    //#endregion Getters
+    /** One action with its places, or nothing if the project has none by that name. */
+    viewOf(action) {
+      return this.all.find((candidate) => candidate.name === action);
+    }
+    /**
+     * What an action is bound to, in words. By default in the family the player is using (a pad's button after they touched a pad, the key after they touched the keyboard), the other family when the first has
+     * nothing; `device` and `slot` ask for one. Nothing when the action is bound to nothing, and until the host has answered.
+     */
+    labelOf(action, options = {}) {
+      const view = this.viewOf(action);
+      if (!view) return void 0;
+      const first = options.device ?? this.device;
+      const families = options.device ? [options.device] : [first, first === "gamepad" ? "keyboardMouse" : "gamepad"];
+      for (const family of families) {
+        const slots = view.slots[family] ?? [];
+        const slot = options.slot === void 0 ? slots.find((candidate) => !!candidate.label) : slots[options.slot];
+        if (slot?.label) return slot.label;
+      }
+      return void 0;
+    }
+    /** Every place of a family as words, in order, `undefined` for one that is empty: the cells of a rebinding row. */
+    labelsOf(action, family) {
+      return (this.viewOf(action)?.slots[family] ?? []).map((slot) => slot.label);
+    }
+    /**
+     * Whether a key or mouse button event the PAGE heard is one of the keyboard-and-mouse controls of the action (a key of a compass counts). The game does not hear the keys of a page that has the focus (a
+     * pause menu), so a page that wants "the journal key closes the journal" asks here with its own `keydown`. A pad's controls are not events of a page.
+     */
+    matches(action, event) {
+      return (this.viewOf(action)?.slots.keyboardMouse ?? []).some((slot) => {
+        const binding = slot.binding;
+        if (!binding) return false;
+        return [binding, ...Object.values(binding)].some((candidate) => {
+          const leaf = candidate;
+          if (!leaf || typeof leaf !== "object") return false;
+          return leaf.kind === "key" && event.code !== void 0 && leaf.code === event.code || leaf.kind === "mouseButton" && event.button !== void 0 && leaf.button === event.button;
+        });
+      });
+    }
+    /** Waits for the player to press a control and binds it. Resolves with what became of it. The page's own keys are not what is read: the game takes the keyboard back for the wait. */
+    rebind(request) {
+      this.connect();
+      return this.host.rebind(request);
+    }
+    /** Ends a rebinding that is waiting, as cancelled. */
+    cancelRebind() {
+      this.connect();
+      this.host.cancelRebind().catch(() => void 0);
+    }
+    /** Back to the project's controls: one action (and one family of it), or everything. */
+    resetBindings(action, family) {
+      this.connect();
+      this.host.resetBindings(action, family).catch(() => void 0);
+    }
+    // Subscribes first and reads second: a change between the two is told again instead of lost. The reading of a snapshot older than the one the page holds is dropped (two answers can cross).
+    connect() {
+      if (!this.connection) {
+        this.host.onChange.on(() => {
+          void this.take();
+        }, { sampleEvery: 16 });
+        this.connection = this.take();
+      }
+      return this.connection;
+    }
+    async take() {
+      const snapshot = await this.host.snapshot();
+      if (this.current && snapshot.version < this.current.version) return;
+      this.current = snapshot;
+      this.listeners.forEach((listener) => listener());
+    }
+  };
+  var _Input = class _Input {
+  };
+  __publicField(_Input, "actions", new InputActions());
+  // The page that loads the library gets `data-input-action` with no call of its own (a plain `<script>` is all it needs). In a static block so that nothing of it is in the class the page uses.
+  (() => {
+    if (typeof document !== "undefined") {
+      watchInputLabels(document, typeof MutationObserver === "undefined" ? void 0 : MutationObserver, {
+        labelOf: (action, options) => _Input.actions.labelOf(action, options),
+        get device() {
+          return _Input.actions.device;
+        },
+        connect: () => {
+          void _Input.actions.ready;
+        },
+        onChange: { on: (listener) => _Input.actions.hear(listener) }
+      });
+    }
+  })();
+  var Input = _Input;
   return __toCommonJS(remote_entry_exports);
 })();
