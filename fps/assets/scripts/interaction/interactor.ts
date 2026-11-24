@@ -1,6 +1,7 @@
 import { AudioSource, AudioTrack, BraveEngine, BraveEngineModeEnum, Camera, Entity, Float, IEntity, Inject, Input, Int, JsonIgnore, MeshRenderer, PhysicsSystem, Ref, Script, ScriptComponent, Signal, Time, Vector3 } from '@brave/core';
 import { Hud, IHudMarker } from '../../services/hud.service';
-import { biggestRenderer, centerOf } from '../shared/drawn';
+import { growBox, rayThroughBox } from '../shared/aim-box';
+import { biggestRenderer, centerOf, hasSolid } from '../shared/drawn';
 import { playClip } from '../shared/sound';
 import { Interactable } from './interactable';
 
@@ -17,10 +18,14 @@ import { Interactable } from './interactable';
  *    its radius, and only a thing that has an `Aim Radius` is held at all.
  * `interact` uses what is looked at, so the box that is shown is what it does: nothing is used that the box does not say.
  *
+ * A thing may also have a box in the world (`aimBox`: a door that slid away has its doorway), and rule 2 counts it the same way: the aim is on the thing when the ray comes into the box, on nothing else usable, and
+ * not through a wall. That is what lets a sliding door be shut by looking where it shuts, and not at the sliver of it that is left.
+ *
  * It also tells the `Hud` which things that can be used are near and in sight (`Marker Range`, at most `Max Markers`, the nearest first), where on the screen, so the page can mark them: the one looked at gets a
  * glass box with what `interact` does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The mark nearest to where the player looks, within `Peek Angle`, says its
  * name next to it (what a thing is can be learned without aiming at it exactly; a door has no name to give, a pickup has its item's). The point on the screen comes from the camera on this entity (the eyes)
- * and the anchor of each thing (the centre of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked.
+ * and the anchor of each thing (the centre of its box, else of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked, nor one the look cannot land on (no solid collider, no `Aim
+ * Radius`, no box: the mark would lead to something that does nothing), nor one that says it has nothing to find (`marked`: a door that is open).
  *
  * It does nothing while the game is paused or when the entity it is on is off (the other one of two players, say).
  *
@@ -208,7 +213,10 @@ export class Interactor extends ScriptComponent {
   // ray is outside it, when the thing does not help the aim, or when it is out of reach.
   private zoneOf(candidate: ICandidate): IZone | undefined {
     const thing = candidate.thing;
-    if (thing.aimRadius <= 0 || !thing.activeInHierarchy || !thing.usable) return undefined;
+    if (!thing.activeInHierarchy || !thing.usable) return undefined;
+
+    const crossed = this.boxZoneOf(thing);
+    if (crossed || thing.aimRadius <= 0) return crossed;
     if (Vector3.distance(thing.entity.transform.globalPosition, this.origin) > this.reach + thing.aimRadius + MODEL_OFFSET) return undefined;
 
     const point = this.aimPointOf(candidate);
@@ -224,6 +232,16 @@ export class Interactor extends ScriptComponent {
     return across <= radius ? { depth: across / radius, point, distance } : undefined;
   }
 
+  // The same for a thing that has a box (a door that slid away: the doorway): the ray comes into it within reach. A little bigger for the one already held, as the sphere is. `depth` is 0 through the middle and 1 along an
+  // edge; the point is where the ray comes in, which is what a wall in the way is measured against.
+  private boxZoneOf(thing: Interactable): IZone | undefined {
+    const box = thing.aimBox;
+    if (!box) return undefined;
+
+    const crossing = rayThroughBox(this.origin, this.direction, thing === this.held ? growBox(box, HELD_MARGIN) : box, this.reach);
+    return crossing ? { depth: crossing.depth, point: new Vector3(crossing.point[0], crossing.point[1], crossing.point[2]), distance: crossing.distance } : undefined;
+  }
+
   // What is on the screen to be used: near, in front of the camera, within the screen, not behind a wall (the one looked at needs no ray: the look already found it), and not asked to be left out.
   // The one looked at comes first, then the ones the aim is near enough to for a name (the nearest first), then the rest by distance.
   private mark(focused: Interactable | undefined): void {
@@ -237,6 +255,7 @@ export class Interactor extends ScriptComponent {
       this.candidates.forEach(candidate => {
         const thing = candidate.thing;
         if (!thing.activeInHierarchy || !thing.usable || thing.marker === 'none' || thing.describesOnly) return;
+        if (thing !== focused && (!candidate.aimable || !thing.marked)) return;
 
         const point = this.anchorOf(candidate);
         const distance = Vector3.distance(point, this.origin);
@@ -298,9 +317,12 @@ export class Interactor extends ScriptComponent {
     return point;
   }
 
-  // The centre of the thing as it is now: of what it is drawn with, else its origin. A new point each time.
+  // The centre of the thing as it is now: of its box when it has one (a door that slid away is still at its doorway), else of what it is drawn with, else its origin. A new point each time.
   private aimPointOf(candidate: ICandidate): Vector3 {
     const { thing, renderer } = candidate;
+    const box = thing.aimBox;
+    if (box) return new Vector3(box.center[0], box.center[1], box.center[2]);
+
     const center = renderer && centerOf(renderer);
     if (center) return center;
 
@@ -310,7 +332,13 @@ export class Interactor extends ScriptComponent {
 
   // The thing's entry in what the scan found; one made on the spot for a thing that is newer than the scan.
   private candidateOf(thing: Interactable): ICandidate {
-    return this.candidates.find(candidate => candidate.thing === thing) ?? { thing, renderer: biggestRenderer(thing.entity) };
+    return this.candidates.find(candidate => candidate.thing === thing) ?? this.candidateFor(thing);
+  }
+
+  // A thing and what the scan keeps of it: the renderer its mark is tied to, and whether the player's look can land on it at all (a solid collider, an Aim Radius or a box). One it cannot is not marked: the mark
+  // would lead to something that does nothing.
+  private candidateFor(thing: Interactable): ICandidate {
+    return { thing, renderer: biggestRenderer(thing.entity), aimable: thing.aimRadius > 0 || hasSolid(thing.entity) || !!thing.aimBox };
   }
 
   // The things that can be used are looked for again every half second (not every frame): a thing that came after the last look is marked and helps the aim a moment later, and the ray finds it at once.
@@ -322,7 +350,7 @@ export class Interactor extends ScriptComponent {
     this.candidates = [];
     const visit = (entity: Entity) => {
       const thing = entity.getComponent(Interactable);
-      if (thing) this.candidates.push({ thing, renderer: biggestRenderer(entity) });
+      if (thing) this.candidates.push(this.candidateFor(thing));
       entity.children.forEach(visit);
     };
     BraveEngine.scenes.forEach(scene => scene.children.forEach(visit));
@@ -365,6 +393,9 @@ const HELD_RADIUS = 1.5;
 // The same for the marker that is saying its name now.
 const PEEK_HELD = 1.3;
 
+// The box of a thing the aim holds is this much bigger on every side, metres: the same let-go-later as HELD_RADIUS, for a box.
+const HELD_MARGIN = 0.15;
+
 // The marker's place on the screen goes to the page in parts of the window (a hundred thousandth: a tenth of a pixel at 4K). It was a thousandth, which is 1.3 px on a 1280 window and 3.8 px on a 4K one: a label that
 // moves 3 px a frame moved in steps of 2.6 and 3.8 px and trembled, more on a bigger screen.
 const MARKER_PRECISION = 100000;
@@ -372,10 +403,11 @@ const MARKER_PRECISION = 100000;
 // How far a thing's model may sit from its entity's origin, metres: a thing whose origin is farther than the reach and its radius by more than this is not measured at all.
 const MODEL_OFFSET = 1;
 
-// A thing that can be used, and the renderer its marker is tied to (none: its origin).
+// A thing that can be used, the renderer its marker is tied to (none: its origin), and whether the player's look can land on it.
 interface ICandidate {
   thing: Interactable;
   renderer?: MeshRenderer;
+  aimable: boolean;
 }
 
 // The ray against the zone of a thing that helps the aim: how deep in it is (0 centre, 1 edge), the centre, and its distance from the eyes.

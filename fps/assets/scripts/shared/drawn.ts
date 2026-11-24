@@ -1,4 +1,4 @@
-import { Entity, MeshRenderer, Vector3 } from '@brave/core';
+import { Collider, Entity, MeshRenderer, Vector3 } from '@brave/core';
 
 /** The renderer of the biggest thing an entity (and what is under it) is drawn with, by the size it has in the world; none when nothing is drawn. */
 export function biggestRenderer(entity: Entity, best?: MeshRenderer): MeshRenderer | undefined {
@@ -16,6 +16,11 @@ export function centerOf(renderer: MeshRenderer): Vector3 | undefined {
   const m = renderer.entity.transform.worldMatrix;
   const x = (bounds.min.x + bounds.max.x) / 2, y = (bounds.min.y + bounds.max.y) / 2, z = (bounds.min.z + bounds.max.z) / 2;
   return new Vector3(m[0] * x + m[4] * y + m[8] * z + m[12], m[1] * x + m[5] * y + m[9] * z + m[13], m[2] * x + m[6] * y + m[10] * z + m[14]);
+}
+
+/** Whether an entity, or something under it, has a collider the player's look can land on: one that is on, and not a trigger (a ray goes through those). */
+export function hasSolid(entity: Entity): boolean {
+  return entity.components.some(component => component instanceof Collider && component.activeInHierarchy && !component.isTrigger) || entity.children.some(child => hasSolid(child));
 }
 
 function volumeOf(renderer: MeshRenderer): number {

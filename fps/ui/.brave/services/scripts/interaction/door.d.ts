@@ -1,7 +1,8 @@
-import { IEntity, Signal, Vector3 } from '@brave/core';
+import { Decal, IEntity, Signal, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
+import { IAimBox } from '../shared/aim-box';
 import { Interactable } from './interactable';
 import type { Interactor } from './interactor';
 export type DoorMode = 'rotate' | 'slide';
@@ -15,12 +16,17 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * ```
  * Front Door          <- this script (and the Audio Source of its sounds). Put it where the hinge is, or where the slide starts.
- *   Front Door Leaf   <- the part that MOVES (Leaf). A Rigid Body of type Kinematic (Interpolate off) is what makes the colliders move with it.
+ *   Front Door Leaf   <- the part that MOVES (Leaf). It needs no Rigid Body: a Collider with none follows the entity it is on, and the navigation grid sees a door with none (a Kinematic body would
+ *                        take it out of the grid). The collider is put where the leaf is each step, a teleport, so the door pushes nothing: a crate in its way is shoved aside slowly, or passed through when the
+ *                        door opens fast. A Kinematic body would push it for real, but the character controller then freezes when the player stands on it and slides along it worse than along a plain collider.
  *     Front Door Panel   <- the mesh, and a Collider: a closed door blocks the player because the collider is where the panel is.
  * ```
  *
  * The leaf's origin is the hinge, so the panel hangs off it (a child, a half-width to the side). The pose the leaf has in the scene is its CLOSED pose; `Starts Open` puts it open when the game
  * starts. With no `Leaf` set, the moving part is this entity itself.
+ *
+ * A sliding door is used through its doorway: the leaf slides out of sight, so the aim counts where it shuts (`aimBox`), and E shuts it from anywhere in the doorway, not only at the edge that is left. While it is
+ * open it has no small mark either (nothing is there to find); looking through the doorway at it brings the prompt. The leaf must have a collider that is on, or there is nothing to look at.
  *
  * Sides: a hinged door swings the way `Amount` says (turn its sign to swing it the other way), and `Opens From` says who may open it: `Either side, one swing` (the default: the door always swings
  * the same way, so from the far side it swings TOWARDS the player), `Either side, away from the player` (it swings away from whoever opens it: a door in a corridor) or `Front side only` (only
@@ -36,6 +42,10 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * Sounds are the four fields of the Sounds group, played through the Audio Source (see `Interactable`). A rotating door's close sound is the latch, so by default it is played when the door
  * SHUTS (`Close Sound When Shut`); a drawer's is a slide, played as it starts to go.
+ *
+ * A sign: the name or the number of THIS door ("A-03", "Archive"). `Sign` is a Text decal and `Sign Text` what it says; the door writes the text into the decal's Text when the game starts, so one prefab of a
+ * door gives each of its instances its own number (the text is a field of the instance, the decal is the prefab's). A `{{ key }}` in it is read in the player's language, and read again when the language
+ * changes. A script gives it another text with `setSign()`. The decal goes on the wall or on the frame, never on the Leaf: paint stays where it was laid and a door that moves slides out from under it.
  */
 export declare class Door extends Interactable {
     prompt: string;
@@ -63,6 +73,8 @@ export declare class Door extends Interactable {
     unlockSound: string;
     unlockDelay: number;
     closeSoundWhenShut: boolean;
+    sign?: Decal;
+    signText: string;
     inventory: Inventory;
     journal: Journal;
     hud: Hud;
@@ -95,7 +107,9 @@ export declare class Door extends Interactable {
     private normal?;
     private swing;
     private unlockTimer?;
+    private signListener?;
     onStart(): void;
+    onRestore(): void;
     onUpdate(): void;
     onDestroy(): void;
     onAfterClone(): void;
@@ -104,8 +118,12 @@ export declare class Door extends Interactable {
     toggle(): void;
     lock(): void;
     unlock(): void;
+    /** Gives the sign another text (a number a script worked out, a name the player was told): it is written into the decal at once, and kept in the save with the door. */
+    setSign(text: string): void;
     get currentPrompt(): string;
     promptFor(interactor: Interactor): string;
+    get aimBox(): IAimBox | undefined;
+    get marked(): boolean;
     protected onUse(interactor: Interactor): void;
     /** It is open, or on its way to be: what the prompt and a Director's condition go by. */
     get isOpen(): boolean;
@@ -117,6 +135,8 @@ export declare class Door extends Interactable {
     private get canUnlock();
     private get mover();
     private arrived;
+    private showSign;
+    private writeSign;
     private capture;
     private measureSides;
     private sideOf;

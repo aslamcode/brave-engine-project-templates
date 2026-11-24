@@ -1,8 +1,9 @@
-import { AudioTrack, Bool, Callable, Entity, Float, IEntity, Inject, Invoke, JsonIgnore, Quaternion, Ref, Saved, Script, Select, Signal, State, String, StringCompletionEnum, Time, Vec3, Vector3 } from '@brave/core';
+import { AudioTrack, Bool, Callable, Decal, DecalModeEnum, Entity, Float, IEntity, Inject, Invoke, JsonIgnore, Quaternion, Ref, Saved, Script, Select, Signal, State, String, StringCompletionEnum, Time, Translate, Vec3, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
-import { biggestRenderer, centerOf } from '../shared/drawn';
+import { aimBoxOf, IAimBox, shiftBox } from '../shared/aim-box';
+import { biggestRenderer, centerOf, hasSolid } from '../shared/drawn';
 import { fillRequirement, IRequirementProgress, parseRequirement, progressOf } from '../shared/requirement';
 import { Interactable } from './interactable';
 import type { Interactor } from './interactor';
@@ -19,12 +20,17 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * ```
  * Front Door          <- this script (and the Audio Source of its sounds). Put it where the hinge is, or where the slide starts.
- *   Front Door Leaf   <- the part that MOVES (Leaf). A Rigid Body of type Kinematic (Interpolate off) is what makes the colliders move with it.
+ *   Front Door Leaf   <- the part that MOVES (Leaf). It needs no Rigid Body: a Collider with none follows the entity it is on, and the navigation grid sees a door with none (a Kinematic body would
+ *                        take it out of the grid). The collider is put where the leaf is each step, a teleport, so the door pushes nothing: a crate in its way is shoved aside slowly, or passed through when the
+ *                        door opens fast. A Kinematic body would push it for real, but the character controller then freezes when the player stands on it and slides along it worse than along a plain collider.
  *     Front Door Panel   <- the mesh, and a Collider: a closed door blocks the player because the collider is where the panel is.
  * ```
  *
  * The leaf's origin is the hinge, so the panel hangs off it (a child, a half-width to the side). The pose the leaf has in the scene is its CLOSED pose; `Starts Open` puts it open when the game
  * starts. With no `Leaf` set, the moving part is this entity itself.
+ *
+ * A sliding door is used through its doorway: the leaf slides out of sight, so the aim counts where it shuts (`aimBox`), and E shuts it from anywhere in the doorway, not only at the edge that is left. While it is
+ * open it has no small mark either (nothing is there to find); looking through the doorway at it brings the prompt. The leaf must have a collider that is on, or there is nothing to look at.
  *
  * Sides: a hinged door swings the way `Amount` says (turn its sign to swing it the other way), and `Opens From` says who may open it: `Either side, one swing` (the default: the door always swings
  * the same way, so from the far side it swings TOWARDS the player), `Either side, away from the player` (it swings away from whoever opens it: a door in a corridor) or `Front side only` (only
@@ -40,6 +46,10 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * Sounds are the four fields of the Sounds group, played through the Audio Source (see `Interactable`). A rotating door's close sound is the latch, so by default it is played when the door
  * SHUTS (`Close Sound When Shut`); a drawer's is a slide, played as it starts to go.
+ *
+ * A sign: the name or the number of THIS door ("A-03", "Archive"). `Sign` is a Text decal and `Sign Text` what it says; the door writes the text into the decal's Text when the game starts, so one prefab of a
+ * door gives each of its instances its own number (the text is a field of the instance, the decal is the prefab's). A `{{ key }}` in it is read in the player's language, and read again when the language
+ * changes. A script gives it another text with `setSign()`. The decal goes on the wall or on the frame, never on the Leaf: paint stays where it was laid and a door that moves slides out from under it.
  */
 @Script({ inheritProperties: true })
 export class Door extends Interactable {
@@ -74,6 +84,9 @@ export class Door extends Interactable {
   @Float({ label: 'Unlock Delay', suffix: 's', tooltip: 'How long after the unlock sound a door opened with its key starts to move.' }) unlockDelay = 0.45;
   @Bool({ label: 'Close Sound When Shut', tooltip: 'On: the close sound plays when it has shut (a latch, a thud). Off: when it starts to close (a slide).' }) closeSoundWhenShut = true;
 
+  @Ref(Decal, { header: 'Sign', label: 'Sign', tooltip: 'A Text decal that shows the name or the number of this door, on the wall beside it or on its frame (not on the Leaf: paint stays where it is laid, and a door that moves slides out from under it). Its Text is set from Sign Text when the game starts. Empty: no sign.' }) sign?: Decal;
+  @String({ label: 'Sign Text', tooltip: 'What the sign says: "A-03", "Archive". A {{ key }} is read in the player\'s language. Empty: the decal keeps the text it has.', completion: StringCompletionEnum.TranslationKeys }) signText = '';
+
   @Inject(Inventory) inventory!: Inventory;
   @Inject(Journal) journal!: Journal;
   @Inject(Hud) hud!: Hud;
@@ -104,6 +117,7 @@ export class Door extends Interactable {
   // 1 swings the way `amount` says, -1 the other (a door that swings away from whoever opened it, from the side it was opened from). Chosen when a closed door starts to open, held until it is shut.
   @JsonIgnore() @Saved() private swing = 1;
   @JsonIgnore() private unlockTimer?: number;
+  @JsonIgnore() private signListener?: { off(): void };
 
   onStart() {
     this.capture();
@@ -112,6 +126,12 @@ export class Door extends Interactable {
       this.progress = 1;
     }
     this.place();
+    this.showSign();
+  }
+
+  // A load builds the door as it was, started: the sign is written again and the listener of the language is not there.
+  onRestore() {
+    this.showSign();
   }
 
   onUpdate() {
@@ -126,10 +146,13 @@ export class Door extends Interactable {
 
   onDestroy() {
     if (this.unlockTimer !== undefined) Invoke.clearTimeout(this.unlockTimer);
+    this.signListener?.off();
   }
 
+  // The copy was handed the original's handles: they are dropped, never turned off (that would take the original's listener away). The copy starts and listens for itself.
   onAfterClone() {
     this.unlockTimer = undefined;
+    this.signListener = undefined;
   }
 
   //#region What a script or a Director can ask
@@ -167,6 +190,12 @@ export class Door extends Interactable {
     this.onUnlocked.emit();
   }
 
+  /** Gives the sign another text (a number a script worked out, a name the player was told): it is written into the decal at once, and kept in the save with the door. */
+  setSign(text: string): void {
+    this.signText = text ?? '';
+    this.showSign();
+  }
+
   //#endregion
 
   //#region Interactable
@@ -183,6 +212,30 @@ export class Door extends Interactable {
   // The side the player looks from decides the prompt of a door that opens from one side only.
   promptFor(interactor: Interactor): string {
     return this.refusedFrom(interactor) ? this.wrongSidePrompt : this.currentPrompt;
+  }
+
+  // A door that slides away leaves nothing in its doorway to look at, and a player who wants to shut it would have to aim at the sliver that is left. So the aim counts where the leaf shuts: the leaf's own box
+  // moved back by how far it has gone. A leaf nobody can touch (no collider that is on) is not a door to look at, whatever has this script on it.
+  get aimBox(): IAimBox | undefined {
+    if (this.mode !== 'slide' || !this.closedPosition || !hasSolid(this.mover)) return undefined;
+
+    const renderer = biggestRenderer(this.mover);
+    const box = renderer && aimBoxOf(renderer);
+    if (!box) return undefined;
+
+    // How far the leaf is from where it shuts, in the space of its parent; the world's is that turned and stretched as the parent is.
+    const length = Math.hypot(this.axis.x, this.axis.y, this.axis.z);
+    const scale = length > 0 ? this.amount * this.eased(this.progress) / length : 0;
+    const x = this.axis.x * scale, y = this.axis.y * scale, z = this.axis.z * scale;
+    const m = this.mover.parent?.transform.worldMatrix;
+    if (!m) return shiftBox(box, -x, -y, -z);
+
+    return shiftBox(box, -(m[0] * x + m[4] * y + m[8] * z), -(m[1] * x + m[5] * y + m[9] * z), -(m[2] * x + m[6] * y + m[10] * z));
+  }
+
+  // Slid away it has nothing to find: no small mark floating in an empty doorway. It is looked at all the same, through the doorway, and then it has its box.
+  get marked(): boolean {
+    return this.mode !== 'slide' || !this.wantsOpen;
   }
 
   protected onUse(interactor: Interactor): void {
@@ -257,6 +310,26 @@ export class Door extends Interactable {
 
     if (this.closeSoundWhenShut) this.play(this.closeSound);
     this.onClosed.emit();
+  }
+
+  // Writes Sign Text into the decal and listens to the language when the text asks for entries. A door with no Sign, or no text, leaves the decal as it is.
+  private showSign(): void {
+    this.signListener?.off();
+    this.signListener = undefined;
+    if (!this.sign) {
+      if (this.signText) console.warn(`[Door] "${this.entity.name}": Sign Text is set but there is no Sign decal to write it into.`);
+      return;
+    }
+
+    if (this.signText && this.sign.mode !== DecalModeEnum.Text) console.warn(`[Door] "${this.entity.name}": the Sign decal is not in Text mode, so it will not show "${this.signText}".`);
+    this.writeSign();
+    if (Translate.reads(this.signText)) this.signListener = Translate.onChange.on(() => this.writeSign(), this);
+  }
+
+  private writeSign(): void {
+    if (!this.sign || !this.signText) return;
+
+    this.sign.text = Translate.resolve(this.signText);
   }
 
   // The scene's pose of the leaf is the closed one.

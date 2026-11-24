@@ -1,5 +1,6 @@
 import { AudioSource, ScriptComponent, Signal } from '@brave/core';
 import type { Interactor } from './interactor';
+import type { IAimBox } from '../shared/aim-box';
 /** What a thing says about itself when the player looks at it: a title and a text under it. Both may hold `{{ key }}` (an entry of the language files), so the HUD shows them in the player's language. */
 export interface IInteractableCaption {
     title: string;
@@ -53,6 +54,13 @@ export declare class Interactable extends ScriptComponent {
     get describesOnly(): boolean;
     /** The name its mark shows when the player's aim is near it without being on it, to tell what a small thing is before aiming at it exactly. Empty: it has none (a door is seen well enough). A small kind answers with its item's name. */
     get peekName(): string;
+    /**
+     * A box in the world where the aim counts as looking at it, besides its collider: for a thing whose collider is not always where the player looks at it (a door that slides away leaves nothing in its place).
+     * It works as `Aim Radius` does: only when nothing else is under the crosshair, and not through a wall. None (the default): only its collider and its `Aim Radius` count.
+     */
+    get aimBox(): IAimBox | undefined;
+    /** Whether it gets the small mark while it is near and not looked at. A thing with nothing to find (a door that is open) says no; when it is looked at it has its box all the same. */
+    get marked(): boolean;
     /** Whether the player may use it now: when not, nothing is shown and `interact` does nothing. (A locked door IS usable: `interact` on it is how the player finds out.) */
     get usable(): boolean;
     /** What `interact` does. Returns whether it did anything. */
