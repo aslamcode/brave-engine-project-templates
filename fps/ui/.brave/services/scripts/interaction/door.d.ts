@@ -44,7 +44,7 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  * SHUTS (`Close Sound When Shut`); a drawer's is a slide, played as it starts to go.
  *
  * A sign: the name or the number of THIS door ("A-03", "Archive"). `Sign` is a Text decal and `Sign Text` what it says; the door writes the text into the decal's Text when the game starts, so one prefab of a
- * door gives each of its instances its own number (the text is a field of the instance, the decal is the prefab's). A `{{ key }}` in it is read in the player's language, and read again when the language
+ * door gives each of its instances its own number (`Sign Text` is a value an instance changes in the Inspector: the editor marks it and the scene keeps it, while the decal and the rest are the prefab's). A `{{ key }}` in it is read in the player's language, and read again when the language
  * changes. A script gives it another text with `setSign()`. The decal goes on the wall or on the frame, never on the Leaf: paint stays where it was laid and a door that moves slides out from under it.
  */
 export declare class Door extends Interactable {
