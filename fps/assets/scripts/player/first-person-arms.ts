@@ -1,4 +1,4 @@
-import { Bool, Camera, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK, findEntityByPath } from '@brave/core';
+import { Bool, Camera, CharacterController, Entity, Float, IEntity, Input, Int, JsonIgnore, LookAt, ParentConstraint, Ref, Script, ScriptComponent, String, Time, TwoBoneIK, Vector3, findEntityByPath } from '@brave/core';
 
 /**
  * The arms of a first person character while it holds something. Unarmed (the start) the arms are the body's: drawn by the world camera with the rest of the character, as they always were. Armed
@@ -21,8 +21,9 @@ import { Bool, Camera, CharacterController, Entity, Float, IEntity, Input, Int, 
  *
  * The arms camera hangs from the eyes, but the arms and the weapon ride the chest, and the chest leans back with the look: looking up, the head comes down towards the hands, and a camera that goes
  * with the head ends up under the forearms and inside them. With `Camera On Chest` (on) the POSITION of the arms camera rides the chest instead (the `Lean Bone`): this script gives it a `Parent Constraint`
- * (Position only) when the game starts, which keeps the place it has relative to the chest as it is at rest (the body still and the look level, about a second and a half in; until then it hangs from the eyes
- * as it always did, so nothing jumps), so the arms and the weapon look the same at every pitch. Its rotation stays the eyes': it looks
+ * (Position only) when the game starts, which keeps the place it has relative to the chest, so the arms and the weapon look the same at every pitch. The place is the one the body has WHEN it is taken, so it is taken twice: soon (half a second into the
+ * game, with the body on the ground and the look not far from level; two seconds in for a player who never stops), so that looking up is never seen from the head, and put right the first time the body has rested for a second
+ * with the look level (the settled idle pose is the place: the camera then moves a centimetre or two, once, and only when the first one was further off than that). Until the first one it hangs from the eyes, as it always did. Its rotation stays the eyes': it looks
  * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
  * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
  * place than the barrel, which it already was a little at rest.
@@ -39,11 +40,17 @@ export class FirstPersonArms extends ScriptComponent {
   private static readonly CAMERA_ORDER = 200;
   // The second one, after it: it takes the camera to the world camera's place while the arms are the body's (see the class).
   private static readonly EYES_ORDER = 210;
-  // The moment to take the arms camera's place relative to the chest: at rest. Frames after the start (the lean, the idle and the eyes' own damping of 0.2 s have settled by then: sooner, what is left of it is kept as part of the place), how level the look must be (the sine of 5 degrees), how slow the body, and the frames after which a player who never stops is taken moving.
-  private static readonly REST_FRAMES = 90;
-  private static readonly REST_LEVEL = 0.09;
+  // When the arms camera's place relative to the chest is taken. The first time: frames after the start (the eyes' own damping of 0.2 s has settled by then: sooner, what is left of it is kept as part of the place), how far from level the look may be (the sine of 30 degrees: the place
+  // moves with the pitch, about a centimetre in ten degrees), how slow the body (m/s), and the frames after which a player who never stops is taken moving. Put right: the frames in a row the body must have rested (standing, level within the sine of 5 degrees, slow: the idle pose takes
+  // about 0.3 s to settle after a stop, a landing or a look that moves), how far apart (m) the two places must be to take it again, and how many times a game it is taken again.
+  private static readonly REST_FRAMES = 30;
+  private static readonly REST_TILT = 0.5;
   private static readonly REST_SPEED = 0.2;
-  private static readonly REST_PATIENCE = 300;
+  private static readonly REST_PATIENCE = 120;
+  private static readonly REST_STILL = 60;
+  private static readonly REST_LEVEL = 0.09;
+  private static readonly REST_ERROR = 0.008;
+  private static readonly REST_RETAKES = 3;
 
   // How far the arms are along the way, eased: what every weight is made of.
   private static ease(reach: number): number {
@@ -74,6 +81,16 @@ export class FirstPersonArms extends ScriptComponent {
   @JsonIgnore() private offsetPending?: ParentConstraint;
   @JsonIgnore() private eyesFollow?: ParentConstraint;
   @JsonIgnore() private updatesSinceStart = 0;
+  @JsonIgnore() private lookY = 0;
+  @JsonIgnore() private slow = false;
+  @JsonIgnore() private standing = false;
+  @JsonIgnore() private stillFor = 0;
+  @JsonIgnore() private retakes = 0;
+  @JsonIgnore() private rested = false;
+  @JsonIgnore() private chestFollow?: ParentConstraint;
+  @JsonIgnore() private controller?: CharacterController;
+  // Where the arms camera hangs from the eyes, as the scene made it (local): what a retake puts it back to before it takes its place from there again.
+  @JsonIgnore() private hangs?: Vector3;
 
   onStart() {
     this.constraints = [];
@@ -103,7 +120,10 @@ export class FirstPersonArms extends ScriptComponent {
   }
 
   onUpdate() {
-    if (this.offsetPending && this.isAtRest()) this.takeChest(this.offsetPending);
+    this.watchBody();
+    if (this.offsetPending) {
+      if (this.isReady()) this.takeChest(this.offsetPending);
+    } else this.retake();
     const goal = this.equipped ? 1 : 0;
     if (this.reach === goal) return;
 
@@ -130,6 +150,9 @@ export class FirstPersonArms extends ScriptComponent {
     this.leans = [];
     this.offsetPending = undefined;
     this.eyesFollow = undefined;
+    this.chestFollow = undefined;
+    this.controller = undefined;
+    this.hangs = undefined;
   }
 
   equip() {
@@ -167,7 +190,7 @@ export class FirstPersonArms extends ScriptComponent {
     const existing = constraints.find(constraint => !ours(constraint));
     if (existing) {
       // One made by hand is left as it is. The one this made and a save kept before it had its chest is finished, and a save that has the chest and not the second constraint gets it.
-      if (!existing.source && existing.order === FirstPersonArms.CAMERA_ORDER) this.offsetPending = existing;
+      if (!existing.source && existing.order === FirstPersonArms.CAMERA_ORDER) { this.offsetPending = existing; this.rememberHang(camera); }
       else if (existing.source && existing.order === FirstPersonArms.CAMERA_ORDER && !this.eyesFollow) this.followEyes(camera);
       return;
     }
@@ -181,16 +204,61 @@ export class FirstPersonArms extends ScriptComponent {
     // With no source it does nothing, and the camera hangs from the eyes as it always did: the chest is given when the body is at rest (`takeChest()`), so that what is kept is the idle place and the weapon never jumps.
     this.offsetPending = follow;
     this.updatesSinceStart = 0;
+    this.stillFor = 0;
+    this.retakes = 0;
+    this.rememberHang(camera);
   }
 
-  // Whether the body is at rest: the idle pose has settled, the look is level and it is standing. A player who never stops is taken moving, but never looking up or down.
-  private isAtRest(): boolean {
+  // What the body is doing this frame, and for how many frames in a row it has been at rest: standing on the ground (not crouched), the look level and the body slow.
+  private watchBody() {
     this.updatesSinceStart++;
-    if (this.updatesSinceStart < FirstPersonArms.REST_FRAMES) return false;
-    if (Math.abs(this.armsCamera?.transform.forward.y ?? 0) > FirstPersonArms.REST_LEVEL) return false;
-    if (this.updatesSinceStart > FirstPersonArms.REST_PATIENCE) return true;
-    const velocity = this.entity.getComponent(CharacterController)?.actualVelocity;
-    return !velocity || Math.hypot(velocity.x, velocity.z) < FirstPersonArms.REST_SPEED;
+    const controller = this.controller ??= this.entity.getComponent(CharacterController);
+    const velocity = controller?.actualVelocity;
+    this.lookY = Math.abs(this.armsCamera?.transform.forward.y ?? 0);
+    this.slow = !velocity || Math.hypot(velocity.x, velocity.z) < FirstPersonArms.REST_SPEED;
+    this.standing = !controller || (controller.isGrounded && !controller.isCrouched);
+    this.stillFor = this.standing && this.slow && this.lookY <= FirstPersonArms.REST_LEVEL ? this.stillFor + 1 : 0;
+    if (this.stillFor === 0) this.rested = false;
+  }
+
+  // Whether the place can be taken now (the first time): the game has begun, the body is standing on the ground and the look is not far from level, and it is not on the move (a player who never stops is taken moving after a while).
+  private isReady(): boolean {
+    if (this.updatesSinceStart < FirstPersonArms.REST_FRAMES || !this.standing || this.lookY > FirstPersonArms.REST_TILT) return false;
+    return this.slow || this.updatesSinceStart > FirstPersonArms.REST_PATIENCE;
+  }
+
+  // The place taken while the body was on the move, or on its way to rest, is put right once the body has rested: the camera is put back where it hangs from the eyes and the constraint takes its place from there again, if the two are further apart than REST_ERROR.
+  private retake() {
+    const follow = this.chestFollow;
+    const camera = this.armsCamera;
+    const hangs = this.hangs;
+    // A constraint somebody turned off is not holding the camera: its place is not ours to put right.
+    if (!follow || !follow.active || !camera || !hangs || this.retakes >= FirstPersonArms.REST_RETAKES) return;
+    // Once for each rest, with the arms at the weapon (while they are the body's the camera is on the eyes' place and the place has nothing to say).
+    if (this.stillFor < FirstPersonArms.REST_STILL || this.rested || this.reach < 1) return;
+    this.rested = true;
+
+    const eyes = camera.parent;
+    if (!eyes) return;
+
+    const hung = eyes.transform.globalPosition;
+    const right = eyes.transform.right, up = eyes.transform.up, back = eyes.transform.back;
+    const placed = camera.transform.globalPosition;
+    const off = Math.hypot(
+      hung.x + right.x * hangs.x + up.x * hangs.y + back.x * hangs.z - placed.x,
+      hung.y + right.y * hangs.x + up.y * hangs.y + back.y * hangs.z - placed.y,
+      hung.z + right.z * hangs.x + up.z * hangs.y + back.z * hangs.z - placed.z);
+    if (off < FirstPersonArms.REST_ERROR) return;
+
+    this.retakes++;
+    camera.transform.position = new Vector3(hangs.x, hangs.y, hangs.z);
+    camera.transform.updateTransform();
+    follow.rebind();
+  }
+
+  private rememberHang(camera: IEntity) {
+    const at = camera.transform.position;
+    this.hangs = new Vector3(at.x, at.y, at.z);
   }
 
   // The camera's place relative to the chest is taken now, from where it is, with the constraint's source: from here on it follows the chest.
@@ -200,6 +268,7 @@ export class FirstPersonArms extends ScriptComponent {
     if (!chest) return;
     follow.source = chest;
     follow.rebind();
+    this.chestFollow = follow;
     if (this.armsCamera) this.followEyes(this.armsCamera);
   }
 

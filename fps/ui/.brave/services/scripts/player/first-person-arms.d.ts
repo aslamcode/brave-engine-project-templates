@@ -20,8 +20,9 @@ import { IEntity, ScriptComponent } from '@brave/core';
  *
  * The arms camera hangs from the eyes, but the arms and the weapon ride the chest, and the chest leans back with the look: looking up, the head comes down towards the hands, and a camera that goes
  * with the head ends up under the forearms and inside them. With `Camera On Chest` (on) the POSITION of the arms camera rides the chest instead (the `Lean Bone`): this script gives it a `Parent Constraint`
- * (Position only) when the game starts, which keeps the place it has relative to the chest as it is at rest (the body still and the look level, about a second and a half in; until then it hangs from the eyes
- * as it always did, so nothing jumps), so the arms and the weapon look the same at every pitch. Its rotation stays the eyes': it looks
+ * (Position only) when the game starts, which keeps the place it has relative to the chest, so the arms and the weapon look the same at every pitch. The place is the one the body has WHEN it is taken, so it is taken twice: soon (half a second into the
+ * game, with the body on the ground and the look not far from level; two seconds in for a player who never stops), so that looking up is never seen from the head, and put right the first time the body has rested for a second
+ * with the look level (the settled idle pose is the place: the camera then moves a centimetre or two, once, and only when the first one was further off than that). Until the first one it hangs from the eyes, as it always did. Its rotation stays the eyes': it looks
  * where the player looks, exactly. What goes with it: the weapon sways less on the screen as the body walks (the bob of the head is not in it any more, the chest's still is), and the arms camera is up to 0.3 m
  * from the world camera when the player looks far up or down, so what the world camera draws at the weapon (the muzzle's glow and sparks: the arms camera draws no particles) is seen from a slightly different
  * place than the barrel, which it already was a little at rest.
@@ -35,9 +36,13 @@ export declare class FirstPersonArms extends ScriptComponent {
     private static readonly CAMERA_ORDER;
     private static readonly EYES_ORDER;
     private static readonly REST_FRAMES;
-    private static readonly REST_LEVEL;
+    private static readonly REST_TILT;
     private static readonly REST_SPEED;
     private static readonly REST_PATIENCE;
+    private static readonly REST_STILL;
+    private static readonly REST_LEVEL;
+    private static readonly REST_ERROR;
+    private static readonly REST_RETAKES;
     private static ease;
     mesh?: IEntity;
     armsSlot: number;
@@ -61,6 +66,15 @@ export declare class FirstPersonArms extends ScriptComponent {
     private offsetPending?;
     private eyesFollow?;
     private updatesSinceStart;
+    private lookY;
+    private slow;
+    private standing;
+    private stillFor;
+    private retakes;
+    private rested;
+    private chestFollow?;
+    private controller?;
+    private hangs?;
     onStart(): void;
     onRestore(): void;
     onUpdate(): void;
@@ -71,7 +85,10 @@ export declare class FirstPersonArms extends ScriptComponent {
     toggle(): void;
     private show;
     private followChest;
-    private isAtRest;
+    private watchBody;
+    private isReady;
+    private retake;
+    private rememberHang;
     private takeChest;
     private followEyes;
     private collect;
