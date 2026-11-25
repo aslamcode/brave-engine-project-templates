@@ -74892,6 +74892,101 @@
                                                               "$circular": "ref_9"
                                                             },
                                                             "static": false
+                                                          },
+                                                          {
+                                                            "$ref": "k991001",
+                                                            "$type": "Entity",
+                                                            "name": "Flashlight",
+                                                            "layer": 0,
+                                                            "_active": false,
+                                                            "_activeInHierarchy": false,
+                                                            "_awaked": false,
+                                                            "_started": false,
+                                                            "materials": [],
+                                                            "id": "ba884cbe-5b21-4007-8fe2-87e816238cdc",
+                                                            "children": [],
+                                                            "components": [
+                                                              {
+                                                                "$ref": "k991002",
+                                                                "$type": "Transform",
+                                                                "_active": true,
+                                                                "_activeInHierarchy": false,
+                                                                "_awaked": false,
+                                                                "_started": false,
+                                                                "id": "e03b120b-5cf6-453f-95fa-938cc68b5d09",
+                                                                "entity": {
+                                                                  "$circular": "k991001"
+                                                                },
+                                                                "hasChangesForNormalMatrix": false,
+                                                                "_position": {
+                                                                  "0": -0.14,
+                                                                  "1": 0.05,
+                                                                  "2": -0.3,
+                                                                  "$ref": "k991003",
+                                                                  "$type": "Vector3"
+                                                                },
+                                                                "_rotation": {
+                                                                  "0": 0,
+                                                                  "1": 0.0,
+                                                                  "2": 0,
+                                                                  "$ref": "k991004",
+                                                                  "$type": "Vector3"
+                                                                },
+                                                                "_rotationQ": {
+                                                                  "0": 0,
+                                                                  "1": 0.0,
+                                                                  "2": 0,
+                                                                  "3": 1.0,
+                                                                  "$ref": "k991005",
+                                                                  "$type": "Quaternion"
+                                                                },
+                                                                "_scale": {
+                                                                  "0": 1,
+                                                                  "1": 1,
+                                                                  "2": 1,
+                                                                  "$ref": "k991006",
+                                                                  "$type": "Vector3"
+                                                                }
+                                                              },
+                                                              {
+                                                                "$ref": "k991007",
+                                                                "$type": "Light",
+                                                                "_active": true,
+                                                                "_activeInHierarchy": false,
+                                                                "_awaked": false,
+                                                                "_started": false,
+                                                                "id": "b0784190-c7b9-45b2-aff4-942a38893a67",
+                                                                "entity": {
+                                                                  "$circular": "k991001"
+                                                                },
+                                                                "_type": 3,
+                                                                "_colorMode": "rgb",
+                                                                "_color": {
+                                                                  "0": 1.0,
+                                                                  "1": 0.95,
+                                                                  "2": 0.85,
+                                                                  "3": 1.0,
+                                                                  "$ref": "k991008",
+                                                                  "$type": "RgbaColor"
+                                                                },
+                                                                "_intensity": 6.0,
+                                                                "_range": 28.0,
+                                                                "_outerAngle": 28.0,
+                                                                "_innerAngle": 14.0,
+                                                                "_shadowType": "soft",
+                                                                "_shadowCacheEnabled": false
+                                                              }
+                                                            ],
+                                                            "scene": {
+                                                              "$circular": "ref_9"
+                                                            },
+                                                            "static": false,
+                                                            "_transform": {
+                                                              "$circular": "k991002"
+                                                            },
+                                                            "parent": {
+                                                              "$circular": "ref_5442"
+                                                            }
                                                           }
                                                         ],
                                                         "components": [
@@ -78145,6 +78240,21 @@
           },
           "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
           "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
+        },
+        {
+          "$ref": "k991009",
+          "$type": "cfe012f3-2f25-475a-a25c-f4e77ef05262",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "1a298ff0-0a60-48d7-a3c0-7d40df0f2f4c",
+          "entity": {
+            "$circular": "ref_4610"
+          },
+          "beam": {
+            "$circular": "k991001"
+          }
         }
       ],
       "materials": [],
@@ -88162,6 +88272,101 @@
                                                               "$circular": "ref_9"
                                                             },
                                                             "static": false
+                                                          },
+                                                          {
+                                                            "$ref": "k991010",
+                                                            "$type": "Entity",
+                                                            "name": "Flashlight",
+                                                            "layer": 0,
+                                                            "_active": false,
+                                                            "_activeInHierarchy": false,
+                                                            "_awaked": false,
+                                                            "_started": false,
+                                                            "materials": [],
+                                                            "id": "7e29b72e-f398-4435-88d6-74ee719798a8",
+                                                            "children": [],
+                                                            "components": [
+                                                              {
+                                                                "$ref": "k991011",
+                                                                "$type": "Transform",
+                                                                "_active": true,
+                                                                "_activeInHierarchy": false,
+                                                                "_awaked": false,
+                                                                "_started": false,
+                                                                "id": "8d82d95e-c779-4582-b7b9-0fa6c747c047",
+                                                                "entity": {
+                                                                  "$circular": "k991010"
+                                                                },
+                                                                "hasChangesForNormalMatrix": false,
+                                                                "_position": {
+                                                                  "0": -0.14,
+                                                                  "1": 0.05,
+                                                                  "2": -0.3,
+                                                                  "$ref": "k991012",
+                                                                  "$type": "Vector3"
+                                                                },
+                                                                "_rotation": {
+                                                                  "0": 0,
+                                                                  "1": 0.0,
+                                                                  "2": 0,
+                                                                  "$ref": "k991013",
+                                                                  "$type": "Vector3"
+                                                                },
+                                                                "_rotationQ": {
+                                                                  "0": 0,
+                                                                  "1": 0.0,
+                                                                  "2": 0,
+                                                                  "3": 1.0,
+                                                                  "$ref": "k991014",
+                                                                  "$type": "Quaternion"
+                                                                },
+                                                                "_scale": {
+                                                                  "0": 1,
+                                                                  "1": 1,
+                                                                  "2": 1,
+                                                                  "$ref": "k991015",
+                                                                  "$type": "Vector3"
+                                                                }
+                                                              },
+                                                              {
+                                                                "$ref": "k991016",
+                                                                "$type": "Light",
+                                                                "_active": true,
+                                                                "_activeInHierarchy": false,
+                                                                "_awaked": false,
+                                                                "_started": false,
+                                                                "id": "a95176b5-3219-4e3b-9589-313a5da41950",
+                                                                "entity": {
+                                                                  "$circular": "k991010"
+                                                                },
+                                                                "_type": 3,
+                                                                "_colorMode": "rgb",
+                                                                "_color": {
+                                                                  "0": 1.0,
+                                                                  "1": 0.95,
+                                                                  "2": 0.85,
+                                                                  "3": 1.0,
+                                                                  "$ref": "k991017",
+                                                                  "$type": "RgbaColor"
+                                                                },
+                                                                "_intensity": 6.0,
+                                                                "_range": 28.0,
+                                                                "_outerAngle": 28.0,
+                                                                "_innerAngle": 14.0,
+                                                                "_shadowType": "soft",
+                                                                "_shadowCacheEnabled": false
+                                                              }
+                                                            ],
+                                                            "scene": {
+                                                              "$circular": "ref_9"
+                                                            },
+                                                            "static": false,
+                                                            "_transform": {
+                                                              "$circular": "k991011"
+                                                            },
+                                                            "parent": {
+                                                              "$circular": "ref_6533"
+                                                            }
                                                           }
                                                         ],
                                                         "components": [
@@ -91396,6 +91601,21 @@
           },
           "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
           "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
+        },
+        {
+          "$ref": "k991018",
+          "$type": "cfe012f3-2f25-475a-a25c-f4e77ef05262",
+          "_active": true,
+          "_activeInHierarchy": false,
+          "_awaked": false,
+          "_started": false,
+          "id": "01bcf39d-6bb0-4cd8-b218-23dd69537417",
+          "entity": {
+            "$circular": "ref_5701"
+          },
+          "beam": {
+            "$circular": "k991010"
+          }
         }
       ],
       "materials": [],

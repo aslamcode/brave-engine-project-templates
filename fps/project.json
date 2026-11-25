@@ -236,6 +236,20 @@
         ]
       },
       {
+        "name": "flashlight",
+        "type": "button",
+        "bindings": [
+          {
+            "kind": "key",
+            "code": "KeyF"
+          },
+          {
+            "kind": "gamepadButton",
+            "button": "rightStick"
+          }
+        ]
+      },
+      {
         "name": "next-weapon",
         "type": "button",
         "bindings": [

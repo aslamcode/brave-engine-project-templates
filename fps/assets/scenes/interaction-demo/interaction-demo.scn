@@ -71730,6 +71730,101 @@
                 "$circular": "pl_p_ref_8"
               },
               "static": false
+            },
+            {
+              "$ref": "k1000003",
+              "$type": "Entity",
+              "name": "Flashlight",
+              "layer": 0,
+              "_active": false,
+              "_activeInHierarchy": false,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "b8fe926a-5231-4955-8821-7b2c6aab74cb",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k1000004",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "e260b8b8-3b6a-4980-924d-8987ad7737c0",
+                  "entity": {
+                    "$circular": "k1000003"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": -0.14,
+                    "1": 0.05,
+                    "2": -0.3,
+                    "$ref": "k1000005",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k1000006",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k1000007",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k1000008",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k1000009",
+                  "$type": "Light",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "34159c3b-2b96-43f4-9ffd-b56f6fc446ef",
+                  "entity": {
+                    "$circular": "k1000003"
+                  },
+                  "_type": 3,
+                  "_colorMode": "rgb",
+                  "_color": {
+                    "0": 1.0,
+                    "1": 0.95,
+                    "2": 0.85,
+                    "3": 1.0,
+                    "$ref": "k1000010",
+                    "$type": "RgbaColor"
+                  },
+                  "_intensity": 6.0,
+                  "_range": 28.0,
+                  "_outerAngle": 28.0,
+                  "_innerAngle": 14.0,
+                  "_shadowType": "soft",
+                  "_shadowCacheEnabled": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k1000004"
+              },
+              "parent": {
+                "$circular": "pl_p_ref_1570"
+              }
             }
           ],
           "components": [
@@ -74856,6 +74951,21 @@
           "bySurface": true,
           "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
           "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
+        },
+        {
+          "$ref": "k1000011",
+          "$type": "cfe012f3-2f25-475a-a25c-f4e77ef05262",
+          "_active": true,
+          "_activeInHierarchy": true,
+          "_awaked": false,
+          "_started": false,
+          "id": "256b036f-ce32-4535-aa88-0620ff6d274b",
+          "entity": {
+            "$circular": "pl_p_ref_1132"
+          },
+          "beam": {
+            "$circular": "k1000003"
+          }
         }
       ],
       "materials": [],
@@ -84819,6 +84929,101 @@
                 "$circular": "pl_p_ref_8"
               },
               "static": false
+            },
+            {
+              "$ref": "k1000012",
+              "$type": "Entity",
+              "name": "Flashlight",
+              "layer": 0,
+              "_active": false,
+              "_activeInHierarchy": false,
+              "_awaked": false,
+              "_started": false,
+              "materials": [],
+              "id": "9b17600f-1737-4053-a25a-80abf9017aa1",
+              "children": [],
+              "components": [
+                {
+                  "$ref": "k1000013",
+                  "$type": "Transform",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "8f65f71c-8d21-46bc-bd42-487590b24d1a",
+                  "entity": {
+                    "$circular": "k1000012"
+                  },
+                  "hasChangesForNormalMatrix": false,
+                  "_position": {
+                    "0": -0.14,
+                    "1": 0.05,
+                    "2": -0.3,
+                    "$ref": "k1000014",
+                    "$type": "Vector3"
+                  },
+                  "_rotation": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "$ref": "k1000015",
+                    "$type": "Vector3"
+                  },
+                  "_rotationQ": {
+                    "0": 0,
+                    "1": 0.0,
+                    "2": 0,
+                    "3": 1.0,
+                    "$ref": "k1000016",
+                    "$type": "Quaternion"
+                  },
+                  "_scale": {
+                    "0": 1,
+                    "1": 1,
+                    "2": 1,
+                    "$ref": "k1000017",
+                    "$type": "Vector3"
+                  }
+                },
+                {
+                  "$ref": "k1000018",
+                  "$type": "Light",
+                  "_active": true,
+                  "_activeInHierarchy": false,
+                  "_awaked": false,
+                  "_started": false,
+                  "id": "c295e6b9-33cc-4570-8584-7b91586b13c0",
+                  "entity": {
+                    "$circular": "k1000012"
+                  },
+                  "_type": 3,
+                  "_colorMode": "rgb",
+                  "_color": {
+                    "0": 1.0,
+                    "1": 0.95,
+                    "2": 0.85,
+                    "3": 1.0,
+                    "$ref": "k1000019",
+                    "$type": "RgbaColor"
+                  },
+                  "_intensity": 6.0,
+                  "_range": 28.0,
+                  "_outerAngle": 28.0,
+                  "_innerAngle": 14.0,
+                  "_shadowType": "soft",
+                  "_shadowCacheEnabled": false
+                }
+              ],
+              "scene": {
+                "$circular": "pl_p_ref_8"
+              },
+              "static": false,
+              "_transform": {
+                "$circular": "k1000013"
+              },
+              "parent": {
+                "$circular": "pb_p_ref_2052"
+              }
             }
           ],
           "components": [
@@ -87930,6 +88135,21 @@
           "bySurface": true,
           "surfaceBank": "d863bbe3-b7c8-4e51-8e67-91b0020b9bba",
           "defaultSurface": "9e037551-a67b-55b1-be26-2a25a8ca5b96"
+        },
+        {
+          "$ref": "k1000020",
+          "$type": "cfe012f3-2f25-475a-a25c-f4e77ef05262",
+          "_active": true,
+          "_activeInHierarchy": false,
+          "_awaked": false,
+          "_started": false,
+          "id": "c89360db-dabb-487d-a493-c364e5cd7da9",
+          "entity": {
+            "$circular": "pb_p_ref_1618"
+          },
+          "beam": {
+            "$circular": "k1000012"
+          }
         }
       ],
       "materials": [],
