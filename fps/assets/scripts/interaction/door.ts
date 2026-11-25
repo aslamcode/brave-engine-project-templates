@@ -1,4 +1,4 @@
-import { AudioTrack, Bool, Callable, Decal, DecalModeEnum, Entity, Float, IEntity, Inject, Invoke, JsonIgnore, Quaternion, Ref, Saved, Script, Select, Signal, State, String, StringCompletionEnum, Time, Translate, Vec3, Vector3 } from '@brave/core';
+import { AudioTrack, Bool, Callable, Entity, Float, IEntity, Inject, Invoke, JsonIgnore, Quaternion, Ref, Saved, Script, Select, Signal, State, String, StringCompletionEnum, Time, Vec3, Vector3 } from '@brave/core';
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
@@ -46,10 +46,6 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * Sounds are the four fields of the Sounds group, played through the Audio Source (see `Interactable`). A rotating door's close sound is the latch, so by default it is played when the door
  * SHUTS (`Close Sound When Shut`); a drawer's is a slide, played as it starts to go.
- *
- * A sign: the name or the number of THIS door ("A-03", "Archive"). `Sign` is a Text decal and `Sign Text` what it says; the door writes the text into the decal's Text when the game starts, so one prefab of a
- * door gives each of its instances its own number (`Sign Text` is a value an instance changes in the Inspector: the editor marks it and the scene keeps it, while the decal and the rest are the prefab's). A `{{ key }}` in it is read in the player's language, and read again when the language
- * changes. A script gives it another text with `setSign()`. The decal goes on the wall or on the frame, never on the Leaf: paint stays where it was laid and a door that moves slides out from under it.
  */
 @Script({ inheritProperties: true })
 export class Door extends Interactable {
@@ -84,9 +80,6 @@ export class Door extends Interactable {
   @Float({ label: 'Unlock Delay', suffix: 's', tooltip: 'How long after the unlock sound a door opened with its key starts to move.' }) unlockDelay = 0.45;
   @Bool({ label: 'Close Sound When Shut', tooltip: 'On: the close sound plays when it has shut (a latch, a thud). Off: when it starts to close (a slide).' }) closeSoundWhenShut = true;
 
-  @Ref(Decal, { header: 'Sign', label: 'Sign', tooltip: 'A Text decal that shows the name or the number of this door, on the wall beside it or on its frame (not on the Leaf: paint stays where it is laid, and a door that moves slides out from under it). Its Text is set from Sign Text when the game starts. Empty: no sign.' }) sign?: Decal;
-  @String({ label: 'Sign Text', tooltip: 'What the sign says: "A-03", "Archive". A {{ key }} is read in the player\'s language. Empty: the decal keeps the text it has.', completion: StringCompletionEnum.TranslationKeys }) signText = '';
-
   @Inject(Inventory) inventory!: Inventory;
   @Inject(Journal) journal!: Journal;
   @Inject(Hud) hud!: Hud;
@@ -117,7 +110,6 @@ export class Door extends Interactable {
   // 1 swings the way `amount` says, -1 the other (a door that swings away from whoever opened it, from the side it was opened from). Chosen when a closed door starts to open, held until it is shut.
   @JsonIgnore() @Saved() private swing = 1;
   @JsonIgnore() private unlockTimer?: number;
-  @JsonIgnore() private signListener?: { off(): void };
 
   onStart() {
     this.capture();
@@ -126,12 +118,6 @@ export class Door extends Interactable {
       this.progress = 1;
     }
     this.place();
-    this.showSign();
-  }
-
-  // A load builds the door as it was, started: the sign is written again and the listener of the language is not there.
-  onRestore() {
-    this.showSign();
   }
 
   onUpdate() {
@@ -146,13 +132,10 @@ export class Door extends Interactable {
 
   onDestroy() {
     if (this.unlockTimer !== undefined) Invoke.clearTimeout(this.unlockTimer);
-    this.signListener?.off();
   }
 
-  // The copy was handed the original's handles: they are dropped, never turned off (that would take the original's listener away). The copy starts and listens for itself.
   onAfterClone() {
     this.unlockTimer = undefined;
-    this.signListener = undefined;
   }
 
   //#region What a script or a Director can ask
@@ -188,12 +171,6 @@ export class Door extends Interactable {
     this.locked = false;
     this.play(this.unlockSound);
     this.onUnlocked.emit();
-  }
-
-  /** Gives the sign another text (a number a script worked out, a name the player was told): it is written into the decal at once, and kept in the save with the door. */
-  setSign(text: string): void {
-    this.signText = text ?? '';
-    this.showSign();
   }
 
   //#endregion
@@ -310,26 +287,6 @@ export class Door extends Interactable {
 
     if (this.closeSoundWhenShut) this.play(this.closeSound);
     this.onClosed.emit();
-  }
-
-  // Writes Sign Text into the decal and listens to the language when the text asks for entries. A door with no Sign, or no text, leaves the decal as it is.
-  private showSign(): void {
-    this.signListener?.off();
-    this.signListener = undefined;
-    if (!this.sign) {
-      if (this.signText) console.warn(`[Door] "${this.entity.name}": Sign Text is set but there is no Sign decal to write it into.`);
-      return;
-    }
-
-    if (this.signText && this.sign.mode !== DecalModeEnum.Text) console.warn(`[Door] "${this.entity.name}": the Sign decal is not in Text mode, so it will not show "${this.signText}".`);
-    this.writeSign();
-    if (Translate.reads(this.signText)) this.signListener = Translate.onChange.on(() => this.writeSign(), this);
-  }
-
-  private writeSign(): void {
-    if (!this.sign || !this.signText) return;
-
-    this.sign.text = Translate.resolve(this.signText);
   }
 
   // The scene's pose of the leaf is the closed one.
