@@ -46,31 +46,36 @@ The things that fill a landscape: procedural trees, layers of grass and plants, 
 - **Water Type** (Still, Sea, River), **Color**, **Absorption Color**, **Clarity** (5 m), **Murkiness** (0.25), **Roughness** (0.03), **Refraction** (1).
 - Still and River **Waves**: **Wave Strength** (0.04), **Wave Scale** (3 m), **Wave Speed** (0.4). Sea: **Wave Height** (1.2 m), **Wave Length** (40 m), **Wind Direction** (30 degrees: 0 along +X, 90 along +Z), **Direction Spread**, **Choppiness**, **Whitecaps**, **Extent** (2000 m). **Flow** (River and Sea, m/s in the world) carries the waves, rings and floating bodies. **Bypass Time Scale** keeps the waves running in a pause menu.
 - **Edge Softness**, **Foam Width**, **Foam Amount**, **Ripple Strength**, **Splash Foam**, **Caustic Amount** (0.7; 0 turns the caustics and their cost off), **Caustic Focus**.
+- **Underwater**: **Volume Depth** (40 m), **Underwater Light** (1), **Underwater Wobble** (1; 0 holds the picture still), **Underwater Audio** (`Underwater`: the name of an Audio Mixer preset).
 - **Physics**: **Affects Bodies** (on; off is a decorative surface that can still be hit by a ray) and **Density** (2, in a Collider's Density units: a default body, Density 1, floats half under; use 1000 with `.pmat` presets).
-- **Water Disturber**: **Enter Strength** (1), **Exit Strength** (0.6), **Ripple Radius** (0.3 m), **Size From Collider** (on), **Wake Strength** (0.8; 0 off), **Wake Speed** (0.4 m/s), **Wake Interval** (1 s). With no Collider on its entity it asks every moving body whether it crosses the surface; with a **Trigger** Collider that volume decides.
+- **Water Disturber**: **Enter Strength** (1), **Exit Strength** (0.6), **Ripple Radius** (0.3 m), **Size From Collider** (on), **Wake Strength** (0.8; 0 off), **Wake Speed** (0.4 m/s), **Wake Interval** (1 s), and **Spray**: **Spray Amount** (1; 0 turns the spray off), **Spray Height** (1), **Spray Color** (white; tint it for a muddy water). With no Collider on its entity it asks every moving body whether it crosses the surface; with a **Trigger** Collider that volume decides.
+
+**Spray.** When something enters a water it throws drops (and a faint mist for a big splash), with nothing to set up: the Water Disturber does it. The size comes from the splash's radius and speed: a footstep is about five tiny drops, a character jumping in about fifty rising a metre and a half, a boulder about 180 drops and a mist, 3 m high; nothing that moves under 0.7 m/s sprays, and there is a cap (200 drops, 70 puffs of mist, 6 m; at most 4 sprays alive per water and 4 splashes per frame). Only the water that was hit sprays: a script that calls `WaterSystem.splash(point, radius, speed, gain, waterEntity)` should pass the water entity (without it, the water whose surface is at that point sprays). The emitters are made while the game plays and are never saved: in the Hierarchy of the running game two entities named Water Spray Drops and Water Spray Mist appear at the root of the scene.
+
+**Under water.** When the camera goes under a water's surface (waves included) it is IN the water, in Play and in the Scene view, with nothing to add to the scene or the camera: the surface is seen from below (the world above through a round window of about 97 degrees, the rest is the water itself mirrored), the picture takes the water's colour and fades into it by distance (the **Absorption Color** and **Clarity**: red is lost first, so far things go blue-green; **Underwater Light** brightens or darkens the water itself; the air's Fog and the Rain are off), it wobbles a little, and the Audio Mixer goes into the preset named by **Underwater Audio** (a name the project has no preset for does nothing; it goes back to the preset it was in when the camera comes out, only while the game runs). The camera is in a water while it is no deeper than **Volume Depth** under it (a cave under a lake is not in it) and, for a Still or River water, inside its mesh. The mixer has only Reverb and Echo effects, so such a preset can lower the channels and add reverb but not filter the sound.
 
 **Scripting.**
 ```ts
-import { IWaterSplash, Script, ScriptComponent, WaterSystem } from '@brave/core';
+import { IUnderwater, IWaterSplash, Script, ScriptComponent, UnderwaterSystem, WaterSystem } from '@brave/core';
 
 @Script()
 export class WaterWatcher extends ScriptComponent {
-  private wasUnder = false;
-
   onStart() {
     WaterSystem.onSplash.on((splash: IWaterSplash) => console.log(`splash, strength ${splash.strength}`), this);
+    // The camera that draws the game: its own entry and exit of a water.
+    UnderwaterSystem.onEnter.on((underwater: IUnderwater) => console.log(`went under, ${underwater.depth.toFixed(1)} m down`), this);
+    UnderwaterSystem.onExit.on(() => console.log('came up'), this);
   }
 
   onUpdate() {
+    // Any point, not only the camera: where the surface is there.
     const position = this.entity.transform.globalPosition;
     const water = WaterSystem.surfaceAt(position.x, position.z);
-    const under = !!water && position.y < water.height;
-    if (under !== this.wasUnder) console.log(under ? 'went under' : 'came up');
-    this.wasUnder = under;
+    if (water && position.y < water.height) console.log('this entity is under the water');
   }
 }
 ```
-- `WaterSystem.surfaceAt(x, z)`: `{ height, rise, density, flowX, flowZ, entity }` or undefined where there is no water. `raycast(origin, direction, maxDistance?)` meets a surface (physics rays do not). `splash(point, radius, speed?, gain?, water?)`, `disturb(position, strength, radius)` and `raycastSplash(...)` (a shot that hits by a ray) make rings; `onSplash` tells a script. Floating your own way: turn **Floats** off and `applyForce` from `onFixedUpdate()` by what `surfaceAt` says.
+- `WaterSystem.surfaceAt(x, z)`: `{ height, rise, density, flowX, flowZ, entity }` or undefined where there is no water. `raycast(origin, direction, maxDistance?)` meets a surface (physics rays do not). `splash(point, radius, speed?, gain?, water?)`, `disturb(position, strength, radius)` and `raycastSplash(...)` (a shot that hits by a ray) make rings; `onSplash` tells a script. Floating your own way: turn **Floats** off and `applyForce` from `onFixedUpdate()` by what `surfaceAt` says. `UnderwaterSystem` is about the camera: `active`, `depth`, `current` (the water it is in: `entity`, `water`, `depth`, `surfaceY`), `onEnter` and `onExit`.
 
 **Traps.** Floating is for Dynamic bodies, in Play only (not in the Scene view): a character (Kinematic) wades through and makes rings. Taking the Water Disturber off loses the splash and wake, not the floating or the ray. A Still or River mesh must be flat and level (it may turn about y and scale); one water per entity. The Sea's Wind Direction is its own field: it does not follow a Wind Zone.
 
@@ -99,6 +104,6 @@ export class RisingStorm extends ScriptComponent {
 Drive the wind through the Global zone's fields: `WindSystem.wind` is overwritten by the zone at the next update.
 
 ## Not available yet
-Swimming for the Character Controller, a tilted water, a vertical wind, kinds of tree other than Pine and Blossom, plants you can hit or collide with.
+Swimming for the Character Controller, the waterline on the lens, shafts of light and caustics seen from under water, a tilted water, a vertical wind, kinds of tree other than Pine and Blossom, plants you can hit or collide with.
 
-Types: `brave/core/component/{tree-generator,vegetation,water-disturber,wind-zone}.d.ts`, `brave/core/shader/water.d.ts`, `brave/core/system/water-system/water-system.d.ts`, `brave/core/system/wind-system/{wind-system,wind-zone-system}.d.ts`, `brave/core/system/vegetation-system/vegetation-system.d.ts`, `brave/core/system/tree-lod-system/tree-lod-system.d.ts`, `brave/core/enum/{vegetation-plant-type,vegetation-card-layout,water-type}.enum.d.ts`
+Types: `brave/core/component/{tree-generator,vegetation,water-disturber,wind-zone}.d.ts`, `brave/core/shader/water.d.ts`, `brave/core/system/water-system/{water-system,underwater-system,underwater-audio}.d.ts`, `brave/core/system/wind-system/{wind-system,wind-zone-system}.d.ts`, `brave/core/system/vegetation-system/vegetation-system.d.ts`, `brave/core/system/tree-lod-system/tree-lod-system.d.ts`, `brave/core/enum/{vegetation-plant-type,vegetation-card-layout,water-type}.enum.d.ts`
