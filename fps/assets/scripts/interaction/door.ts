@@ -208,6 +208,20 @@ export class Door extends Interactable {
     return boxes.length ? boxes.reduce(joinBoxes) : undefined;
   }
 
+  // A double door is one thing, and its middle is between the two leaves, not on whichever is drawn bigger: where its marker is tied and where the aim measures it from. The middle of the two panels as they are now;
+  // a leaf with nothing drawn has no panel to measure, and the door goes by what is drawn.
+  get aimCenter(): Vector3 | undefined {
+    if (!this.secondLeaf) return undefined;
+
+    const centers = [this.mover, this.secondLeaf].map(leaf => {
+      const renderer = biggestRenderer(leaf);
+      return renderer && centerOf(renderer);
+    }).filter((center): center is Vector3 => !!center);
+    if (centers.length < 2) return undefined;
+
+    return new Vector3((centers[0].x + centers[1].x) / 2, (centers[0].y + centers[1].y) / 2, (centers[0].z + centers[1].z) / 2);
+  }
+
   // Slid away it has nothing to find: no small mark floating in an empty doorway. It is looked at all the same, through the doorway, and then it has its box.
   get marked(): boolean {
     return this.mode !== 'slide' || !this.wantsOpen;

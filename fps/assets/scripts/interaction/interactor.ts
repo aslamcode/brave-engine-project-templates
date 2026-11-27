@@ -24,7 +24,7 @@ import { Interactable } from './interactable';
  * It also tells the `Hud` which things that can be used are near and in sight (`Marker Range`, at most `Max Markers`, the nearest first), where on the screen, so the page can mark them: the one looked at gets a
  * glass box with what `interact` does (tied to the thing by a line, or on it, by the `Marker` of its Interactable), the others a small mark. The mark nearest to where the player looks, within `Peek Angle`, says its
  * name next to it (what a thing is can be learned without aiming at it exactly; a door has no name to give, a pickup has its item's). The point on the screen comes from the camera on this entity (the eyes)
- * and the anchor of each thing (the centre of its box, else of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked, nor one the look cannot land on (no solid collider, no `Aim
+ * and the anchor of each thing (the centre of its box, else the centre it says (`aimCenter`: the middle of a double door's two leaves), else of what it is drawn with, and its `Marker Height`); a thing behind a wall is not marked, nor one the look cannot land on (no solid collider, no `Aim
  * Radius`, no box: the mark would lead to something that does nothing), nor one that says it has nothing to find (`marked`: a door that is open).
  *
  * It does nothing while the game is paused or when the entity it is on is off (the other one of two players, say).
@@ -317,11 +317,15 @@ export class Interactor extends ScriptComponent {
     return point;
   }
 
-  // The centre of the thing as it is now: of its box when it has one (a door that slid away is still at its doorway), else of what it is drawn with, else its origin. A new point each time.
+  // The centre of the thing as it is now: of its box when it has one (a door that slid away is still at its doorway), else the centre the thing says (the middle of a double door's two leaves), else of what it is drawn
+  // with, else its origin. A new point each time.
   private aimPointOf(candidate: ICandidate): Vector3 {
     const { thing, renderer } = candidate;
     const box = thing.aimBox;
     if (box) return new Vector3(box.center[0], box.center[1], box.center[2]);
+
+    const middle = thing.aimCenter;
+    if (middle) return middle;
 
     const center = renderer && centerOf(renderer);
     if (center) return center;

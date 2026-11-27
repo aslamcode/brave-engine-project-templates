@@ -1,4 +1,4 @@
-import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String, StringCompletionEnum } from '@brave/core';
+import { AudioSource, Float, JsonIgnore, Ref, Script, ScriptComponent, Select, Signal, String, StringCompletionEnum, Vector3 } from '@brave/core';
 import type { Interactor } from './interactor';
 import type { IAimBox } from '../shared/aim-box';
 import { fillText } from '../shared/phrase';
@@ -86,6 +86,14 @@ export class Interactable extends ScriptComponent {
    * It works as `Aim Radius` does: only when nothing else is under the crosshair, and not through a wall. None (the default): only its collider and its `Aim Radius` count.
    */
   get aimBox(): IAimBox | undefined {
+    return undefined;
+  }
+
+  /**
+   * The centre of it as it is now, for a thing made of several pieces whose middle is not the middle of the biggest piece it is drawn with (a double door: between its two leaves). It is where the marker is tied and
+   * where the aim measures it from, a box (`aimBox`) saying the same wins, and it must be a new point each time (the marker adds `Marker Height` to it). None (the default): the centre of its biggest drawing, else its origin.
+   */
+  get aimCenter(): Vector3 | undefined {
     return undefined;
   }
 
