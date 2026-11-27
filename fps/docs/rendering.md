@@ -38,7 +38,7 @@ How the picture is made: the Camera component, the `.pps` post-process stacks, m
 | Film Grain | Intensity 0.05, Response 1. |
 | Vignette | Darkens the edges toward a colour. Intensity 0.4 is its opacity (0 changes nothing, 1 takes the farthest corners all the way to the Color), Smoothness 0.5 is how far in from the corners the fade reaches (1 starts at the middle), Roundness 1 (0 follows the screen's shape, 1 is a circle), Color black. |
 | Lens Flare | Starburst on the brightest visible light (Directional, Point, Spot, Area; not Ambient or Soft). Intensity 1; **Intensity Threshold 1.5**: a light whose own Intensity is lower never flares. |
-| Rain | Streaks, lens droplets, thinner visibility. **Intensity 0**: nothing shows until you raise it. Wind Lean, Speed 1, Distance Falloff 0.5, Lens Droplets on, Area Radius 60. |
+| Rain | Streaks, lens droplets, thinner visibility. **Intensity 0**: nothing shows until you raise it. Wind Lean, Speed 1, Distance Falloff 0.5 (the mist; **Mist Color** is its colour, its own and never the Fog's; **Mist Masses** 0, **Mass Size** 90 m: raise Mist Masses and the mist comes in the heavy masses of water of a storm that drift with the world's wind and shut the view for a while, with clear air between; it needs Distance Falloff above 0), Lens Droplets on, Area Radius 60. |
 | Distortion, Glitch, Lens Distortion | Screen wobble (presets such as Heat Haze; Intensity 0), glitch (Scanlines, RGB Split, Static Noise, CRT Lines, each On/Off), barrel / pincushion (Intensity -1 to 1). |
 | Dithering | Last: noise that hides banding in skies and fog. Intensity 1. |
 | Anti-Aliasing | FXAA over the tonemapped image. Quality Low, Medium, High (default), Ultra. |
