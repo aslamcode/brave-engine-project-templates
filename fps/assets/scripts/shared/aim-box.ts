@@ -39,6 +39,23 @@ export function shiftBox(box: IAimBox, x: number, y: number, z: number): IAimBox
   return { center: [box.center[0] + x, box.center[1] + y, box.center[2] + z], axes: box.axes, half: box.half };
 }
 
+/** The smallest box turned as `a` is that holds both `a` and `b` (the doorway of a pair of sliding leaves is where the two of them shut). */
+export function joinBoxes(a: IAimBox, b: IAimBox): IAimBox {
+  const dot = (u: ArrayLike<number>, v: ArrayLike<number>) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  const spans = [0, 1, 2].map(i => {
+    const reachOfB = b.half.reduce((sum, half, j) => sum + half * Math.abs(dot(b.axes[j], a.axes[i])), 0);
+    const centerOfA = dot(a.center, a.axes[i]), centerOfB = dot(b.center, a.axes[i]);
+    return [Math.min(centerOfA - a.half[i], centerOfB - reachOfB), Math.max(centerOfA + a.half[i], centerOfB + reachOfB)];
+  });
+  const middles = spans.map(([low, high]) => (low + high) / 2);
+
+  return {
+    center: [0, 1, 2].map(k => a.axes.reduce((sum, axis, i) => sum + axis[k] * middles[i], 0)) as [number, number, number],
+    axes: a.axes,
+    half: spans.map(([low, high]) => (high - low) / 2) as [number, number, number]
+  };
+}
+
 /** The same box, every side `margin` metres further out. */
 export function growBox(box: IAimBox, margin: number): IAimBox {
   return { center: box.center, axes: box.axes, half: [box.half[0] + margin, box.half[1] + margin, box.half[2] + margin] };

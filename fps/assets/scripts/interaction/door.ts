@@ -2,7 +2,7 @@ import { AudioTrack, Bool, Callable, Entity, Float, IEntity, Inject, Invoke, Jso
 import { Hud } from '../../services/hud.service';
 import { Inventory } from '../../services/inventory.service';
 import { Journal } from '../../services/journal.service';
-import { aimBoxOf, IAimBox, shiftBox } from '../shared/aim-box';
+import { aimBoxOf, IAimBox, joinBoxes, shiftBox } from '../shared/aim-box';
 import { biggestRenderer, centerOf, hasSolid } from '../shared/drawn';
 import { fillRequirement, IRequirementProgress, parseRequirement, progressOf } from '../shared/requirement';
 import { Interactable } from './interactable';
@@ -28,6 +28,11 @@ export type DoorSides = 'fixed' | 'both' | 'front';
  *
  * The leaf's origin is the hinge, so the panel hangs off it (a child, a half-width to the side). The pose the leaf has in the scene is its CLOSED pose; `Starts Open` puts it open when the game
  * starts. With no `Leaf` set, the moving part is this entity itself.
+ *
+ * A double door is this same script with a `Second Leaf`: the other half of the pair, with its own origin at its own hinge (or the place it starts to slide from). It is moved by the same `progress`, so the two
+ * open, close and turn back together by construction, and it is MIRRORED: a hinged leaf turns the opposite way (two leaves hinged on opposite edges swing the same way, away from the player or towards
+ * them), a sliding one slides the opposite way (the two part). One script is one prompt, one lock, one key, one set of sounds and one state for the Director: looking at either leaf and pressing E moves
+ * both. `Axis` is in the space of the parent of the leaves, so give both the same parent. `Opens From` is told from the first leaf: the plane of the door is the same for the two.
  *
  * A sliding door is used through its doorway: the leaf slides out of sight, so the aim counts where it shuts (`aimBox`), and E shuts it from anywhere in the doorway, not only at the edge that is left. While it is
  * open it has no small mark either (nothing is there to find); looking through the doorway at it brings the prompt. The leaf must have a collider that is on, or there is nothing to look at.
@@ -59,6 +64,7 @@ export class Door extends Interactable {
   @Float({ label: 'Duration', suffix: 's', tooltip: 'How long it takes to open, or to close.' }) duration = 1;
   @Select({ label: 'Easing', optionsKey: 'easingOptions', sort: false }) easing: DoorEasing = 'smooth';
   @Ref(Entity, { label: 'Leaf', tooltip: 'The part that moves. For a hinged door its origin is the hinge. Empty: this entity.' }) leaf?: IEntity;
+  @Ref(Entity, { label: 'Second Leaf', tooltip: 'A double door: the other half of the pair. It moves with the Leaf, mirrored (a hinged one turns the opposite way, a sliding one slides the opposite way), and shares this door\'s prompt, lock and state. Give both leaves the same parent. Empty: a single door.' }) secondLeaf?: IEntity;
 
   @Bool({ header: 'State', label: 'Starts Open' }) startsOpen = false;
   @Bool({ label: 'Locked', tooltip: 'Starts locked: Interact is refused, unless the player carries the Key Item.' }) locked = false;
@@ -104,6 +110,8 @@ export class Door extends Interactable {
   @JsonIgnore() @Saved() private wantsOpen = false;
   @JsonIgnore() @Saved() private closedPosition?: number[];
   @JsonIgnore() @Saved() private closedRotation?: number[];
+  @JsonIgnore() @Saved() private secondClosedPosition?: number[];
+  @JsonIgnore() @Saved() private secondClosedRotation?: number[];
   // The hinge and the way the leaf starts to move (the door's normal, towards the side it swings to), in the space of the leaf's parent: from them, which side of the door a place is on.
   @JsonIgnore() @Saved() private hinge?: number[];
   @JsonIgnore() @Saved() private normal?: number[];
@@ -192,22 +200,12 @@ export class Door extends Interactable {
   }
 
   // A door that slides away leaves nothing in its doorway to look at, and a player who wants to shut it would have to aim at the sliver that is left. So the aim counts where the leaf shuts: the leaf's own box
-  // moved back by how far it has gone. A leaf nobody can touch (no collider that is on) is not a door to look at, whatever has this script on it.
+  // moved back by how far it has gone (a pair of leaves: the box that holds both). A leaf nobody can touch (no collider that is on) is not a door to look at, whatever has this script on it.
   get aimBox(): IAimBox | undefined {
-    if (this.mode !== 'slide' || !this.closedPosition || !hasSolid(this.mover)) return undefined;
+    if (this.mode !== 'slide' || !this.closedPosition) return undefined;
 
-    const renderer = biggestRenderer(this.mover);
-    const box = renderer && aimBoxOf(renderer);
-    if (!box) return undefined;
-
-    // How far the leaf is from where it shuts, in the space of its parent; the world's is that turned and stretched as the parent is.
-    const length = Math.hypot(this.axis.x, this.axis.y, this.axis.z);
-    const scale = length > 0 ? this.amount * this.eased(this.progress) / length : 0;
-    const x = this.axis.x * scale, y = this.axis.y * scale, z = this.axis.z * scale;
-    const m = this.mover.parent?.transform.worldMatrix;
-    if (!m) return shiftBox(box, -x, -y, -z);
-
-    return shiftBox(box, -(m[0] * x + m[4] * y + m[8] * z), -(m[1] * x + m[5] * y + m[9] * z), -(m[2] * x + m[6] * y + m[10] * z));
+    const boxes = [this.shutBoxOf(this.mover, 1), this.secondLeaf && this.shutBoxOf(this.secondLeaf, -1)].filter((box): box is IAimBox => !!box);
+    return boxes.length ? boxes.reduce(joinBoxes) : undefined;
   }
 
   // Slid away it has nothing to find: no small mark floating in an empty doorway. It is looked at all the same, through the doorway, and then it has its box.
@@ -289,14 +287,39 @@ export class Door extends Interactable {
     this.onClosed.emit();
   }
 
-  // The scene's pose of the leaf is the closed one.
+  // The scene's pose of the leaf (of both, in a double door) is the closed one.
   private capture(): void {
     if (this.closedPosition) return;
 
-    const transform = this.mover.transform;
-    this.closedPosition = [transform.position.x, transform.position.y, transform.position.z];
-    this.closedRotation = [transform.rotationQ.x, transform.rotationQ.y, transform.rotationQ.z, transform.rotationQ.w];
+    [this.closedPosition, this.closedRotation] = this.poseOf(this.mover);
+    if (this.secondLeaf) [this.secondClosedPosition, this.secondClosedRotation] = this.poseOf(this.secondLeaf);
     this.measureSides();
+  }
+
+  private poseOf(leaf: IEntity): [number[], number[]] {
+    const transform = leaf.transform;
+    return [
+      [transform.position.x, transform.position.y, transform.position.z],
+      [transform.rotationQ.x, transform.rotationQ.y, transform.rotationQ.z, transform.rotationQ.w]
+    ];
+  }
+
+  // The box of where a sliding leaf shuts: its own box moved back by how far it has gone, in the space of its parent, the world's being that turned and stretched as the parent is. `side` is -1 for the
+  // second leaf of a pair, which slides the other way.
+  private shutBoxOf(leaf: IEntity, side: number): IAimBox | undefined {
+    if (!hasSolid(leaf)) return undefined;
+
+    const renderer = biggestRenderer(leaf);
+    const box = renderer && aimBoxOf(renderer);
+    if (!box) return undefined;
+
+    const length = Math.hypot(this.axis.x, this.axis.y, this.axis.z);
+    const scale = length > 0 ? side * this.amount * this.eased(this.progress) / length : 0;
+    const x = this.axis.x * scale, y = this.axis.y * scale, z = this.axis.z * scale;
+    const m = leaf.parent?.transform.worldMatrix;
+    if (!m) return shiftBox(box, -x, -y, -z);
+
+    return shiftBox(box, -(m[0] * x + m[4] * y + m[8] * z), -(m[1] * x + m[5] * y + m[9] * z), -(m[2] * x + m[6] * y + m[10] * z));
   }
 
   // The door's normal and its hinge, from where the panel is: the part of the way from the hinge to the panel that lies across the axis turns, when the leaf is turned by a positive angle about the axis, towards
@@ -347,24 +370,30 @@ export class Door extends Interactable {
     this.swing = this.sides === 'both' && this.sideOf(interactor) > 0 ? -1 : 1;
   }
 
-  // The leaf where `progress` puts it. A new Vector3 or Quaternion each time: the Transform takes the object it is given and listens to it.
+  // The leaf (both, in a double door) where `progress` puts it.
   private place(): void {
-    if (!this.closedPosition || !this.closedRotation) return;
+    this.placeLeaf(this.mover, this.closedPosition, this.closedRotation, 1);
+    if (this.secondLeaf) this.placeLeaf(this.secondLeaf, this.secondClosedPosition, this.secondClosedRotation, -1);
+  }
 
-    const transform = this.mover.transform;
+  // One leaf from its closed pose; `side` is -1 for the second leaf of a pair, which goes the opposite way. A new Vector3 or Quaternion each time: the Transform takes the object it is given and listens to it.
+  private placeLeaf(leaf: IEntity, position: number[] | undefined, rotation: number[] | undefined, side: number): void {
+    if (!position || !rotation) return;
+
+    const transform = leaf.transform;
     const reached = this.eased(this.progress);
     const length = Math.hypot(this.axis.x, this.axis.y, this.axis.z);
 
     if (this.mode === 'slide') {
-      const scale = length > 0 ? this.amount * reached / length : 0;
-      const [x, y, z] = this.closedPosition;
+      const scale = length > 0 ? side * this.amount * reached / length : 0;
+      const [x, y, z] = position;
       transform.position = new Vector3(x + this.axis.x * scale, y + this.axis.y * scale, z + this.axis.z * scale);
       return;
     }
 
-    const turn = Quaternion.fromAxisAngle(new Quaternion(), length > 0 ? this.axis : new Vector3(0, 1, 0), this.amount * this.swing * reached);
+    const turn = Quaternion.fromAxisAngle(new Quaternion(), length > 0 ? this.axis : new Vector3(0, 1, 0), side * this.amount * this.swing * reached);
     const closed = new Quaternion();
-    [closed.x, closed.y, closed.z, closed.w] = this.closedRotation;
+    [closed.x, closed.y, closed.z, closed.w] = rotation;
     transform.rotationQ = Quaternion.multiply(new Quaternion(), turn, closed);
   }
 
